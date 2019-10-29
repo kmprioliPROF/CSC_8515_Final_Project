@@ -1,0 +1,46 @@
+---
+title: "Understanding Correlates of Obesity:  Supervised and Unsupervised Learning Approaches"
+author: "Katherine M. Prioli"
+date: "December 05, 2019"
+output:
+  pdf_document: default
+  html_document: default
+geometry: margin = 0.5in
+references:
+abstract: ""
+---
+
+## **Background**
+
+
+## **Methods**
+
+
+### *Subheading 1*
+
+
+### *Subheading 2*
+
+
+## **Results**
+
+
+### *Subheading 1*
+
+
+### *Subheading 2*
+
+
+## **Discussion**
+
+
+### *Strengths*
+
+
+### *Limitations*
+
+
+## **Conclusion**
+
+
+## **References**
