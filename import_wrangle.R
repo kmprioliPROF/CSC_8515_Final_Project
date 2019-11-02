@@ -142,15 +142,15 @@ PHQ9_stag <- PHQ9_raw %>%
     dpq090c = case_when(
       dpq090 > 3 ~ as.numeric(NA),
       TRUE ~ dpq090)) %>% 
-  mutate(phq9_score = rowSums(.[11:19], na.rm = FALSE),   # Ensuring only complete batteries are scored
-         phq9_cat = case_when(
-           phq9_score >=  0 & phq9_score <=  4 ~ 0,       # None to minimal
-           phq9_score >=  5 & phq9_score <=  9 ~ 1,       # Mild
-           phq9_score >= 10 & phq9_score <= 14 ~ 2,       # Moderate
-           phq9_score >= 15 & phq9_score <= 19 ~ 3,       # Moderately severe
-           phq9_score >= 20 & phq9_score <= 27 ~ 4,       # Severe
+  mutate(PHQ9_score = rowSums(.[11:19], na.rm = FALSE),   # Ensuring only complete batteries are scored
+         PHQ9_cat = case_when(
+           PHQ9_score >=  0 & PHQ9_score <=  4 ~ 0,       # None to minimal
+           PHQ9_score >=  5 & PHQ9_score <=  9 ~ 1,       # Mild
+           PHQ9_score >= 10 & PHQ9_score <= 14 ~ 2,       # Moderate
+           PHQ9_score >= 15 & PHQ9_score <= 19 ~ 3,       # Moderately severe
+           PHQ9_score >= 20 & PHQ9_score <= 27 ~ 4,       # Severe
            TRUE ~ as.numeric(NA)),
-         phq9_cat = factor(phq9_cat,
+         PHQ9_cat = factor(PHQ9_cat,
                            levels = c(0, 1, 2, 3, 4),
                            labels = c("None to minimal",
                                       "Mild",
@@ -158,7 +158,7 @@ PHQ9_stag <- PHQ9_raw %>%
                                       "Moderately severe",
                                       "Severe")))
 
-PHQ9 <- PHQ9_stag %>% select(seqn, phq9_score, phq9_cat)
+PHQ9 <- PHQ9_stag %>% select(seqn, PHQ9_score, PHQ9_cat)
 
 # Examination data - blood pressure
 
@@ -168,7 +168,7 @@ bloodpress <- bloodpress_raw %>%
   select(seqn, bpxsy2, bpxdi2) %>% 
   rename(systolic = bpxsy2,
          diastolic = bpxdi2) %>% 
-  mutate(htn_cat = case_when(
+  mutate(HTN_cat = case_when(
     is.na(systolic) == TRUE | is.na(diastolic) == TRUE ~ as.numeric(NA),
     systolic <  120 & diastolic < 80 ~ 0,   # Normal BP
     systolic >= 120 & diastolic < 80 ~ 1,   # Elevated BP
@@ -176,7 +176,7 @@ bloodpress <- bloodpress_raw %>%
     (systolic >= 140 & systolic <= 180) | (diastolic >= 90 & diastolic <= 120) ~ 3,   # Stage 2 HTN
     systolic > 180 | diastolic > 120 ~ 4   # Hypertensive crisis
   ),
-  htn_cat = factor(htn_cat,
+  HTN_cat = factor(HTN_cat,
                    levels = c(0, 1, 2, 3, 4),
                    labels = c("Normal", "Elevated", "Stage 1 HTN", 
                               "Stage 2 HTN", "Hypertensive crisis")))
@@ -404,15 +404,30 @@ nhanes <- allseqn %>%   # These joins will throw a warning; ignore it - this is 
   left_join(PHQ9, by = c("seqn" = "seqn")) %>% 
   left_join(dietbehav, by = c("seqn" = "seqn")) %>% 
   left_join(dietintake, by = c("seqn" = "seqn")) %>% 
-  left_join(bodymeas, by = c("seqn" = "seqn"))
+  left_join(bodymeas, by = c("seqn" = "seqn")) %>% 
+  select(seqn, age, gender, race, educ, marital, famincome_cat, famincome_povratio,
+         diabet_hx, hba1c, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
+         systolic, diastolic, HTN_cat,
+         mins_activ, mins_seden, worklim, walklim,
+         diethealth, fastfood_eat, fastfood_usednutrit, fastfood_woulduse, restaur_eat, restaur_usednutrit, restaur_woulduse,
+         dailykcal, dailykcal_typical, dailywater,
+         PHQ9_score, PHQ9_cat,
+         BMI, BMI_cat)
 
 
 #### Exploratory analysis ----
 
 # Continuous variables
 
-# nhanes_contin <- nhanes %>% 
-#   select()
+nhanes_contin <- nhanes %>%
+  select(age, famincome_povratio, hba1c, systolic, diastolic, mins_activ, mins_seden, dailykcal, dailywater, PHQ9_score, BMI)
+
+nhanes_contin_kable <- nhanes_contin %>% 
+  describe() %>% 
+  select(n, mean, sd, min, max, median) %>% 
+  mutate(mean = round(mean, digits = 2),
+         sd = round(sd, digits = 3)) %>% 
+  kable(format = "markdown")
 
 
 #### Sending data to .Rmd ----

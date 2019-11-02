@@ -7,10 +7,96 @@ output:
   html_document: default
 geometry: margin = 0.5in
 references:
+- id: cdc_risk
+  title: Selected health conditions and risk factors, by age - United States, selected years 1988-1994 through 2015-2016.
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title: "Health, United States, 2017:  Trend Tables."
+  volume: 
+  URL: https://www.cdc.gov/nchs/data/hus/2017/053.pdf
+  DOI: 
+  publisher: 
+  page: 
+  type: webpage
+  issued:
+    year: 2017
+    month:  
+- id: cdc_defining
+  title: Defining Adult Overweight and Obesity.
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title: 
+  volume: 
+  URL: https://www.cdc.gov/obesity/adult/defining.html
+  DOI: 
+  publisher: 
+  page: 
+  type: webpage
+  issued:
+    year: 2017
+    month:  
+- id: hruby_2015
+  title: "The Epidemiology of Obesity: A Big Picture."
+  author:
+  - family: Hruby A, Hu FB
+  container-title: Pharmacoeconomics
+  volume: 33(7)
+  URL: 
+  DOI: 10.1007/s40273-014-0243-x
+  publisher: 
+  page: 673-89
+  type: article-journal
+  issued:
+    year: 2015
+    month:
+- id: li_2015
+  title: "Prevalence and healthcare costs of obesity-related comorbidities:  evidence from an electronic medical records system in the United States."
+  author:
+  - family: Li Q, Blume SW, Huang JC, Hammer M, Ganz ML
+  container-title: J Med Econ
+  volume: 18(12)
+  URL: 
+  DOI: 10.3111/13696998.2015.1067623
+  publisher: 
+  page: 1020-8
+  type: article-journal
+  issued:
+    year: 2015
+    month:
+
+  
+    
+      
+        
+
+- id: 
+  title: 
+  author:
+  - family: 
+    given: 
+  - family: 
+    given: 
+  container-title: 
+  volume: 
+  URL: 
+  DOI: 
+  publisher: 
+  page: 
+  type: article-journal
+  issued:
+    year: 
+    month:
+   
 abstract: ""
 ---
 
 ## **Background**
+
+Overweight and obesity are growing public health concerns, with 71.6% of American adults meeting at least the criteria for overweight, and 39.8% qualifying as obese per the Centers for Disease Control and Prevention (CDC) as of 2016.(@cdc_risk)  Defined as a body mass index (BMI) of 30 $kg/m^{2}$ or above, obesity is of especially high concern because it strongly correlates with many diseases and conditions that lead to significant morbidity and mortality, and thus to increased healthcare utilization and decreased productivity, both at high economic burden.(@cdc_defining, @hruby_2015, @li_2015)
+
+The National Health and Nutrition Examination Survey (NHANES), a biennial health surveillance study performed by the CDC, collects data from a nationally representative sample of community-dwelling Americans pertaining to demographics, health, and nutritional and exercise habits through both self-report and physical examination.[5]  NHANES has uncovered some demographic correlates of obesity $-$ namely, that obesity is more prevalent among Hispanics and non-Hispanic blacks for both adults and children, that obesity is more prevalent among women across all racial groups, and that for all racial groups except blacks, education level appears inversely correlated with prevalence of obesity.[6,7]  However, though much progress has been made toward understanding the socioeconomic and behavioral drivers of obesity, much remains unknown about the interactions of these characteristics and how, when considered in groups, they may correlate with obesity.
+
+Reducing both the incidence and prevalence of obesity will be critical in managing obesity-related healthcare expenditure, especially for publicly funded programs such as Medicare and Medicaid.  If constellations of obesity correlates can be identified, tailored health interventions that target these constellations to prevent or reduce obesity could be developed.  The objective of this study was to use both supervised and unsupervised machine learning approaches to find patterns in a carefully selected set of characteristics which are known or suspected to be correlated with obesity.
 
 
 ## **Methods**
