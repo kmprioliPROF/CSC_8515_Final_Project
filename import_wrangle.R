@@ -365,6 +365,37 @@ rm(list = c("dietbehav_raw", "dietintake_raw", "PHQ9_raw", "bloodpress_raw", "bo
           "diabetes_raw", "medical_raw", "physactiv_raw", "physfxn_raw"))
 
 
+# Joining datasets
+
+a <- bloodpress$seqn %>% as_tibble()
+b <- bodymeas$seqn %>% as_tibble()
+c <- demog$seqn %>% as_tibble()
+d <- diabetes$seqn %>% as_tibble()
+e <- dietbehav$seqn %>% as_tibble()
+f <- dietintake$seqn %>% as_tibble()
+g <- medical$seqn %>% as_tibble()
+h <- PHQ9$seqn %>% as_tibble()
+i <- physactiv$seqn %>% as_tibble()
+j <- physfxn$seqn %>% as_tibble()
+
+allseqn <- rbind(a, b, c, d, e, f, g, h, i, j) %>% 
+  unique() %>% 
+  arrange() %>% 
+  rename(seqn = value)
+
+nhanes <- allseqn %>%   # These joins will throw a warning; ignore - this is a known dplyr issue
+  left_join(demog, by = c("seqn" = "seqn")) %>% 
+  left_join(diabetes, by = c("seqn" = "seqn")) %>% 
+  left_join(medical, by = c("seqn" = "seqn")) %>% 
+  left_join(bloodpress, by = c("seqn" = "seqn")) %>% 
+  left_join(physactiv, by = c("seqn" = "seqn")) %>% 
+  left_join(physfxn, by = c("seqn" = "seqn")) %>% 
+  left_join(PHQ9, by = c("seqn" = "seqn")) %>% 
+  left_join(dietbehav, by = c("seqn" = "seqn")) %>% 
+  left_join(dietintake, by = c("seqn" = "seqn")) %>% 
+  left_join(bodymeas, by = c("seqn" = "seqn"))
+
+
 #### Sending data to .Rmd ----
 
 # render("analysis_report_nb.Rmd")
