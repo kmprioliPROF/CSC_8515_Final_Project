@@ -35,7 +35,7 @@ physfxn_raw <- read_xpt("data/PFQ_I.XPT")         # Questionnaire data - physica
 
 #### Wrangling data ----
 
-# Dietary behavior data
+# Questionnaire data - dietary behavior
 
 names(dietbehav_raw) <- str_to_lower(names(dietbehav_raw))
 
@@ -87,7 +87,7 @@ dietbehav_stag <- dietbehav_raw %>%
 
 dietbehav <- dietbehav_stag %>% select(-dbq700, -cbq505, -cbq540, -cbq545, -cbq550, -cbq585, -cbq590)
 
-# Dietary intake data
+# Dietary intake data, Day 1
 
 names(dietintake_raw) <- str_to_lower(names(dietintake_raw))
 
@@ -106,7 +106,7 @@ dietintake_stag <- dietintake_raw %>%
 
 dietintake <- dietintake_stag %>% select(-dr1_300)
 
-# PHQ-9 data
+# Questionnaire data - PHQ-9
 
 names(PHQ9_raw) <- str_to_lower(names(PHQ9_raw))
 
@@ -158,7 +158,7 @@ PHQ9_stag <- PHQ9_raw %>%
 
 PHQ9 <- PHQ9_stag %>% select(seqn, phq9_score, phq9_cat)
 
-# Blood pressure data
+# Examination data - blood pressure
 
 names(bloodpress_raw) <- str_to_lower(names(bloodpress_raw))
 
@@ -177,7 +177,7 @@ bloodpress <- bloodpress_raw %>%
                    labels = c("Normal", "Elevated", "Stage 1 HTN", 
                               "Stage 2 HTN", "Hypertensive crisis")))
 
-# Body measures data
+# Examination data - body measures
 
 names(bodymeas_raw) <- str_to_lower(names(bodymeas_raw))
 
@@ -192,6 +192,172 @@ bodymeas_stag <- bodymeas_raw %>%
   ))
   
 bodymeas <- bodymeas_stag %>% select(-bmxwt, -bmxwt)
+
+# Demographics data
+
+names(demog_raw) <- str_to_lower(names(demog_raw))
+
+demog_stag <- demog_raw %>% 
+  select(seqn, riagendr, ridageyr, ridreth3, dmdeduc2, dmdmartl, indfmin2, indfmpir) %>% 
+  mutate(gender = factor(riagendr,
+                         levels = c(1, 2),
+                         labels = c("Male", "Female")),
+         race = factor(ridreth3,
+                       levels = c(1, 2, 3, 4, 6, 7),
+                       labels = c("Mexican American",
+                                  "Other Hispanic",
+                                  "Non-Hispanic white",
+                                  "Non-Hispanic black",
+                                  "Non-Hispanic Asian",
+                                  "Other or mixed race")),
+         educ = case_when(
+           dmdeduc2 > 5 ~ as.numeric(NA),
+           TRUE ~ dmdeduc2),
+         educ = factor(educ,
+                       levels = c(1, 2, 3, 4, 5),
+                       labels = c("Less than 9th grade",
+                                  "9th-12th grade, no HS diploma",
+                                  "High school / GED",
+                                  "Some college / AA degree",
+                                  "College graduate or above")),
+         marital = case_when(
+           dmdmartl > 6 ~ as.numeric(NA),
+           TRUE ~ dmdmartl),
+         marital = factor(marital,
+                          levels = c(1, 2, 3, 4, 5, 6),
+                          labels = c("Married",
+                                     "Widowed",
+                                     "Divorced",
+                                     "Separated",
+                                     "Never married",
+                                     "Living with partner")),
+         famincome_cat = case_when(
+           (indfmin2 >= 11 & indfmin2 <= 13) | indfmin2 > 15 ~ as.numeric(NA),
+           TRUE ~ indfmin2),
+         famincome_cat = factor(famincome_cat,
+                                levels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15),
+                                labels = c("$0 to $4,999",       # 1
+                                           "$5,000 to $9,999",   # 2
+                                           "$10,000 to $14,999", # 3
+                                           "$15,000 to $19,999", # 4
+                                           "$20,000 to $24,999", # 5
+                                           "$25,000 to $34,999", # 6
+                                           "$35,000 to $44,999", # 7
+                                           "$45,000 to $54,999", # 8
+                                           "$55,000 to $64,999", # 9
+                                           "$65,000 to $74,999", # 10
+                                           "$75,000 to $99,999", # 14
+                                           "$100,000 and over")))  # 15
+
+demog <- demog_stag %>% select(-riagendr, -ridreth3, -dmdeduc2, -dmdmartl, -indfmin2)
+
+# Questionnaire data - diabetes items
+
+names(diabetes_raw) <- str_to_lower(names(diabetes_raw))
+
+diabetes_stag <- diabetes_raw %>% 
+  select(seqn, diq010, diq280) %>% 
+  mutate(
+    diabet_hx = case_when(
+      diq010 > 3 ~ as.numeric(NA),
+      TRUE ~ diq010),
+    diabet_hx = factor(diabet_hx,
+                       levels = c(1, 2, 3),
+                       labels = c("Yes", "No", "Borderline")),
+    hba1c = case_when(
+      diq280 > 18.5 ~ as.numeric(NA),
+      TRUE ~ diq280))
+
+diabetes <- diabetes_stag %>% select(-diq010, -diq280)
+
+# Questionnaire data - medical items
+
+names(medical_raw) <- str_to_lower(names(medical_raw))
+
+medical_stag <- medical_raw %>% 
+  select(seqn, mcq160c, mcq160e, mcq160m, mcq365a, mcq365b) %>% 
+  mutate(
+    CAD_hx = case_when(
+      mcq160c > 2 ~ as.numeric(NA),
+      TRUE ~ mcq160c),
+    CAD_hx = factor(CAD_hx,
+                    levels = c(1, 2),
+                    labels = c("Yes", "No")),
+    MI_hx = case_when(
+      mcq160e > 2 ~ as.numeric(NA),
+      TRUE ~ mcq160e),
+    MI_hx = factor(MI_hx,
+                   levels = c(1, 2),
+                   labels = c("Yes", "No")),
+    thy_hx = case_when(
+      mcq160m > 2 ~ as.numeric(NA),
+      TRUE ~ mcq160m),
+    thy_hx = factor(thy_hx,
+                    levels = c(1, 2),
+                    labels = c("Yes", "No")),
+    doc_losewt = case_when(
+      mcq365a > 2 ~ as.numeric(NA),
+      TRUE ~ mcq365a),
+    doc_losewt = factor(doc_losewt,
+                        levels = c(1, 2),
+                        labels = c("Yes", "No")),
+    doc_exer = case_when(
+      mcq365b > 2 ~ as.numeric(NA),
+      TRUE ~ mcq365b),
+    doc_exer = factor(doc_exer,
+                      levels = c(1, 2),
+                      labels = c("Yes", "No")))
+
+medical <- medical_stag %>% select(-mcq160c, -mcq160e, -mcq160m, -mcq365a, -mcq365b)
+
+# Questionnaire data - physical activity
+
+names(physactiv_raw) <- str_to_lower(names(physactiv_raw))
+
+physactiv_stag <- physactiv_raw %>% 
+  select(seqn, pad615, pad630, pad660, pad675, pad680) %>% 
+  mutate(
+    mins_vigwork = case_when(
+      pad615 > 840 ~ as.numeric(NA),
+      TRUE ~ pad615),
+    mins_modwork = case_when(
+      pad630 > 990 ~ as.numeric(NA),
+      TRUE ~ pad630),
+    mins_vigrec = case_when(
+      pad660 > 480 ~ as.numeric(NA),
+      TRUE ~ pad660),
+    mins_modrec = case_when(
+      pad675 > 660 ~ as.numeric(NA),
+      TRUE ~ pad675),
+    mins_seden = case_when(
+      pad680 > 1380 ~ as.numeric(NA),
+      TRUE ~ pad680)) %>% 
+  rowwise() %>%
+  mutate(mins_activ = sum(mins_vigwork, mins_modwork, mins_vigrec, mins_modrec, na.rm = TRUE))
+
+physactiv <- physactiv_stag %>% select(seqn, mins_activ, mins_seden)
+
+# Questionnaire data - physical functioning
+
+names(physfxn_raw) <- str_to_lower(names(physfxn_raw))
+
+physfxn_stag <- physfxn_raw %>% 
+  select(seqn, pfq049, pfq061b) %>% 
+  mutate(
+    worklim = case_when(
+      pfq049 > 2 ~ as.numeric(NA),
+      TRUE ~ pfq049),
+    worklim = factor(worklim,
+                     levels = c(1, 2),
+                     labels = c("Yes", "No")),
+    walklim = case_when(
+      pfq061b > 5 ~ as.numeric(NA),
+      TRUE ~ pfq061b),
+    walklim = factor(walklim,
+                     levels = c(1, 2, 3, 4),
+                     labels = c("No difficulty", "Some difficulty", "Much difficulty", "Unable to do")))
+
+physfxn <- physfxn_stag %>% select(-pfq049, -pfq061b)
 
 # Removing raw dataframes
 
