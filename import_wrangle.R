@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Sat Nov 02 10:31:33 2019 ------------------------------
+# Sat Nov 02 17:04:28 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -8,11 +8,12 @@
 library(tidyverse)    # For data import and wrangling
 library(haven)        # For loading SAS .xpt files
 library(forcats)      # For handling categorical data
+library(psych)        # For describe()
 library(gridExtra)    # For grid.arrange()
 library(grid)         # For textGrob() to annotate grid.arrange() elements
 library(kableExtra)   # For prettifying output tables
 library(ggthemr)      # For prettifying output plots
-library(rmarkdown)    # For `render()`
+library(rmarkdown)    # For render()
 
 ggthemr("fresh")
 
@@ -42,48 +43,48 @@ names(dietbehav_raw) <- str_to_lower(names(dietbehav_raw))
 dietbehav_stag <- dietbehav_raw %>%
   select(seqn, dbq700, cbq505, cbq540, cbq545, cbq550, cbq585, cbq590) %>%
   mutate(
-    dbq700c = case_when(
+    diethealth = case_when(
       dbq700 > 5 ~ as.numeric(NA),
       TRUE ~ dbq700),
-    dbq700c = factor(dbq700c,
-                     levels = c(1, 2, 3, 4, 5),
-                     labels = c("Excellent", "Very good", "Good", "Fair", "Poor")),
-    cbq505c = case_when(
+    diethealth = factor(diethealth,
+                        levels = c(1, 2, 3, 4, 5),
+                        labels = c("Excellent", "Very good", "Good", "Fair", "Poor")),
+    fastfood_eat = case_when(
       cbq505 > 3 ~ as.numeric(NA),
       TRUE ~ cbq505),
-    cbq505c = factor(cbq505c,
-                     levels = c(1, 2),
-                     labels = c("Yes", "No")),
-    cbq540c = case_when(
+    fastfood_eat = factor(fastfood_eat,
+                          levels = c(1, 2),
+                          labels = c("Yes", "No")),
+    fastfood_usednutrit = case_when(
       cbq540 > 3 ~ as.numeric(NA),
       TRUE ~ cbq540),
-    cbq540c = factor(cbq540c,
-                     levels = c(1, 2),
-                     labels = c("Yes", "No")),
-    cbq545c = case_when(
+    fastfood_usednutrit = factor(fastfood_usednutrit,
+                                 levels = c(1, 2),
+                                 labels = c("Yes", "No")),
+    fastfood_woulduse = case_when(
       cbq545 > 4 ~ as.numeric(NA),
       TRUE ~ cbq545),
-    cbq545c = factor(cbq545c,
-                     levels = c(1, 2, 3, 4),
-                     labels = c("Often", "Sometimes", "Rarely", "Never")),
-    cbq550c = case_when(
+    fastfood_woulduse = factor(fastfood_woulduse,
+                               levels = c(1, 2, 3, 4),
+                               labels = c("Often", "Sometimes", "Rarely", "Never")),
+    restaur_eat = case_when(
       cbq550 > 3 ~ as.numeric(NA),
       TRUE ~ cbq550),
-    cbq550c = factor(cbq550c,
-                     levels = c(1, 2),
-                     labels = c("Yes", "No")),
-    cbq585c = case_when(
+    restaur_eat = factor(restaur_eat,
+                         levels = c(1, 2),
+                         labels = c("Yes", "No")),
+    restaur_usednutrit = case_when(
       cbq585 > 3 ~ as.numeric(NA),
       TRUE ~ cbq585),
-    cbq585c = factor(cbq585c,
-                     levels = c(1, 2),
-                     labels = c("Yes", "No")),
-    cbq590c = case_when(
+    restaur_usednutrit = factor(restaur_usednutrit,
+                                levels = c(1, 2),
+                                labels = c("Yes", "No")),
+    restaur_woulduse = case_when(
       cbq590 > 4 ~ as.numeric(NA),
       TRUE ~ cbq590),
-    cbq590c = factor(cbq590c,
-                     levels = c(1, 2, 3, 4),
-                     labels = c("Often", "Sometimes", "Rarely", "Never")))
+    restaur_woulduse = factor(restaur_woulduse,
+                              levels = c(1, 2, 3, 4),
+                              labels = c("Often", "Sometimes", "Rarely", "Never")))
 
 dietbehav <- dietbehav_stag %>% select(-dbq700, -cbq505, -cbq540, -cbq545, -cbq550, -cbq585, -cbq590)
 
@@ -93,16 +94,17 @@ names(dietintake_raw) <- str_to_lower(names(dietintake_raw))
 
 dietintake_stag <- dietintake_raw %>% 
   select(seqn, dr1tkcal, dr1_300, dr1_320z) %>% 
-  rename(dr1_32oz = dr1_320z) %>% 
+  rename(dailykcal = dr1tkcal,
+         dailywater = dr1_320z) %>% 
   mutate(
-    dr1_300c = case_when(
+    dailykcal_typical = case_when(
       dr1_300 > 3 ~ as.numeric(NA),
       TRUE ~ dr1_300),
-    dr1_300c = factor(dr1_300c,
-                      levels = c(1, 2, 3),
-                      labels = c("Much more than usual",
-                                 "Usual",
-                                 "Much less than usual")))
+    dailykcal_typical = factor(dailykcal_typical,
+                               levels = c(1, 2, 3),
+                               labels = c("Much more than usual",
+                                          "Usual",
+                                          "Much less than usual")))
 
 dietintake <- dietintake_stag %>% select(-dr1_300)
 
@@ -164,13 +166,15 @@ names(bloodpress_raw) <- str_to_lower(names(bloodpress_raw))
 
 bloodpress <- bloodpress_raw %>% 
   select(seqn, bpxsy2, bpxdi2) %>% 
+  rename(systolic = bpxsy2,
+         diastolic = bpxdi2) %>% 
   mutate(htn_cat = case_when(
-    is.na(bpxsy2) == TRUE | is.na(bpxdi2) == TRUE ~ as.numeric(NA),
-    bpxsy2 <  120 & bpxdi2 < 80 ~ 0,   # Normal BP
-    bpxsy2 >= 120 & bpxdi2 < 80 ~ 1,   # Elevated BP
-    (bpxsy2 >= 130 & bpxsy2 <= 139) | (bpxdi2 >= 80 & bpxdi2 <=  89) ~ 2,   # Stage 1 HTN
-    (bpxsy2 >= 140 & bpxsy2 <= 180) | (bpxdi2 >= 90 & bpxdi2 <= 120) ~ 3,   # Stage 2 HTN
-    bpxsy2 > 180 | bpxdi2 > 120 ~ 4   # Hypertensive crisis
+    is.na(systolic) == TRUE | is.na(diastolic) == TRUE ~ as.numeric(NA),
+    systolic <  120 & diastolic < 80 ~ 0,   # Normal BP
+    systolic >= 120 & diastolic < 80 ~ 1,   # Elevated BP
+    (systolic >= 130 & systolic <= 139) | (diastolic >= 80 & diastolic <=  89) ~ 2,   # Stage 1 HTN
+    (systolic >= 140 & systolic <= 180) | (diastolic >= 90 & diastolic <= 120) ~ 3,   # Stage 2 HTN
+    systolic > 180 | diastolic > 120 ~ 4   # Hypertensive crisis
   ),
   htn_cat = factor(htn_cat,
                    levels = c(0, 1, 2, 3, 4),
@@ -183,15 +187,18 @@ names(bodymeas_raw) <- str_to_lower(names(bodymeas_raw))
 
 bodymeas_stag <- bodymeas_raw %>% 
   select(seqn, bmxwt, bmxht, bmxbmi) %>% 
+  rename(weight_kg = bmxwt,
+         height_cm = bmxht,
+         BMI = bmxbmi) %>% 
   mutate(BMI_cat = case_when(
-    is.na(bmxbmi) == TRUE ~ as.numeric(NA),
-    bmxbmi < 18.5 ~ 1,                    # Underweight
-    bmxbmi >= 18.5 & bmxbmi < 25.0 ~ 2,   # Normal weight
-    bmxbmi >= 25.0 & bmxbmi < 30.0 ~ 3,   # Overweight
-    bmxbmi >= 30.0 ~ 4                    # Obese
+    is.na(BMI) == TRUE ~ as.numeric(NA),
+    BMI < 18.5 ~ 1,                 # Underweight
+    BMI >= 18.5 & BMI < 25.0 ~ 2,   # Normal weight
+    BMI >= 25.0 & BMI < 30.0 ~ 3,   # Overweight
+    BMI >= 30.0 ~ 4                 # Obese
   ))
   
-bodymeas <- bodymeas_stag %>% select(-bmxwt, -bmxwt)
+bodymeas <- bodymeas_stag %>% select(-weight_kg, -height_cm)
 
 # Demographics data
 
@@ -199,6 +206,8 @@ names(demog_raw) <- str_to_lower(names(demog_raw))
 
 demog_stag <- demog_raw %>% 
   select(seqn, riagendr, ridageyr, ridreth3, dmdeduc2, dmdmartl, indfmin2, indfmpir) %>% 
+  rename(age = ridageyr,
+         famincome_povratio = indfmpir) %>% 
   mutate(gender = factor(riagendr,
                          levels = c(1, 2),
                          labels = c("Male", "Female")),
@@ -383,7 +392,9 @@ allseqn <- rbind(a, b, c, d, e, f, g, h, i, j) %>%
   arrange() %>% 
   rename(seqn = value)
 
-nhanes <- allseqn %>%   # These joins will throw a warning; ignore - this is a known dplyr issue
+rm(list = c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"))
+
+nhanes <- allseqn %>%   # These joins will throw a warning; ignore it - this is a known dplyr issue
   left_join(demog, by = c("seqn" = "seqn")) %>% 
   left_join(diabetes, by = c("seqn" = "seqn")) %>% 
   left_join(medical, by = c("seqn" = "seqn")) %>% 
@@ -396,6 +407,13 @@ nhanes <- allseqn %>%   # These joins will throw a warning; ignore - this is a k
   left_join(bodymeas, by = c("seqn" = "seqn"))
 
 
-#### Sending data to .Rmd ----
+#### Exploratory analysis ----
 
+# Continuous variables
+
+# nhanes_contin <- nhanes %>% 
+#   select()
+
+
+#### Sending data to .Rmd ----
 # render("analysis_report_nb.Rmd")
