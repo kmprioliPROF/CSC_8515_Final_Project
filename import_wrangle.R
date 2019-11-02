@@ -361,7 +361,7 @@ physfxn <- physfxn_stag %>% select(-pfq049, -pfq061b)
 
 # Removing raw dataframes
 
-rm(ls = c("dietbehav_raw", "dietintake_raw", "PHQ9_raw", "bloodpress_raw", "bodymeas_raw", "demog_raw",
+rm(list = c("dietbehav_raw", "dietintake_raw", "PHQ9_raw", "bloodpress_raw", "bodymeas_raw", "demog_raw",
           "diabetes_raw", "medical_raw", "physactiv_raw", "physfxn_raw"))
 
 
