@@ -63,38 +63,238 @@ references:
   issued:
     year: 2015
     month:
-
-  
-    
-      
-        
-
-- id: 
-  title: 
+- id: nhanes
+  title: National Health and Nutrition Examination Survey
   author:
-  - family: 
-    given: 
-  - family: 
-    given: 
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://www.cdc.gov/nchs/nhanes/index.htm
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: webpage
+  issued:
+    year: 2019
+    month: 09
+- id: hales_2017
+  title: "Prevalence of Obesity Among Adults and Youth:  United States, 2015-2016"
+  author:
+  - family: Hales CM, Carroll MD, Fryar CD, Ogden CL
+  container-title: 
+  volume: NCHS Data Brief No. 288
+  URL: https://www.cdc.gov/nchs/data/databriefs/db288.pdf
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: report
+  issued:
+    year: 2017
+    month:  
+- id: ogden_2017
+  title: Prevalence of Obesity Among Adults, by Household Income and Education – United States, 2011-2014
+  author:
+  - family: Ogden CL, Fakhouri TH, Carroll MD, et al
+  container-title: Morb Mortal Wkly Rep
+  volume: 66
+  URL: 
+  DOI: 10.15585/mmwr.mm6650a1
+  publisher: 
+  page: 1369-73
+  type: article-journal
+  issued:
+    year: 2017
+    month: 
+- id: nhanes_demog
+  title: "National Health and Nutrition Examination Survey:  Demographic Variables and Sample Weights (DEMO_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2017
+    month: 09
+- id: nhanes_diabetes
+  title: "National Health and Nutrition Examination Survey:  Questionnaire Data - Diabetes (DIQ_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DIQ_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2017
+    month: 09
+- id: nhanes_medical
+  title: "National Health and Nutrition Examination Survey:  Questionnaire Data - Medical (MCQ_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/MCQ_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2017
+    month: 09
+- id: nhanes_bloodpress
+  title: "National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BPX_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2017
+    month: 09
+- id: nhanes_physactiv
+  title: "National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2017
+    month: 09
+- id: nhanes_physfxn
+  title: "National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2017
+    month: 09  
+- id: nhanes_phq9
+  title: "National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2017
+    month: 12
+- id: nhanes_dietbehav
+  title: "National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2018
+    month: 11
+- id: nhanes_dietintake
+  title: "National Health and Nutrition Examination Survey:  Dietary Interview - Total Nutrient Intakes, First Day (DR1TOT_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2018
+    month: 07
+- id: nhanes_bodymeas
+  title: "National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX_I)"
+  author:
+  - family: Centers for Disease Control and Prevention
+  container-title:
+  volume: 
+  URL: https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT
+  DOI: 
+  publisher: National Center for Health Statistics
+  page: 
+  type: dataset
+  issued:
+    year: 2017
+    month: 09
+- id: whelton_2018
+  title: "2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines"
+  author:
+  - family: Whelton PK, Carey RM, Aronow WS, et al
+  container-title: J Am Coll Cardiol
+  volume: 71(19)
+  URL: 
+  DOI: 10.1016/j.jacc.2017.11.006
+  publisher: 
+  page: e127-e248
+  type: article-journal
+  issued:
+    year: 2018
+    month:
+- id: kroenke_2002
+  title: "The PHQ-9: A new depression diagnostic and severity measure"
+  author:
+  - family: Kroenke K, Spitzer RL
+  container-title: Psychiatric Annals
+  volume: 32(9)
+  URL: 
+  DOI: 10.3928/0048-5713-20020901-06
+  publisher: 
+  page: 1-7
+  type: article-journal
+  issued:
+    year: 2002
+    month:
+- id: kmpgit
+  title: CSC_8515_Final_Project
+  author:
+  - family: Prioli KM
   container-title: 
   volume: 
-  URL: 
+  URL: https://github.com/kmprioliPROF/CSC_8515_Final_Project
   DOI: 
   publisher: 
   page: 
   type: article-journal
   issued:
-    year: 
-    month:
-   
-abstract: ""
+    year: 2019
+    month: 12
+abstract: "**_Background_** Text **_Methods_** Text  **_Results_** Text **_Conclusion_** Text"
 ---
 
 ## **Background**
 
 Overweight and obesity are growing public health concerns, with 71.6% of American adults meeting at least the criteria for overweight, and 39.8% qualifying as obese per the Centers for Disease Control and Prevention (CDC) as of 2016.(@cdc_risk)  Defined as a body mass index (BMI) of 30 $kg/m^{2}$ or above, obesity is of especially high concern because it strongly correlates with many diseases and conditions that lead to significant morbidity and mortality, and thus to increased healthcare utilization and decreased productivity, both at high economic burden.(@cdc_defining, @hruby_2015, @li_2015)
 
-The National Health and Nutrition Examination Survey (NHANES), a biennial health surveillance study performed by the CDC, collects data from a nationally representative sample of community-dwelling Americans pertaining to demographics, health, and nutritional and exercise habits through both self-report and physical examination.[5]  NHANES has uncovered some demographic correlates of obesity $-$ namely, that obesity is more prevalent among Hispanics and non-Hispanic blacks for both adults and children, that obesity is more prevalent among women across all racial groups, and that for all racial groups except blacks, education level appears inversely correlated with prevalence of obesity.[6,7]  However, though much progress has been made toward understanding the socioeconomic and behavioral drivers of obesity, much remains unknown about the interactions of these characteristics and how, when considered in groups, they may correlate with obesity.
+The National Health and Nutrition Examination Survey (NHANES), a biennial health surveillance study performed by the CDC, collects data from a nationally representative sample of community-dwelling Americans pertaining to demographics, health, and nutritional and exercise habits through both self-report and physical examination.(@nhanes)  NHANES has uncovered some demographic correlates of obesity $-$ namely, that obesity is more prevalent among Hispanics and non-Hispanic blacks for both adults and children, that obesity is more prevalent among women across all racial groups, and that for all racial groups except blacks, education level appears inversely correlated with prevalence of obesity.(@hales_2017, @ogden_2017)  However, though much progress has been made toward understanding the socioeconomic and behavioral drivers of obesity, much remains unknown about the interactions of these characteristics and how, when considered in groups, they may correlate with obesity.
 
 Reducing both the incidence and prevalence of obesity will be critical in managing obesity-related healthcare expenditure, especially for publicly funded programs such as Medicare and Medicaid.  If constellations of obesity correlates can be identified, tailored health interventions that target these constellations to prevent or reduce obesity could be developed.  The objective of this study was to use both supervised and unsupervised machine learning approaches to find patterns in a carefully selected set of characteristics which are known or suspected to be correlated with obesity.
 
@@ -130,3 +330,69 @@ Reducing both the incidence and prevalence of obesity will be critical in managi
 
 
 ## **References**
+
+\begin{flushleft}
+\begin{thebibliography}{99}
+\bibitem[1]
+  `Selected health conditions and risk factors, by age:  United States, selected years 1988-1994 through 2015-2016.  Centers for Disease Control and Prevention.  Health, United States, 2017:  Trend Tables.  Accessed October 20, 2019.  Available online at:  \url{https://www.cdc.gov/nchs/data/hus/2017/053.pdf}.
+
+\bibitem[2]
+  `Defining Adult Overweight and Obesity.  Centers for Disease Control and Prevention.  Last updated April 11, 2017.  Available online at:  \url{https://www.cdc.gov/obesity/adult/defining.html}.  Accessed October 22, 2019.
+
+\bibitem[3]
+  `Hruby A, Hu FB.  The Epidemiology of Obesity: A Big Picture. \textit{Pharmacoeconomics}. 2015;33(7):673-89.  doi:10.1007/s40273-014-0243-x.
+
+\bibitem[4]
+  `Li Q, Blume SW, Huang JC, Hammer M, Ganz ML.  Prevalence and healthcare costs of obesity-related comorbidities:  evidence from an electronic medical records system in the United States.  \textit{J Med Econ}.  2015;18(12):1020-8.  doi:  10.3111/13696998.2015.1067623.
+	
+\bibitem[5]
+	`National Health and Nutrition Examination Survey.  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 20, 2019.
+	
+\bibitem[6]
+  `Hales CM, Carroll MD, Fryar CD, Ogden CL.  Prevalence of Obesity Among Adults and Youth:  United States, 2015-2016.  NCHS Data Brief No. 288.  National Center for Health Statistics.  2017.  Accessed October 20, 2019.  Available online at:  \url{https://www.cdc.gov/nchs/data/databriefs/db288.pdf}.
+	
+\bibitem[7]
+  `Ogden CL, Fakhouri TH, Carroll MD, et al. Prevalence of Obesity Among Adults, by Household Income and Education – United States, 2011-2014.  \textit{Morb Mortal Wkly Rep}. 2017;66:1369-1373.  doi:  \url{http://dx.doi.org/10.15585/mmwr.mm6650a1}.
+	
+\bibitem[8]
+  `National Health and Nutrition Examination Survey:  Demographic Variables and Sample Weights (DEMO$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 27, 2019.
+	
+\bibitem[9]
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diabetes (DIQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+	
+\bibitem[10]
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Medical (MCQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+
+\bibitem[11]
+  `National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+	
+\bibitem[12]
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+	
+\bibitem[13]
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+	
+\bibitem[14]
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+	
+\bibitem[15]
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+
+\bibitem[16]
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+
+\bibitem[17]
+  `National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+
+\bibitem[18]
+	`Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  $\textit{J Am Coll Cardiol}$.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
+
+\bibitem[19]
+  `Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. \textit{Psychiatric Annals}. 2002;32(9):1-7.
+
+\bibitem[20]
+  `Prioli KM. CSC$\_$8515$\_$Final$\_$Project. Available online at:  \url{https://github.com/kprioliPROF/CSC_8515_Final_Project}.
+
+
+\end{thebibliography}
+\end{flushleft}
