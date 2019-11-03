@@ -12,9 +12,9 @@ library(psych)        # For describe()
 library(skimr)        # For skim()
 library(gridExtra)    # For grid.arrange()
 library(grid)         # For textGrob() to annotate grid.arrange() elements
+library(rmarkdown)    # For render()
 library(kableExtra)   # For prettifying output tables
 library(ggthemr)      # For prettifying output plots
-library(rmarkdown)    # For render()
 
 ggthemr("fresh")
 
@@ -430,12 +430,47 @@ nhanes_contin_kable <- nhanes_contin %>%
          sd = round(sd, digits = 3)) %>% 
   kable(format = "markdown")
 
-nhanes_categ <- nhanes %>%
-  select(gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer, 
+nhanes_categvars <- nhanes %>%
+  select(gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
          HTN_cat, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse,
-         restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>% 
-  # skim() %>%    # What function to use here for descriptives of categorical vars?
-  kable(format = "markdown")
+         restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>%
+  names()
+
+categsumm <- function(df, x){
+  summdf <- df %>%
+    group_by(!! x) %>% 
+    select(!! x) %>% 
+    summarize(n = n(),
+              pct = round((n / dim(df)[1]) * 100, digits = 2)) %>% 
+    arrange(desc(n))
+  dfout <- return(summdf)
+}
+
+for(i in 1:length(nhanes_categvars)){
+  summ <- categsumm(nhanes, rlang::quo_get_expr(quo(nhanes_categvars[[1]])))
+  summout <- return(summ)
+}
+
+
+
+
+#### CONTINUE HERE ----
+# Need to get the for-loop working because there's no way I'm running this fxn for each categ var!
+
+
+
+
+gender_summ <- categsumm(nhanes, quo(gender))
+race_summ <- categsumm(nhanes, quo(race))
+educ_summ <- categsumm(nhanes, quo(educ))
+famincome_cat_summ <- categsumm(nhanes, quo(famincome_cat))
+diabet_hx_summ <- categsumm(nhanes, quo(diabet_hx))
+CAD_hx_summ <- categsumm(nhanes, quo(CAD_hx))
+MI_hx_summ <- categsumm(nhanes, quo(MI_hx))
+thy_hx_summ <- categsumm(nhanes, quo(thy_hx))
+doc_losewt_summ <- categsumm(nhanes, quo(MI_hx))
+
+
 
 
 #### Sending data to .Rmd ----
