@@ -1,5 +1,7 @@
 ---
-title: "Understanding Correlates of Obesity:  Supervised and Unsupervised Learning Approaches"
+title: |
+  | Understanding Correlates of Obesity:
+  | Supervised and Unsupervised Learning Approaches
 author: "Katherine M. Prioli"
 date: "December 05, 2019"
 output:
@@ -21,19 +23,25 @@ Reducing both the incidence and prevalence of obesity will be critical in managi
 ## **Methods**
 
 
-### *Subheading 1*
+### *Variable Selection*
 
 
-### *Subheading 2*
+### *Supervised Approach*
+
+
+### *Unsupervised Approach*
+
+
+### *Technologies*
 
 
 ## **Results**
 
 
-### *Subheading 1*
+### *Supervised Approach*
 
 
-### *Subheading 2*
+### *Unsupervised Approach*
 
 
 ## **Discussion**
@@ -76,40 +84,40 @@ Reducing both the incidence and prevalence of obesity will be critical in managi
   `Ogden CL, Fakhouri TH, Carroll MD, et al. Prevalence of Obesity Among Adults, by Household Income and Education – United States, 2011-2014.  \textit{Morb Mortal Wkly Rep}. 2017;66:1369-1373.  doi:  \url{http://dx.doi.org/10.15585/mmwr.mm6650a1}.
 	
 \bibitem[8]
-  `National Health and Nutrition Examination Survey:  Demographic Variables and Sample Weights (DEMO$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 27, 2019.
+  `National Health and Nutrition Examination Survey:  Demographic Variables and Sample Weights (DEMO$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.XPT}.  Last updated September 2017.  Accessed October 27, 2019.
 	
 \bibitem[9]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diabetes (DIQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diabetes (DIQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DIQ_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
 	
 \bibitem[10]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Medical (MCQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Medical (MCQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/MCQ_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
 
 \bibitem[11]
-  `National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BPX_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
 	
 \bibitem[12]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
 	
 \bibitem[13]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
 	
 \bibitem[14]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT}.  Last updated December 2017.  Accessed October 29, 2019.
 	
 \bibitem[15]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT}.  Last updated November 2018.  Accessed October 29, 2019.
 
 \bibitem[16]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT}.  Last updated July 2018.  Accessed October 29, 2019.
 
 \bibitem[17]
-  `National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
 
 \bibitem[18]
 	`Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  $\textit{J Am Coll Cardiol}$.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
 
 \bibitem[19]
-  `Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. \textit{Psychiatric Annals}. 2002;32(9):1-7.
+  `Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. \textit{Psychiatric Annals}. 2002;32(9):1-7  doi:  10.3928/0048-5713-20020901-06.
 
 \bibitem[20]
   `Prioli KM. CSC$\_$8515$\_$Final$\_$Project. Available online at:  \url{https://github.com/kprioliPROF/CSC_8515_Final_Project}.
