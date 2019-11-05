@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Sat Nov 02 17:04:28 2019 ------------------------------
+# Tue Nov 05 13:22:33 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -192,11 +192,11 @@ bodymeas_stag <- bodymeas_raw %>%
          height_cm = bmxht,
          BMI = bmxbmi) %>% 
   mutate(BMI_cat = case_when(
-    is.na(BMI) == TRUE ~ as.numeric(NA),
-    BMI < 18.5 ~ 1,                 # Underweight
-    BMI >= 18.5 & BMI < 25.0 ~ 2,   # Normal weight
-    BMI >= 25.0 & BMI < 30.0 ~ 3,   # Overweight
-    BMI >= 30.0 ~ 4                 # Obese
+    is.na(BMI) == TRUE ~ as.character(NA),
+    BMI < 18.5 ~ "Underweight",
+    BMI >= 18.5 & BMI < 25.0 ~ "Normal weight",
+    BMI >= 25.0 & BMI < 30.0 ~ "Overweight",
+    BMI >= 30.0 ~ "Obese"
   ))
   
 bodymeas <- bodymeas_stag %>% select(-weight_kg, -height_cm)
@@ -421,44 +421,55 @@ nhanes <- allseqn %>%   # These joins will throw a warning; ignore it - this is 
 # Continuous variables
 
 nhanes_contin <- nhanes %>%
-  select(age, famincome_povratio, hba1c, systolic, diastolic, mins_activ, mins_seden, dailykcal, dailywater, PHQ9_score, BMI)
+  select(age, famincome_povratio, hba1c, systolic, diastolic, mins_activ, mins_seden, dailykcal, dailywater, PHQ9_score, BMI) %>% 
+  describe()
+
+contins <- rownames(nhanes_contin_kable)
 
 nhanes_contin_kable <- nhanes_contin %>% 
-  describe() %>% 
-  select(n, mean, sd, min, max, median) %>% 
+  mutate(vars = contins) %>% 
+  select(vars, n, mean, sd, min, max, median) %>% 
   mutate(mean = round(mean, digits = 2),
          sd = round(sd, digits = 3)) %>% 
   kable(format = "markdown")
 
+# Categorical variables
+
+# Can't use the commented out code below - `gather()` strips factor attributes
+
+# nhanes_categ_summ <- nhanes %>% 
+#   select(gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
+#          HTN_cat, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse,
+#          restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>% 
+#   gather(variable, value, gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
+#          HTN_cat, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse,
+#          restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>%
+#   group_by(variable, value) %>% 
+#   arrange(variable, value) %>% 
+#   summarise(n = n()) %>% 
+#   mutate(pct = round((n / sum(n)) * 100, digits = 2))
+
 nhanes_categvars <- nhanes %>%
   select(gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
          HTN_cat, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse,
-         restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>%
+         restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>% 
   names()
 
 categsumm <- function(df, x){
   summdf <- df %>%
-    group_by(!! x) %>% 
-    select(!! x) %>% 
-    summarize(n = n(),
-              pct = round((n / dim(df)[1]) * 100, digits = 2)) %>% 
-    arrange(desc(n))
+    select(!!x) %>%
+    group_by(!!x) %>%
+    summarize(n = n()) %>%
+    mutate(pct = round((n / sum(n)) * 100, digits = 2)) %>%
+    arrange(!!x)
   dfout <- return(summdf)
 }
 
-for(i in 1:length(nhanes_categvars)){
-  summ <- categsumm(nhanes, rlang::quo_get_expr(quo(nhanes_categvars[[1]])))
-  summout <- return(summ)
-}
+# For loop isn't working; not worth spending the time to fix it
 
-
-
-
-#### CONTINUE HERE ----
-# Need to get the for-loop working because there's no way I'm running this fxn for each categ var!
-
-
-
+# for(i in 1:length(nhanes_categvars)){
+#   assign(paste0("summ_", nhanes_categvars[[i]]), categsumm(nhanes, quo(nhanes_categvars[[i]])))
+# }
 
 gender_summ <- categsumm(nhanes, quo(gender))
 race_summ <- categsumm(nhanes, quo(race))
@@ -469,6 +480,19 @@ CAD_hx_summ <- categsumm(nhanes, quo(CAD_hx))
 MI_hx_summ <- categsumm(nhanes, quo(MI_hx))
 thy_hx_summ <- categsumm(nhanes, quo(thy_hx))
 doc_losewt_summ <- categsumm(nhanes, quo(MI_hx))
+doc_exer_summ <- categsumm(nhanes, quo(doc_exer))
+HTN_cat_summ <- categsumm(nhanes, quo(HTN_cat))
+worklim_summ <- categsumm(nhanes, quo(worklim))
+walklim_summ <- categsumm(nhanes, quo(walklim))
+diethealthy_summ <- categsumm(nhanes, quo(diethealthy))
+fastfood_eat_summ <- categsumm(nhanes, quo(fastfood_eat))
+fastfood_usednutrit_summ <- categsumm(nhanes, quo(fastfood_usednutrit))
+fastfood_woulduse_summ <- categsumm(nhanes, quo(fastfood_woulduse))
+restaur_eat_summ <- categsumm(nhanes, quo(restaur_eat))
+restaur_usednutrit_summ <- categsumm(nhanes, quo(restaur_usednutrit))
+restaur_woulduse_summ <- categsumm(nhanes, quo(restaur_woulduse))
+PHQ9_cat_summ <- categsumm(nhanes, quo(PHQ9_cat))
+BMI_cat_summ <- categsumm(nhanes, quo(BMI_cat))
 
 
 
