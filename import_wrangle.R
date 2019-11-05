@@ -191,13 +191,17 @@ bodymeas_stag <- bodymeas_raw %>%
   rename(weight_kg = bmxwt,
          height_cm = bmxht,
          BMI = bmxbmi) %>% 
-  mutate(BMI_cat = case_when(
-    is.na(BMI) == TRUE ~ as.character(NA),
-    BMI < 18.5 ~ "Underweight",
-    BMI >= 18.5 & BMI < 25.0 ~ "Normal weight",
-    BMI >= 25.0 & BMI < 30.0 ~ "Overweight",
-    BMI >= 30.0 ~ "Obese"
-  ))
+  mutate(
+    BMI_cat = case_when(
+      is.na(BMI) == TRUE ~ as.numeric(NA),
+      BMI < 18.5 ~ 1,
+      BMI >= 18.5 & BMI < 25.0 ~ 2,
+      BMI >= 25.0 & BMI < 30.0 ~ 3,
+      BMI >= 30.0 ~ 4
+      ),
+    BMI_cat = factor(BMI_cat,
+                     levels = c(1, 2, 3, 4),
+                     labels = c("Underweight", "Normal weight", "Overweight", "Obese")))
   
 bodymeas <- bodymeas_stag %>% select(-weight_kg, -height_cm)
 
@@ -424,7 +428,7 @@ nhanes_contin <- nhanes %>%
   select(age, famincome_povratio, hba1c, systolic, diastolic, mins_activ, mins_seden, dailykcal, dailywater, PHQ9_score, BMI) %>% 
   describe()
 
-contins <- rownames(nhanes_contin_kable)
+contins <- rownames(nhanes_contin)
 
 nhanes_contin_kable <- nhanes_contin %>% 
   mutate(vars = contins) %>% 
@@ -458,11 +462,12 @@ nhanes_categvars <- nhanes %>%
 categsumm <- function(df, x){
   summdf <- df %>%
     select(!!x) %>%
+    mutate(lev = as.numeric(!!x)) %>% 
     group_by(!!x) %>%
+    arrange(lev) %>% 
     summarize(n = n()) %>%
-    mutate(pct = round((n / sum(n)) * 100, digits = 2)) %>%
-    arrange(!!x)
-  dfout <- return(summdf)
+    mutate(pct = round((n / sum(n)) * 100, digits = 2))
+  dfout <- return(summdf) %>% kable(format = "markdown")
 }
 
 # For loop isn't working; not worth spending the time to fix it
@@ -493,8 +498,6 @@ restaur_usednutrit_summ <- categsumm(nhanes, quo(restaur_usednutrit))
 restaur_woulduse_summ <- categsumm(nhanes, quo(restaur_woulduse))
 PHQ9_cat_summ <- categsumm(nhanes, quo(PHQ9_cat))
 BMI_cat_summ <- categsumm(nhanes, quo(BMI_cat))
-
-
 
 
 #### Sending data to .Rmd ----
