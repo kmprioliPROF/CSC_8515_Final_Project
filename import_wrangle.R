@@ -1,12 +1,13 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Tue Nov 05 13:22:33 2019 ------------------------------
+# Tue Nov 05 22:50:07 2019 ------------------------------
 
 
 #### Loading libraries ----
 
 library(tidyverse)    # For data import and wrangling
 library(haven)        # For loading SAS .xpt files
+library(sjlabelled)   # For removing pesky column labels
 library(forcats)      # For handling categorical data
 library(psych)        # For describe()
 library(skimr)        # For skim()
@@ -417,8 +418,9 @@ nhanes <- allseqn %>%   # These joins will throw a warning; ignore it - this is 
          diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse, restaur_eat, restaur_usednutrit, restaur_woulduse,
          dailykcal, dailykcal_typical, dailywater,
          PHQ9_score, PHQ9_cat,
-         BMI, BMI_cat)
-
+         BMI, BMI_cat) %>% 
+  remove_all_labels() %>%   # Removing annoying column labels
+  filter(age >= 20)
 
 #### Exploratory analysis ----
 
@@ -500,5 +502,6 @@ PHQ9_cat_summ <- categsumm(nhanes, quo(PHQ9_cat))
 BMI_cat_summ <- categsumm(nhanes, quo(BMI_cat))
 
 
-#### Sending data to .Rmd ----
+#### Rendering .Rmd ----
+# render("checkpoints/Prioli_checkpoint1.Rmd")
 # render("Prioli_final_report.Rmd")
