@@ -41,6 +41,15 @@ nhanes_feat = nhanes.drop(['seqn', 'PHQ9_score', 'BMI', 'BMI_cat'], axis = 1)
 nhanes_labs = nhanes.filter(['BMI_cat'])   # pd .filter() works as a `keep` or dplyr::select()
 ```
 
+
+
+#### CONTINUE HERE ----
+<!-- Problem with NAN in the df (I thought tree classifiers could handle missing values?) -->
+
+
+
+
+
 ```{python nxk_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 rfc = ensemble.RandomForestClassifier(n_estimators = 100)
 rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
