@@ -37,6 +37,58 @@ Reducing both the incidence and prevalence of obesity will be critical in managi
 
 ## **Results**
 
+The final analytic dataframe had `r dim(nhanes)[1]` rows and `r dim(nhanes)[2]` columns.  Variables included in the dataset were:
+
+```{r nhanes_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+varnames <- colnames(nhanes) %>% 
+  as_tibble() %>% 
+  rename(Variable = value)
+
+vardescs <- c("Unique identifier",
+              "Age",
+              "Gender",
+              "Race",
+              "Level of education",
+              "Marital status",
+              "Family income category",
+              "Ratio of family income to poverty level",
+              "History of diabetes",
+              "Hemoglobin A1C reading",
+              "History of coronary artery disease",
+              "History of myocardial infarction",
+              "History of thyroid disease",
+              "Told by doctor to lose weight",
+              "Told by doctor to exercise",
+              "Systolic blood pressure",
+              "Diastolic blood pressure",
+              "Hypertension category",
+              "Daily minutes of moderate to vigorous activity",
+              "Daily minutes spent sedentary",
+              "Work limitations",
+              "Walking limitations",
+              "Feels diet is healthy",
+              "Has eaten fast food in past 12 months",
+              "Has used nutrition information to select fast food",
+              "Would use nutrition information to select fast food",
+              "Has eaten at a restaurant in past 12 months",
+              "Has used nutrition information to select restaurant meal",
+              "Would use nutrition information to select restaurant meal",
+              "Calories consumed on previous day",
+              "Previous day's calorie consumption compared to usual",
+              "Previous day's water intake",
+              "PHQ-9 depression screening score",
+              "PHQ-9 depression category",
+              "Body mass index (BMI)",
+              "BMI weight category") %>% 
+  as_tibble() %>% 
+  rename(Description = value)
+
+dfvars <- cbind(varnames, vardescs) %>% 
+  as_tibble() %>% 
+  kable(format = "markdown")
+dfvars
+```
+
 
 ### *Supervised Approach*
 

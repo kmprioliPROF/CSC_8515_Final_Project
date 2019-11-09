@@ -1,0 +1,111 @@
+---
+title: "Final Project:  Checkpoint 1"
+author: "Katherine M. Prioli"
+date: "November 06, 2019"
+output:
+  pdf_document: default
+  html_document: default
+geometry: margin = 0.5in
+---
+
+## **Progress to Date**
+
+The 2015-2016 NHANES datasets of interest have been downloaded and wrangled into a single dataframe, and exploratory data analysis has begun.  Some descriptive output is presented below.  Additionally, progress has been made in drafting the Background and Methods sections of the final report using some of the text that informed the full proposal.
+
+No unexpected challenges have arisen at this early stage in the project, and there are no proposed changes to the scope or timeline.
+
+
+## **Dataframe Descriptives**
+
+The analytic dataframe has `r dim(nhanes)[1]` rows and `r dim(nhanes)[2]` columns.  Variables included in the dataset are:
+
+```{r nhanes_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+varnames <- colnames(nhanes) %>% 
+  as_tibble() %>% 
+  rename(Variable = value)
+
+vardescs <- c("Unique identifier",
+              "Age",
+              "Gender",
+              "Race",
+              "Level of education",
+              "Marital status",
+              "Family income category",
+              "Ratio of family income to poverty level",
+              "History of diabetes",
+              "Hemoglobin A1C reading",
+              "History of coronary artery disease",
+              "History of myocardial infarction",
+              "History of thyroid disease",
+              "Told by doctor to lose weight",
+              "Told by doctor to exercise",
+              "Systolic blood pressure",
+              "Diastolic blood pressure",
+              "Hypertension category",
+              "Daily minutes of moderate to vigorous activity",
+              "Daily minutes spent sedentary",
+              "Work limitations",
+              "Walking limitations",
+              "Feels diet is healthy",
+              "Has eaten fast food in past 12 months",
+              "Has used nutrition information to select fast food",
+              "Would use nutrition information to select fast food",
+              "Has eaten at a restaurant in past 12 months",
+              "Has used nutrition information to select restaurant meal",
+              "Would use nutrition information to select restaurant meal",
+              "Calories consumed on previous day",
+              "Previous day's calorie consumption compared to usual",
+              "Previous day's water intake",
+              "PHQ-9 depression screening score",
+              "PHQ-9 depression category",
+              "Body mass index (BMI)",
+              "BMI weight category") %>% 
+  as_tibble() %>% 
+  rename(Description = value)
+
+dfvars <- cbind(varnames, vardescs) %>% 
+  as_tibble() %>% 
+  kable(format = "markdown")
+dfvars
+```
+
+The structure of the dataframe is as follows:
+
+```{r str_df, echo = TRUE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+str(nhanes)
+```
+
+## **Descriptive Statistics**
+
+Descriptive statistics for continuous variables are presented below:
+
+```{r desc_stats_contin, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+nhanes_contin_kable
+```
+
+Frequency tables for each categorical variable are as follows:
+
+```{r freq_categ, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+gender_summ
+race_summ
+educ_summ
+famincome_cat_summ
+diabet_hx_summ
+CAD_hx_summ
+MI_hx_summ
+thy_hx_summ
+doc_losewt_summ
+doc_exer_summ
+HTN_cat_summ
+worklim_summ
+walklim_summ
+diethealthy_summ
+fastfood_eat_summ
+fastfood_usednutrit_summ
+fastfood_woulduse_summ
+restaur_eat_summ
+restaur_usednutrit_summ
+restaur_woulduse_summ
+PHQ9_cat_summ
+BMI_cat_summ
+```

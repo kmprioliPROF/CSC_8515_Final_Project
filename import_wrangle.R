@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Tue Nov 05 22:50:07 2019 ------------------------------
+# Fri Nov 08 18:27:49 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -22,7 +22,7 @@ ggthemr("fresh")
 
 #### Importing datasets ----
 
-# NHANES 2015-2016 data (Source:  https://wwwn.cdc.gov/nchs/nhanes/ContinuousNhanes/Default.aspx?BeginYear=2015)
+# NHANES 2015-2016 data ( Source:  https://wwwn.cdc.gov/nchs/nhanes/ContinuousNhanes/Default.aspx?BeginYear=2015 )
 
 dietbehav_raw <- read_xpt("data/DBQ_I.XPT")       # Questionnaire data - dietary behavior
 dietintake_raw <- read_xpt("data/DR1TOT_I.XPT")   # Dietary intake data, Day 1
@@ -441,20 +441,6 @@ nhanes_contin_kable <- nhanes_contin %>%
 
 # Categorical variables
 
-# Can't use the commented out code below - `gather()` strips factor attributes
-
-# nhanes_categ_summ <- nhanes %>% 
-#   select(gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
-#          HTN_cat, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse,
-#          restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>% 
-#   gather(variable, value, gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
-#          HTN_cat, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse,
-#          restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>%
-#   group_by(variable, value) %>% 
-#   arrange(variable, value) %>% 
-#   summarise(n = n()) %>% 
-#   mutate(pct = round((n / sum(n)) * 100, digits = 2))
-
 nhanes_categvars <- nhanes %>%
   select(gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
          HTN_cat, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse,
@@ -504,4 +490,6 @@ BMI_cat_summ <- categsumm(nhanes, quo(BMI_cat))
 
 #### Rendering .Rmd ----
 # render("checkpoints/Prioli_checkpoint1.Rmd")
+# render("checkpoints/Prioli_checkpoint2.Rmd")
+# render("checkpoints/Prioli_checkpoint3.Rmd")
 # render("Prioli_final_report.Rmd")

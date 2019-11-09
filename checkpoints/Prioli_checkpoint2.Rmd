@@ -1,0 +1,51 @@
+---
+title: "Final Project:  Checkpoint 2"
+author: "Katherine M. Prioli"
+date: "November 13, 2019"
+output:
+  pdf_document: default
+  html_document: default
+geometry: margin = 0.5in
+---
+
+## **Progress to Date**
+
+x
+
+No unexpected challenges have arisen at this stage in the project, and there are no proposed changes to the scope or timeline.
+
+
+## **Supervised Learning Approach**
+
+```{python libs, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+# Importing libraries
+
+import math
+import numpy as np
+import pandas as pd
+import scipy   # Do I need this?  Could use R for stats instead
+
+from sklearn import ensemble
+from sklearn import tree
+
+from sklearn.metrics import confusion_matrix
+
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RepeatedKFold
+from sklearn.model_selection import train_test_split
+```
+
+```{python import_df, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+nhanes = r.nhanes
+nhanes_feat = nhanes.drop(['seqn', 'BMI', 'BMI_cat'], axis = 1)
+nhanes_labs = nhanes.filter(['BMI_cat'])   # pd .filter() works as a `keep` or dplyr::select()
+```
+
+```{python nxk_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
+X_train, X_test, y_train, y_test = train_test_split(nhanes)
+```
+
+
+## **Heading**
+
