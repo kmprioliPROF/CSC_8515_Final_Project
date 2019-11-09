@@ -37,13 +37,18 @@ from sklearn.model_selection import train_test_split
 
 ```{python import_df, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 nhanes = r.nhanes
-nhanes_feat = nhanes.drop(['seqn', 'BMI', 'BMI_cat'], axis = 1)
+nhanes_feat = nhanes.drop(['seqn', 'PHQ9_score', 'BMI', 'BMI_cat'], axis = 1)
 nhanes_labs = nhanes.filter(['BMI_cat'])   # pd .filter() works as a `keep` or dplyr::select()
 ```
 
 ```{python nxk_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+rfc = ensemble.RandomForestClassifier(n_estimators = 100)
 rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
-X_train, X_test, y_train, y_test = train_test_split(nhanes)
+
+# Do I even need this?  I don't think so
+# X_train, X_test, y_train, y_test = train_test_split(nhanes_feat, nhanes_labs, test.size = 0.3)
+
+scores = cross_val_score(rfc, nhanes_feat, nhanes_labs, cv = rkf)
 ```
 
 

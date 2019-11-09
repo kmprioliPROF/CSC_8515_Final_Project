@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Fri Nov 08 18:27:49 2019 ------------------------------
+# Fri Nov 08 21:13:13 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -48,47 +48,51 @@ dietbehav_stag <- dietbehav_raw %>%
     diethealthy = case_when(
       dbq700 > 5 ~ as.numeric(NA),
       TRUE ~ dbq700),
-    diethealthy = factor(diethealthy,
-                        levels = c(1, 2, 3, 4, 5),
-                        labels = c("Excellent", "Very good", "Good", "Fair", "Poor")),
+    diethealthy_fct = factor(diethealthy,
+                             levels = c(1, 2, 3, 4, 5),
+                             labels = c("Excellent", "Very good", "Good", "Fair", "Poor")),
     fastfood_eat = case_when(
       cbq505 > 3 ~ as.numeric(NA),
       TRUE ~ cbq505),
-    fastfood_eat = factor(fastfood_eat,
+    fastfood_eat_fct = factor(fastfood_eat,
                           levels = c(1, 2),
                           labels = c("Yes", "No")),
     fastfood_usednutrit = case_when(
       cbq540 > 3 ~ as.numeric(NA),
       TRUE ~ cbq540),
-    fastfood_usednutrit = factor(fastfood_usednutrit,
+    fastfood_usednutrit_fct = factor(fastfood_usednutrit,
                                  levels = c(1, 2),
                                  labels = c("Yes", "No")),
     fastfood_woulduse = case_when(
       cbq545 > 4 ~ as.numeric(NA),
       TRUE ~ cbq545),
-    fastfood_woulduse = factor(fastfood_woulduse,
+    fastfood_woulduse_fct = factor(fastfood_woulduse,
                                levels = c(1, 2, 3, 4),
                                labels = c("Often", "Sometimes", "Rarely", "Never")),
     restaur_eat = case_when(
       cbq550 > 3 ~ as.numeric(NA),
       TRUE ~ cbq550),
-    restaur_eat = factor(restaur_eat,
+    restaur_eat_fct = factor(restaur_eat,
                          levels = c(1, 2),
                          labels = c("Yes", "No")),
     restaur_usednutrit = case_when(
       cbq585 > 3 ~ as.numeric(NA),
       TRUE ~ cbq585),
-    restaur_usednutrit = factor(restaur_usednutrit,
+    restaur_usednutrit_fct = factor(restaur_usednutrit,
                                 levels = c(1, 2),
                                 labels = c("Yes", "No")),
     restaur_woulduse = case_when(
       cbq590 > 4 ~ as.numeric(NA),
       TRUE ~ cbq590),
-    restaur_woulduse = factor(restaur_woulduse,
+    restaur_woulduse_fct = factor(restaur_woulduse,
                               levels = c(1, 2, 3, 4),
                               labels = c("Often", "Sometimes", "Rarely", "Never")))
 
-dietbehav <- dietbehav_stag %>% select(-dbq700, -cbq505, -cbq540, -cbq545, -cbq550, -cbq585, -cbq590)
+dietbehav <- dietbehav_stag %>% select(c("seqn", "diethealthy", "fastfood_eat", "fastfood_usednutrit", 
+                                         "fastfood_woulduse", "restaur_eat", "restaur_usednutrit", "restaur_woulduse"))
+dietbehav_fct <- dietbehav_stag %>% select(c("seqn", "diethealthy_fct", "fastfood_eat_fct", "fastfood_usednutrit_fct", 
+                                             "fastfood_woulduse_fct", "restaur_eat_fct", "restaur_usednutrit_fct", 
+                                             "restaur_woulduse_fct"))
 
 # Dietary intake data, Day 1
 
@@ -102,13 +106,14 @@ dietintake_stag <- dietintake_raw %>%
     dailykcal_typical = case_when(
       dr1_300 > 3 ~ as.numeric(NA),
       TRUE ~ dr1_300),
-    dailykcal_typical = factor(dailykcal_typical,
+    dailykcal_typical_fct = factor(dailykcal_typical,
                                levels = c(1, 2, 3),
                                labels = c("Much more than usual",
                                           "Usual",
                                           "Much less than usual")))
 
-dietintake <- dietintake_stag %>% select(-dr1_300)
+dietintake <- dietintake_stag %>% select(seqn, dailykcal, dailykcal_typical, dailywater)
+dietintake_fct <- dietintake_stag %>% select(seqn, dailykcal, dailykcal_typical_fct, dailywater)
 
 # Questionnaire data - PHQ-9
 
@@ -152,7 +157,7 @@ PHQ9_stag <- PHQ9_raw %>%
            PHQ9_score >= 15 & PHQ9_score <= 19 ~ 3,       # Moderately severe
            PHQ9_score >= 20 & PHQ9_score <= 27 ~ 4,       # Severe
            TRUE ~ as.numeric(NA)),
-         PHQ9_cat = factor(PHQ9_cat,
+         PHQ9_cat_fct = factor(PHQ9_cat,
                            levels = c(0, 1, 2, 3, 4),
                            labels = c("None to minimal",
                                       "Mild",
@@ -161,27 +166,30 @@ PHQ9_stag <- PHQ9_raw %>%
                                       "Severe")))
 
 PHQ9 <- PHQ9_stag %>% select(seqn, PHQ9_score, PHQ9_cat)
+PHQ9_fct <- PHQ9_stag %>% select(seqn, PHQ9_score, PHQ9_cat_fct)
 
 # Examination data - blood pressure
 
 names(bloodpress_raw) <- str_to_lower(names(bloodpress_raw))
 
-bloodpress <- bloodpress_raw %>% 
+bloodpress_stag <- bloodpress_raw %>% 
   select(seqn, bpxsy2, bpxdi2) %>% 
   rename(systolic = bpxsy2,
          diastolic = bpxdi2) %>% 
   mutate(HTN_cat = case_when(
     is.na(systolic) == TRUE | is.na(diastolic) == TRUE ~ as.numeric(NA),
-    systolic <  120 & diastolic < 80 ~ 0,   # Normal BP
-    systolic >= 120 & diastolic < 80 ~ 1,   # Elevated BP
+    systolic <  120 & diastolic < 80 ~ 0,                                             # Normal BP
+    systolic >= 120 & diastolic < 80 ~ 1,                                             # Elevated BP
     (systolic >= 130 & systolic <= 139) | (diastolic >= 80 & diastolic <=  89) ~ 2,   # Stage 1 HTN
     (systolic >= 140 & systolic <= 180) | (diastolic >= 90 & diastolic <= 120) ~ 3,   # Stage 2 HTN
-    systolic > 180 | diastolic > 120 ~ 4   # Hypertensive crisis
+    systolic > 180 | diastolic > 120 ~ 4                                              # Hypertensive crisis
   ),
-  HTN_cat = factor(HTN_cat,
+  HTN_cat_fct = factor(HTN_cat,
                    levels = c(0, 1, 2, 3, 4),
-                   labels = c("Normal", "Elevated", "Stage 1 HTN", 
-                              "Stage 2 HTN", "Hypertensive crisis")))
+                   labels = c("Normal", "Elevated", "Stage 1 HTN", "Stage 2 HTN", "Hypertensive crisis")))
+
+bloodpress <- bloodpress_stag %>% select(seqn, systolic, diastolic, HTN_cat)
+bloodpress_fct <- bloodpress_stag %>% select(seqn, systolic, diastolic, HTN_cat_fct)
 
 # Examination data - body measures
 
@@ -200,11 +208,12 @@ bodymeas_stag <- bodymeas_raw %>%
       BMI >= 25.0 & BMI < 30.0 ~ 3,
       BMI >= 30.0 ~ 4
       ),
-    BMI_cat = factor(BMI_cat,
+    BMI_cat_fct = factor(BMI_cat,
                      levels = c(1, 2, 3, 4),
                      labels = c("Underweight", "Normal weight", "Overweight", "Obese")))
   
-bodymeas <- bodymeas_stag %>% select(-weight_kg, -height_cm)
+bodymeas <- bodymeas_stag %>% select(seqn, BMI, BMI_cat)
+bodymeas_fct <- bodymeas_stag %>% select(seqn, BMI, BMI_cat_fct)
 
 # Demographics data
 
@@ -212,12 +221,14 @@ names(demog_raw) <- str_to_lower(names(demog_raw))
 
 demog_stag <- demog_raw %>% 
   select(seqn, riagendr, ridageyr, ridreth3, dmdeduc2, dmdmartl, indfmin2, indfmpir) %>% 
-  rename(age = ridageyr,
+  rename(gender = riagendr,
+         age = ridageyr,
+         race = ridreth3,
          famincome_povratio = indfmpir) %>% 
-  mutate(gender = factor(riagendr,
+  mutate(gender_fct = factor(gender,
                          levels = c(1, 2),
                          labels = c("Male", "Female")),
-         race = factor(ridreth3,
+         race_fct = factor(race,
                        levels = c(1, 2, 3, 4, 6, 7),
                        labels = c("Mexican American",
                                   "Other Hispanic",
@@ -228,7 +239,7 @@ demog_stag <- demog_raw %>%
          educ = case_when(
            dmdeduc2 > 5 ~ as.numeric(NA),
            TRUE ~ dmdeduc2),
-         educ = factor(educ,
+         educ_fct = factor(educ,
                        levels = c(1, 2, 3, 4, 5),
                        labels = c("Less than 9th grade",
                                   "9th-12th grade, no HS diploma",
@@ -238,7 +249,7 @@ demog_stag <- demog_raw %>%
          marital = case_when(
            dmdmartl > 6 ~ as.numeric(NA),
            TRUE ~ dmdmartl),
-         marital = factor(marital,
+         marital_fct = factor(marital,
                           levels = c(1, 2, 3, 4, 5, 6),
                           labels = c("Married",
                                      "Widowed",
@@ -249,7 +260,7 @@ demog_stag <- demog_raw %>%
          famincome_cat = case_when(
            (indfmin2 >= 11 & indfmin2 <= 13) | indfmin2 > 15 ~ as.numeric(NA),
            TRUE ~ indfmin2),
-         famincome_cat = factor(famincome_cat,
+         famincome_cat_fct = factor(famincome_cat,
                                 levels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15),
                                 labels = c("$0 to $4,999",       # 1
                                            "$5,000 to $9,999",   # 2
@@ -264,7 +275,10 @@ demog_stag <- demog_raw %>%
                                            "$75,000 to $99,999", # 14
                                            "$100,000 and over")))  # 15
 
-demog <- demog_stag %>% select(-riagendr, -ridreth3, -dmdeduc2, -dmdmartl, -indfmin2)
+demog <- demog_stag %>% select(c("seqn", "age", "famincome_povratio", "gender", "race", "educ", 
+                                 "marital", "famincome_cat"))
+demog_fct <- demog_stag %>% select(c("seqn", "age", "famincome_povratio", "gender_fct", "race_fct", 
+                                     "educ_fct", "marital_fct", "famincome_cat_fct"))
 
 # Questionnaire data - diabetes items
 
@@ -276,14 +290,15 @@ diabetes_stag <- diabetes_raw %>%
     diabet_hx = case_when(
       diq010 > 3 ~ as.numeric(NA),
       TRUE ~ diq010),
-    diabet_hx = factor(diabet_hx,
+    diabet_hx_fct = factor(diabet_hx,
                        levels = c(1, 2, 3),
                        labels = c("Yes", "No", "Borderline")),
     hba1c = case_when(
       diq280 > 18.5 ~ as.numeric(NA),
       TRUE ~ diq280))
 
-diabetes <- diabetes_stag %>% select(-diq010, -diq280)
+diabetes <- diabetes_stag %>% select(seqn, diabet_hx, hba1c)
+diabetes_fct <- diabetes_stag %>% select(seqn, diabet_hx_fct, hba1c)
 
 # Questionnaire data - medical items
 
@@ -295,35 +310,36 @@ medical_stag <- medical_raw %>%
     CAD_hx = case_when(
       mcq160c > 2 ~ as.numeric(NA),
       TRUE ~ mcq160c),
-    CAD_hx = factor(CAD_hx,
+    CAD_hx_fct = factor(CAD_hx,
                     levels = c(1, 2),
                     labels = c("Yes", "No")),
     MI_hx = case_when(
       mcq160e > 2 ~ as.numeric(NA),
       TRUE ~ mcq160e),
-    MI_hx = factor(MI_hx,
+    MI_hx_fct = factor(MI_hx,
                    levels = c(1, 2),
                    labels = c("Yes", "No")),
     thy_hx = case_when(
       mcq160m > 2 ~ as.numeric(NA),
       TRUE ~ mcq160m),
-    thy_hx = factor(thy_hx,
+    thy_hx_fct = factor(thy_hx,
                     levels = c(1, 2),
                     labels = c("Yes", "No")),
     doc_losewt = case_when(
       mcq365a > 2 ~ as.numeric(NA),
       TRUE ~ mcq365a),
-    doc_losewt = factor(doc_losewt,
+    doc_losewt_fct = factor(doc_losewt,
                         levels = c(1, 2),
                         labels = c("Yes", "No")),
     doc_exer = case_when(
       mcq365b > 2 ~ as.numeric(NA),
       TRUE ~ mcq365b),
-    doc_exer = factor(doc_exer,
+    doc_exer_fct = factor(doc_exer,
                       levels = c(1, 2),
                       labels = c("Yes", "No")))
 
-medical <- medical_stag %>% select(-mcq160c, -mcq160e, -mcq160m, -mcq365a, -mcq365b)
+medical <- medical_stag %>% select(c("seqn", "CAD_hx", "MI_hx", "thy_hx", "doc_losewt", "doc_exer"))
+medical_fct <- medical_stag %>% select(c("seqn", "CAD_hx_fct", "MI_hx_fct", "thy_hx_fct", "doc_losewt_fct", "doc_exer_fct"))
 
 # Questionnaire data - physical activity
 
@@ -362,17 +378,18 @@ physfxn_stag <- physfxn_raw %>%
     worklim = case_when(
       pfq049 > 2 ~ as.numeric(NA),
       TRUE ~ pfq049),
-    worklim = factor(worklim,
+    worklim_fct = factor(worklim,
                      levels = c(1, 2),
                      labels = c("Yes", "No")),
     walklim = case_when(
       pfq061b > 5 ~ as.numeric(NA),
       TRUE ~ pfq061b),
-    walklim = factor(walklim,
+    walklim_fct = factor(walklim,
                      levels = c(1, 2, 3, 4),
                      labels = c("No difficulty", "Some difficulty", "Much difficulty", "Unable to do")))
 
-physfxn <- physfxn_stag %>% select(-pfq049, -pfq061b)
+physfxn <- physfxn_stag %>% select(seqn, worklim, walklim)
+physfxn_fct <- physfxn_stag %>% select(seqn, worklim_fct, walklim_fct)
 
 # Removing raw dataframes
 
@@ -422,11 +439,36 @@ nhanes <- allseqn %>%   # These joins will throw a warning; ignore it - this is 
   remove_all_labels() %>%   # Removing annoying column labels
   filter(age >= 20)
 
+# Generating nhanes data with factors
+
+nhanes_fct <- allseqn %>%   # These joins will throw a warning; ignore it - this is a known dplyr issue
+  left_join(demog_fct, by = c("seqn" = "seqn")) %>% 
+  left_join(diabetes_fct, by = c("seqn" = "seqn")) %>% 
+  left_join(medical_fct, by = c("seqn" = "seqn")) %>% 
+  left_join(bloodpress_fct, by = c("seqn" = "seqn")) %>% 
+  left_join(physactiv, by = c("seqn" = "seqn")) %>% 
+  left_join(physfxn_fct, by = c("seqn" = "seqn")) %>% 
+  left_join(PHQ9_fct, by = c("seqn" = "seqn")) %>% 
+  left_join(dietbehav_fct, by = c("seqn" = "seqn")) %>% 
+  left_join(dietintake_fct, by = c("seqn" = "seqn")) %>% 
+  left_join(bodymeas_fct, by = c("seqn" = "seqn")) %>% 
+  select(seqn, age, gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, famincome_povratio,
+         diabet_hx_fct, hba1c, CAD_hx_fct, MI_hx_fct, thy_hx_fct, doc_losewt_fct, doc_exer_fct,
+         systolic, diastolic, HTN_cat_fct,
+         mins_activ, mins_seden, worklim_fct, walklim_fct,
+         diethealthy_fct, fastfood_eat_fct, fastfood_usednutrit_fct, fastfood_woulduse_fct, restaur_eat_fct, 
+         restaur_usednutrit_fct, restaur_woulduse_fct,
+         dailykcal, dailykcal_typical_fct, dailywater,
+         PHQ9_score, PHQ9_cat_fct,
+         BMI, BMI_cat_fct) %>% 
+  remove_all_labels() %>%   # Removing annoying column labels
+  filter(age >= 20)
+
 #### Exploratory analysis ----
 
 # Continuous variables
 
-nhanes_contin <- nhanes %>%
+nhanes_contin <- nhanes_fct %>%
   select(age, famincome_povratio, hba1c, systolic, diastolic, mins_activ, mins_seden, dailykcal, dailywater, PHQ9_score, BMI) %>% 
   describe()
 
@@ -441,10 +483,11 @@ nhanes_contin_kable <- nhanes_contin %>%
 
 # Categorical variables
 
-nhanes_categvars <- nhanes %>%
-  select(gender, race, educ, marital, famincome_cat, diabet_hx, CAD_hx, MI_hx, thy_hx, doc_losewt, doc_exer,
-         HTN_cat, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit, fastfood_woulduse,
-         restaur_eat, restaur_usednutrit, restaur_woulduse, PHQ9_cat, BMI_cat) %>% 
+nhanes_categvars <- nhanes_fct %>%
+  select(gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, diabet_hx_fct, CAD_hx_fct, 
+         MI_hx_fct, thy_hx_fct, doc_losewt_fct, doc_exer_fct, HTN_cat_fct, worklim_fct, walklim_fct, 
+         diethealthy_fct, fastfood_eat_fct, fastfood_usednutrit_fct, fastfood_woulduse_fct,
+         restaur_eat_fct, restaur_usednutrit_fct, restaur_woulduse_fct, PHQ9_cat_fct, BMI_cat_fct) %>% 
   names()
 
 categsumm <- function(df, x){
@@ -464,28 +507,29 @@ categsumm <- function(df, x){
 #   assign(paste0("summ_", nhanes_categvars[[i]]), categsumm(nhanes, quo(nhanes_categvars[[i]])))
 # }
 
-gender_summ <- categsumm(nhanes, quo(gender))
-race_summ <- categsumm(nhanes, quo(race))
-educ_summ <- categsumm(nhanes, quo(educ))
-famincome_cat_summ <- categsumm(nhanes, quo(famincome_cat))
-diabet_hx_summ <- categsumm(nhanes, quo(diabet_hx))
-CAD_hx_summ <- categsumm(nhanes, quo(CAD_hx))
-MI_hx_summ <- categsumm(nhanes, quo(MI_hx))
-thy_hx_summ <- categsumm(nhanes, quo(thy_hx))
-doc_losewt_summ <- categsumm(nhanes, quo(MI_hx))
-doc_exer_summ <- categsumm(nhanes, quo(doc_exer))
-HTN_cat_summ <- categsumm(nhanes, quo(HTN_cat))
-worklim_summ <- categsumm(nhanes, quo(worklim))
-walklim_summ <- categsumm(nhanes, quo(walklim))
-diethealthy_summ <- categsumm(nhanes, quo(diethealthy))
-fastfood_eat_summ <- categsumm(nhanes, quo(fastfood_eat))
-fastfood_usednutrit_summ <- categsumm(nhanes, quo(fastfood_usednutrit))
-fastfood_woulduse_summ <- categsumm(nhanes, quo(fastfood_woulduse))
-restaur_eat_summ <- categsumm(nhanes, quo(restaur_eat))
-restaur_usednutrit_summ <- categsumm(nhanes, quo(restaur_usednutrit))
-restaur_woulduse_summ <- categsumm(nhanes, quo(restaur_woulduse))
-PHQ9_cat_summ <- categsumm(nhanes, quo(PHQ9_cat))
-BMI_cat_summ <- categsumm(nhanes, quo(BMI_cat))
+gender_summ <- categsumm(nhanes_fct, quo(gender_fct))
+race_summ <- categsumm(nhanes_fct, quo(race_fct))
+educ_summ <- categsumm(nhanes_fct, quo(educ_fct))
+marital_summ <- categsumm(nhanes_fct, quo(marital_fct))
+famincome_cat_summ <- categsumm(nhanes_fct, quo(famincome_cat_fct))
+diabet_hx_summ <- categsumm(nhanes_fct, quo(diabet_hx_fct))
+CAD_hx_summ <- categsumm(nhanes_fct, quo(CAD_hx_fct))
+MI_hx_summ <- categsumm(nhanes_fct, quo(MI_hx_fct))
+thy_hx_summ <- categsumm(nhanes_fct, quo(thy_hx_fct))
+doc_losewt_summ <- categsumm(nhanes_fct, quo(MI_hx_fct))
+doc_exer_summ <- categsumm(nhanes_fct, quo(doc_exer_fct))
+HTN_cat_summ <- categsumm(nhanes_fct, quo(HTN_cat_fct))
+worklim_summ <- categsumm(nhanes_fct, quo(worklim_fct))
+walklim_summ <- categsumm(nhanes_fct, quo(walklim_fct))
+diethealthy_summ <- categsumm(nhanes_fct, quo(diethealthy_fct))
+fastfood_eat_summ <- categsumm(nhanes_fct, quo(fastfood_eat_fct))
+fastfood_usednutrit_summ <- categsumm(nhanes_fct, quo(fastfood_usednutrit_fct))
+fastfood_woulduse_summ <- categsumm(nhanes_fct, quo(fastfood_woulduse_fct))
+restaur_eat_summ <- categsumm(nhanes_fct, quo(restaur_eat_fct))
+restaur_usednutrit_summ <- categsumm(nhanes_fct, quo(restaur_usednutrit_fct))
+restaur_woulduse_summ <- categsumm(nhanes_fct, quo(restaur_woulduse_fct))
+PHQ9_cat_summ <- categsumm(nhanes_fct, quo(PHQ9_cat_fct))
+BMI_cat_summ <- categsumm(nhanes_fct, quo(BMI_cat_fct))
 
 
 #### Rendering .Rmd ----
