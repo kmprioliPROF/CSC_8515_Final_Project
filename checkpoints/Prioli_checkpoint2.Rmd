@@ -24,6 +24,7 @@ import math
 import numpy as np
 import pandas as pd
 import scipy   # Do I need this?  Could use R for stats instead
+import xgboost as xgb
 
 from sklearn import ensemble
 from sklearn import tree
@@ -35,10 +36,17 @@ from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import train_test_split
 ```
 
+<!-- ```{r} -->
+<!-- nhanes_py <- reticulate::r_to_py(nhanes, convert = TRUE) -->
+<!-- ``` -->
+
+
 ```{python import_df, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 nhanes = r.nhanes
 nhanes_feat = nhanes.drop(['seqn', 'PHQ9_score', 'BMI', 'BMI_cat'], axis = 1)
 nhanes_labs = nhanes.filter(['BMI_cat'])   # pd .filter() works as a `keep` or dplyr::select()
+
+#nhanes.head(30)
 ```
 
 
@@ -46,7 +54,15 @@ nhanes_labs = nhanes.filter(['BMI_cat'])   # pd .filter() works as a `keep` or d
 #### CONTINUE HERE ----
 <!-- Problem with NAN in the df (I thought tree classifiers could handle missing values?) -->
 
+```{python}
+np.all(np.isfinite(nhanes))
+```
 
+```{python}
+rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
+for train_index, test_index in rkf.split(nhanes_feat):
+  rf = xgb.XGBRFClassifier().fit(nhanes_feat[train_index], nhanes_labs[test_index])
+```
 
 
 
