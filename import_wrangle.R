@@ -1,16 +1,17 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Sun Nov 10 20:17:42 2019 ------------------------------
+# Sun Nov 10 20:29:01 2019 ------------------------------
 
 
 #### Loading libraries ----
 
 library(tidyverse)    # For data import and wrangling
+library(skimr)        # For skim()
+library(tidyselect)   # For selecting by string
 library(haven)        # For loading SAS .xpt files
 library(sjlabelled)   # For removing pesky column labels
 library(forcats)      # For handling categorical data
 library(psych)        # For describe()
-library(skimr)        # For skim()
 library(GGally)       # For ggpairs()
 library(gridExtra)    # For grid.arrange()
 library(grid)         # For textGrob() to annotate grid.arrange() elements
@@ -613,9 +614,15 @@ wilcox_pvals <- c(age_wilcox$p.value,
 
 wilcox_results <- cbind(wilcox_vars, wilcox_pvals) %>% as_tibble()
 
+omits <- wilcox_results %>% 
+  filter(p_value < 0.05) %>% 
+  select(-p_value) %>% 
+  as.list()
 
+#### Finalizing analytic dataset
 
-
+nhanes <- nhanes_imputed %>% 
+  select(-one_of(!!quo(omits$variable)))
 
 
 #### Rendering .Rmd ----
