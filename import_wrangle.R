@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Sun Nov 10 18:11:42 2019 ------------------------------
+# Sun Nov 10 20:17:42 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -526,11 +526,96 @@ nhanes_stag2 <- nhanes_stag %>%
 
 #### Imputing missing values for continuous data ----
 
-# Proof of concept
+# Running `rfImpute()`
 
-a <- head(nhanes_stag2, 50)
-a_imputed <- randomForest::rfImpute(BMI_cat ~ ., a)
-# Next step is to compare continuous descriptives from data having NAs to continuous descriptives from imputed data
+set.seed(20191110)
+nhanes_imputed <- randomForest::rfImpute(BMI_cat ~ ., nhanes_stag2)
+set.seed(NULL)
+
+# Looking at descriptives for `nhanes_stag2` vs `nhanes_imputed`
+
+nhanes_contin2 <- nhanes_stag2 %>%
+  select(age, famincome_povratio, mins_activ, mins_seden, dailykcal, dailywater, PHQ9_score)
+
+nhanes_contin2_desc <- nhanes_contin2 %>% 
+  describe()
+
+contins2 <- rownames(nhanes_contin2_desc)
+
+nhanes_contin2_kable <- nhanes_contin2_desc %>% 
+  mutate(vars = contins2) %>% 
+  select(vars, n, mean, sd, min, max, median) %>% 
+  mutate(mean = round(mean, digits = 2),
+         sd = round(sd, digits = 3)) %>% 
+  kable(format = "markdown")
+
+nhanes_contin_imp <- nhanes_imputed %>%
+  select(age, famincome_povratio, mins_activ, mins_seden, dailykcal, dailywater, PHQ9_score)
+
+nhanes_contin_imp_desc <- nhanes_contin_imp %>% 
+  describe()
+
+contins_imp <- rownames(nhanes_contin_imp_desc)
+
+nhanes_contin_imp_kable <- nhanes_contin_imp_desc %>% 
+  mutate(vars = contins_imp) %>% 
+  select(vars, n, mean, sd, min, max, median) %>% 
+  mutate(mean = round(mean, digits = 2),
+         sd = round(sd, digits = 3)) %>% 
+  kable(format = "markdown")
+
+nhanes_contin2_kable
+nhanes_contin_imp_kable
+
+# Comparing descriptives from `nhanes_stag2` to `nhanes_imputed`
+
+age_wilcox <- wilcox.test(nhanes_stag2$age, nhanes_imputed$age, 
+                          alternative = "two.sided", 
+                          conf.int = TRUE)
+
+famincome_povratio_wilcox <- wilcox.test(nhanes_stag$famincome_povratio, nhanes_imputed$famincome_povratio, 
+                                         alternative = "two.sided", 
+                                         conf.int = TRUE)
+
+mins_activ_wilcox <- wilcox.test(nhanes_stag2$mins_activ, nhanes_imputed$mins_activ,
+                          alternative = "two.sided", 
+                          conf.int = TRUE)
+
+mins_seden_wilcox <- wilcox.test(nhanes_stag2$mins_seden, nhanes_imputed$mins_seden,
+                          alternative = "two.sided", 
+                          conf.int = TRUE)
+
+dailykcal_wilcox <- wilcox.test(nhanes_stag2$dailykcal, nhanes_imputed$dailykcal,
+                                alternative = "two.sided",
+                                conf.int = TRUE)
+
+dailywater_wilcox <- wilcox.test(nhanes_stag2$dailywater, nhanes_imputed$dailywater,
+                                alternative = "two.sided",
+                                conf.int = TRUE)
+
+PHQ9_score_wilcox <- wilcox.test(nhanes_stag2$PHQ9_score, nhanes_imputed$PHQ9_score,
+                                 alternative = "two.sided",
+                                 conf.int = TRUE)
+
+wilcox_vars <- c("age", "famincome_povratio", "mins_activ", "mins_seden", "dailykcal", "dailywater", "PHQ9_score") %>% 
+  as_tibble() %>% 
+  rename(variable = value)
+
+wilcox_pvals <- c(age_wilcox$p.value,
+                  famincome_povratio_wilcox$p.value,
+                  mins_activ_wilcox$p.value,
+                  mins_seden_wilcox$p.value,
+                  dailykcal_wilcox$p.value,
+                  dailywater_wilcox$p.value,
+                  PHQ9_score_wilcox$p.value) %>% 
+  as_tibble() %>% 
+  rename(p_value = value)
+
+wilcox_results <- cbind(wilcox_vars, wilcox_pvals) %>% as_tibble()
+
+
+
+
 
 
 #### Rendering .Rmd ----
