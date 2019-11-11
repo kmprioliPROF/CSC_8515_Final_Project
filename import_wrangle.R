@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Sun Nov 10 20:29:01 2019 ------------------------------
+# Sun Nov 10 21:06:35 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -16,8 +16,10 @@ library(GGally)       # For ggpairs()
 library(gridExtra)    # For grid.arrange()
 library(grid)         # For textGrob() to annotate grid.arrange() elements
 library(rmarkdown)    # For render()
+library(reticulate)   # For interfacing with Python in .Rmd
 library(kableExtra)   # For prettifying output tables
 library(ggthemr)      # For prettifying output plots
+
 
 ggthemr("fresh")
 
@@ -457,14 +459,6 @@ nhanes_contin_kable <- nhanes_contin_desc %>%
          sd = round(sd, digits = 3)) %>% 
   kable(format = "markdown")
 
-# Continuous variables - correlation matrix
-
-# contin_corrplot <- ggpairs(data = nhanes_contin, columns = c(1:2, 6:11),
-#                            title = "NHANES Correlation Matrix, Selected Continuous Variables")
-# contin_corrplot
-
-# Categorical variables
-
 nhanes_fct <- nhanes_stag %>%
   select(gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, diabet_hx_fct, CAD_hx_fct, 
          MI_hx_fct, thy_hx_fct, doc_losewt_fct, doc_exer_fct, BP_cat_fct, worklim_fct, walklim_fct, 
@@ -623,6 +617,11 @@ omits <- wilcox_results %>%
 
 nhanes <- nhanes_imputed %>% 
   select(-one_of(!!quo(omits$variable)))
+
+# Removing staging and other unnecessary dataframes
+
+rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_contin", "nhanes_contin2", "nhanes_contin_desc", 
+            "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", "nhanes_fct", "nhanes_imputed"))
 
 
 #### Rendering .Rmd ----

@@ -12,7 +12,7 @@ geometry: margin = 0.5in
 
 x
 
-No unexpected challenges have arisen at this stage in the project, and there are no proposed changes to the scope or timeline.
+Despite these challenges, there are no proposed changes to the scope or timeline.
 
 
 ## **Supervised Learning Approach**
@@ -36,33 +36,29 @@ from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import train_test_split
 ```
 
-<!-- ```{r} -->
-<!-- nhanes_py <- reticulate::r_to_py(nhanes, convert = TRUE) -->
+
+
+```{python import_subset, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+nhanes = r.nhanes
+nhanes_feat = nhanes.drop(['seqn', 'BMI_cat'], axis = 1)
+nhanes_labs = nhanes.filter(['BMI_cat'])   # .filter() works as a `keep` or dplyr::select()
+
+# nhanes.head(6)   # Eyeballing to make sure it all looks good
+# np.all(np.isfinite(nhanes))   # Double-checking that nothing converted to NAN or Inf
+
+```
+
+
+
+<!-- IGNORE THE BELOW CODE (don't think I'll need it) -->
+
+<!-- ```{python xgboost, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
+<!-- rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats -->
+<!-- for train_index, test_index in rkf.split(nhanes_feat): -->
+<!--   rf = xgb.XGBRFClassifier().fit(nhanes_feat[train_index], nhanes_labs[test_index]) -->
 <!-- ``` -->
 
 
-```{python import_df, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-nhanes = r.nhanes
-nhanes_feat = nhanes.drop(['seqn', 'PHQ9_score', 'BMI', 'BMI_cat'], axis = 1)
-nhanes_labs = nhanes.filter(['BMI_cat'])   # pd .filter() works as a `keep` or dplyr::select()
-
-#nhanes.head(30)
-```
-
-
-
-#### CONTINUE HERE ----
-<!-- Problem with NAN in the df (I thought tree classifiers could handle missing values?) -->
-
-```{python}
-np.all(np.isfinite(nhanes))
-```
-
-```{python}
-rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
-for train_index, test_index in rkf.split(nhanes_feat):
-  rf = xgb.XGBRFClassifier().fit(nhanes_feat[train_index], nhanes_labs[test_index])
-```
 
 
 
@@ -73,7 +69,27 @@ rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = #
 # Do I even need this?  I don't think so
 # X_train, X_test, y_train, y_test = train_test_split(nhanes_feat, nhanes_labs, test.size = 0.3)
 
-scores = cross_val_score(rfc, nhanes_feat, nhanes_labs, cv = rkf)
+scores = cross_val_score(rfc, nhanes_feat, nhanes_labs.values.ravel(), cv = rkf)   # Note:  ravel() flattens the array of labels
+scores = pd.DataFrame(scores)
+print(scores)
+```
+
+
+
+```{r score_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+scores <- py$scores %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  rename(score = value) %>% 
+  select(score) %>% 
+  mutate(score = as.numeric(score)) %>% 
+  summarize(n_runs = n(),
+            pct_acc = round(mean(score), digits = 2),
+            sd_acc = round(sd(score), digits = 3),
+            min_acc = round(min(score), digits = 2),
+            max_acc = round(max(score), digits = 2)) %>% 
+  kable(format = "markdown")
+scores
 ```
 
 
