@@ -10,12 +10,31 @@ geometry: margin = 0.5in
 
 ## **Progress to Date**
 
-x
+The following progress has been made since Checkpoint 1:
 
-Despite these challenges, there are no proposed changes to the scope or timeline.
+* Refined descriptive analysis of dataset
+* Imputed missing values for continuous variables and performed two-sided Wilcoxon Rank-Sum tests at the $\alpha = 0.05$ level to determine whether imputation introduced bias
+* Based on results of descriptive analysis and statistical testing, refined the dataset further to generate the final analytic dataset
+* Pulled the analytic dataframe (an R `tibble`) into Python (converted to a pandas object) and subset into features and labels
+* Ran the analytic dataset through `RandomForestClassifier()` using $n \times k$-fold crossvalidation ($n = 5, k = 5$) and assessed the mean accuracy returned
+* Continued fleshing out the final report; namely:
+  * Methods:  Describing initial variable selection and derivation of calculated variables including adding supporting table, describing approach for handling missing values
+  * Results:  Added a table describing variables contained in the final dataset
+  
+## **Next Steps**
+
+* Possibly reassess which variables are being used in the random forest - perhaps a smaller subset would improve accuracy
+* Prune tree
+* Move on to unsupervised learning analysis
+  
+## **Challenges**
+
+I did face a challenge when first attempting to run the dataset through the $n \times k$-fold CV random forest.  Specifically, the dataset at that point had missing values, which I mistakenly believed a decision tree classifier could handle.  After some research, I found that the random forest classifier algorithm in Scikit-Learn doesn't handle missing values well, but that the `xgboost` library possibly could.  I spent some time installing and attempting to work with `xgboost`, but ultimately decided it made more sense to do a more thorough job of data cleansing because I suspected the missing values would also be a problem for the planned unsupervised learning approach.  This entailed refactoring my data wrangling code.  For categorical variables, I grouped nonresponses (e.g., refusals to respond, "Don't know" responses, and missing values) into a single category.  For continuous data, missing values were imputed and statistical testing was performed to check for bias as described in the second bullet above.  Two continuous variables showed statistically significant differences between the imputed data and the original data; however, both of these had categorical analogues and I am comfortable with dropping them.
+
+Despite these challenges, there are no proposed changes to the scope or timeline at this point.
 
 
-## **Supervised Learning Approach**
+## **Preliminary Accuracy of Supervised Learning Approach**
 
 ```{python libs, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 # Importing libraries
@@ -36,19 +55,14 @@ from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import train_test_split
 ```
 
-
-
 ```{python import_subset, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 nhanes = r.nhanes
-nhanes_feat = nhanes.drop(['seqn', 'BMI_cat'], axis = 1)
+nhanes_feat = nhanes.drop(['BMI_cat'], axis = 1)
 nhanes_labs = nhanes.filter(['BMI_cat'])   # .filter() works as a `keep` or dplyr::select()
 
 # nhanes.head(6)   # Eyeballing to make sure it all looks good
 # np.all(np.isfinite(nhanes))   # Double-checking that nothing converted to NAN or Inf
-
 ```
-
-
 
 <!-- IGNORE THE BELOW CODE (don't think I'll need it) -->
 
@@ -58,25 +72,16 @@ nhanes_labs = nhanes.filter(['BMI_cat'])   # .filter() works as a `keep` or dply
 <!--   rf = xgb.XGBRFClassifier().fit(nhanes_feat[train_index], nhanes_labs[test_index]) -->
 <!-- ``` -->
 
-
-
-
-
-```{python nxk_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+```{python nxk_rkf}
 rfc = ensemble.RandomForestClassifier(n_estimators = 100)
 rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
 
-# Do I even need this?  I don't think so
-# X_train, X_test, y_train, y_test = train_test_split(nhanes_feat, nhanes_labs, test.size = 0.3)
-
 scores = cross_val_score(rfc, nhanes_feat, nhanes_labs.values.ravel(), cv = rkf)   # Note:  ravel() flattens the array of labels
 scores = pd.DataFrame(scores)
-print(scores)
+# print(scores)
 ```
 
-
-
-```{r score_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+```{r score_rkf}
 scores <- py$scores %>% 
   unlist() %>% 
   as_tibble() %>% 
@@ -92,6 +97,4 @@ scores <- py$scores %>%
 scores
 ```
 
-
-## **Heading**
-
+<!-- NEXT STEP:  try pruning the tree; try omitting some variables -->

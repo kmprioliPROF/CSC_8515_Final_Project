@@ -11,6 +11,12 @@ geometry: margin = 0.5in
 abstract: "**_Background_** Text **_Methods_** Text  **_Results_** Text **_Conclusion_** Text"
 ---
 
+```{r incrementers, include = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+i <- 1   # Tables
+j <- 1   # Figures
+```
+
+
 ## **Background**
 
 Overweight and obesity are growing public health concerns, with 71.6% of American adults meeting at least the criteria for overweight, and 39.8% qualifying as obese per the Centers for Disease Control and Prevention (CDC) as of 2016.[1]  Defined as a body mass index (BMI) of 30 $kg/m^{2}$ or above, obesity is of especially high concern because it strongly correlates with many diseases and conditions that lead to significant morbidity and mortality, and thus to increased healthcare utilization and decreased productivity, both at high economic burden.[2-4]
@@ -23,10 +29,30 @@ Reducing both the incidence and prevalence of obesity will be critical in managi
 ## **Methods**
 
 
+
+
 ### *Variable Selection*
+
+Variables selected for the study are presented in Table `r i`, with source noted as "native" for variables native to the NHANES dataset or "derived" for variables calculated from native NHANES variables.  These variables were selected because they are attributes known or believed to be correlated with obesity per the scientific literature as informed by both literature search (PubMed and mESH) and prior knowledge.  Derived variables of note included the scored and categorized nine-item Patient Health Questionnaire (PHQ-9), a validated nine-item depression inventory, as well as `BP_cat`, representing clinical categories of blood pressure ranging from hypotension through hypertensive crisis, assigned based on systolic and diastolic blood pressure values.  Additionally, many of the native categorical variables were refactored to group nonresponses (e.g., refusals to respond, "Don't know" responses, and missing values) into a single category.
+
+**Table `r i`.  Variables in initial dataset.**
+
+```{r init_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+
+initvars <- read_csv("init_vars_final_rept.csv", col_names = TRUE) %>% 
+  kable(format = "markdown")
+initvars
+
+i <- i + 1
+```
+
+Because BMI categories differ for children and adults, the analysis was limited to ages $\ge$ 20, consistent with the NHANES definition of adult.[8]  Additionally, since `BMI_cat` represents the data labels, all rows with null BMI were excluded.
+
+Descriptive statistics and frequency tables were generated for continuous and categorical variables respectively to understand data contents and to assess the degree of missingness among the continuous data.  Missing values were imputed for continuous data using the R function `rfImpute()`.  To avoid introducing bias through imputation, two-sided Wilcoxon Rank-Sum tests were performed for each variable on the pre- vs. post-imputation data to identify any statistically significant changes introduced by imputation at the $\alpha = 0.05$ level.  Any variables having statistically different post-imputation data were considered for removal.
 
 
 ### *Supervised Approach*
+
 
 
 ### *Unsupervised Approach*
@@ -34,34 +60,35 @@ Reducing both the incidence and prevalence of obesity will be critical in managi
 
 ### *Technologies*
 
+Data import, wrangling, and visualization were performed in R using an RMarkdown notebook and relying primarily on the `tidyverse` ecosystem.  The $n \times k$ crossvalidation random forest was implemented via Python code chunks in the notebook leveraging Scikit-Learn along with other common Python libraries as necessary (*e.g.*, `numpy` and `pandas`).  For the agglomerative and divisive clustering, R packages `cluster`, `fpc`, and `CollapsibleTree` were used.  A public GitHub repository was established for this study and contains all raw data files and code along with project documentation.[20]
+
 
 ## **Results**
 
-The final analytic dataframe had `r dim(nhanes)[1]` rows and `r dim(nhanes)[2]` columns.  Variables included in the dataset were:
+The final analytic dataframe had `r dim(nhanes)[1]` rows and `r dim(nhanes)[2]` columns.  Variables included in the dataset are presented in Table `r i`:
 
-```{r nhanes_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+**Table `r i`.  Variables in final dataset.**
+
+```{r analytic_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 varnames <- colnames(nhanes) %>% 
   as_tibble() %>% 
   rename(Variable = value)
 
-vardescs <- c("Unique identifier",
-              "Age",
+# Double-check that this matches after fixing seed for rfImpute()
+
+vardescs <- c("Age",
               "Gender",
               "Race",
               "Level of education",
               "Marital status",
               "Family income category",
-              "Ratio of family income to poverty level",
               "History of diabetes",
-              "Hemoglobin A1C reading",
               "History of coronary artery disease",
               "History of myocardial infarction",
               "History of thyroid disease",
               "Told by doctor to lose weight",
               "Told by doctor to exercise",
-              "Systolic blood pressure",
-              "Diastolic blood pressure",
-              "Hypertension category",
+              "Blood pressure category",
               "Daily minutes of moderate to vigorous activity",
               "Daily minutes spent sedentary",
               "Work limitations",
@@ -76,9 +103,7 @@ vardescs <- c("Unique identifier",
               "Calories consumed on previous day",
               "Previous day's calorie consumption compared to usual",
               "Previous day's water intake",
-              "PHQ-9 depression screening score",
               "PHQ-9 depression category",
-              "Body mass index (BMI)",
               "BMI weight category") %>% 
   as_tibble() %>% 
   rename(Description = value)
@@ -87,6 +112,8 @@ dfvars <- cbind(varnames, vardescs) %>%
   as_tibble() %>% 
   kable(format = "markdown")
 dfvars
+
+i <- i + 1
 ```
 
 
@@ -166,13 +193,16 @@ dfvars
   `National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
 
 \bibitem[18]
-	`Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  $\textit{J Am Coll Cardiol}$.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
+	`Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  \textit{J Am Coll Cardiol}.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
 
 \bibitem[19]
   `Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. \textit{Psychiatric Annals}. 2002;32(9):1-7  doi:  10.3928/0048-5713-20020901-06.
 
 \bibitem[20]
   `Prioli KM. CSC$\_$8515$\_$Final$\_$Project. Available online at:  \url{https://github.com/kprioliPROF/CSC_8515_Final_Project}.
+  
+\bibitem[21]
+  `Low Blood Pressure.  US National Library of Medicine:  MedlinePlus.  Last updated November 06, 2019.  Accessed November 10, 2019.  Available online at:  \url{https://medlineplus.gov/ency/article/007278.htm}.
 
 
 \end{thebibliography}

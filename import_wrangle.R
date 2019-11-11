@@ -613,10 +613,12 @@ omits <- wilcox_results %>%
   select(-p_value) %>% 
   as.list()
 
-#### Finalizing analytic dataset
+
+#### Finalizing analytic dataset ----
 
 nhanes <- nhanes_imputed %>% 
-  select(-one_of(!!quo(omits$variable)))
+  select(-one_of(!!quo(omits$variable)), -seqn) %>% 
+  select(2:dim(nhanes)[2], 1)
 
 # Removing staging and other unnecessary dataframes
 
