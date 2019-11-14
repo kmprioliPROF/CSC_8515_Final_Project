@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Sun Nov 10 21:06:35 2019 ------------------------------
+# Thu Nov 14 12:41:43 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -568,7 +568,7 @@ age_wilcox <- wilcox.test(nhanes_stag2$age, nhanes_imputed$age,
                           alternative = "two.sided", 
                           conf.int = TRUE)
 
-famincome_povratio_wilcox <- wilcox.test(nhanes_stag$famincome_povratio, nhanes_imputed$famincome_povratio, 
+famincome_povratio_wilcox <- wilcox.test(nhanes_stag2$famincome_povratio, nhanes_imputed$famincome_povratio, 
                                          alternative = "two.sided", 
                                          conf.int = TRUE)
 
@@ -616,9 +616,13 @@ omits <- wilcox_results %>%
 
 #### Finalizing analytic dataset ----
 
-nhanes <- nhanes_imputed %>% 
-  select(-one_of(!!quo(omits$variable)), -seqn) %>% 
-  select(2:dim(nhanes)[2], 1)
+nhanes_stag3 <- nhanes_imputed %>% 
+  select(-one_of(!!quo(omits$variable)), -seqn)
+
+stag3width <- dim(nhanes_stag3)[2]
+
+nhanes <- nhanes_stag3 %>% 
+  select(2:stag3width, 1)
 
 # Removing staging and other unnecessary dataframes
 
