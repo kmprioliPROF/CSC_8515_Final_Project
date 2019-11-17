@@ -1,0 +1,105 @@
+---
+title: "Final Project:  Checkpoint 3"
+author: "Katherine M. Prioli"
+date: "November 20, 2019"
+output:
+  pdf_document: default
+  html_document: default
+geometry: margin = 0.5in
+---
+
+## **Progress to Date**
+
+The following progress has been made since Checkpoint 2:
+
+* 
+  
+## **Next Steps**
+
+* 
+  
+## **Challenges**
+
+
+
+## **Heading**
+
+```{python libs, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+# Importing libraries
+
+import math
+import numpy as np
+import pandas as pd
+import scipy   # Do I need this?  Could use R for stats instead
+import xgboost as xgb
+
+from sklearn import ensemble
+from sklearn import tree
+
+from sklearn.metrics import confusion_matrix
+
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RepeatedKFold
+from sklearn.model_selection import train_test_split
+```
+
+```{r var_select, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+nhanes_cat <- nhanes %>% 
+  select(-c("age", "famincome_povratio", "mins_activ", "mins_seden", "dailykcal", "dailykcal_typical", "dailywater"))
+
+nhanes_contin <- nhanes %>% 
+  select(age, famincome_povratio, mins_activ, mins_seden, dailykcal, dailywater)
+
+fitord <- princals(select(nhanes_cat, -BMI_cat), ordinal = FALSE)
+summary(fitord)
+plot(fitord, "screeplot")
+
+nhanes_cat_PCA <- nhanes %>% 
+  select(educ, famincome_cat, fastfood_eat, BMI_cat)
+```
+
+
+```{python import_subset, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+#nhanes = r.nhanes
+nhanes = r.nhanes_cat_sub
+nhanes_feat = nhanes.drop(['BMI_cat'], axis = 1)
+nhanes_labs = nhanes.filter(['BMI_cat'])   # .filter() works as a `keep` or dplyr::select()
+
+# nhanes.head(6)   # Eyeballing to make sure it all looks good
+# np.all(np.isfinite(nhanes))   # Double-checking that nothing converted to NAN or Inf
+```
+
+<!-- IGNORE THE BELOW CODE (don't think I'll need it) -->
+
+<!-- ```{python xgboost, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
+<!-- rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats -->
+<!-- for train_index, test_index in rkf.split(nhanes_feat): -->
+<!--   rf = xgb.XGBRFClassifier().fit(nhanes_feat[train_index], nhanes_labs[test_index]) -->
+<!-- ``` -->
+
+```{python nxk_rkf}
+rfc = ensemble.RandomForestClassifier(n_estimators = 100, max_depth = 4, min_samples_leaf = 100, bootstrap = False)
+rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
+
+scores = cross_val_score(rfc, nhanes_feat, nhanes_labs.values.ravel(), cv = rkf)   # Note:  ravel() flattens the array of labels
+scores = pd.DataFrame(scores)
+# print(scores)
+```
+
+```{r score_rkf}
+scores <- py$scores %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  rename(score = value) %>% 
+  select(score) %>% 
+  mutate(score = as.numeric(score)) %>% 
+  summarize(n_runs = n(),
+            pct_acc = round(mean(score), digits = 2),
+            sd_acc = round(sd(score), digits = 3),
+            min_acc = round(min(score), digits = 2),
+            max_acc = round(max(score), digits = 2)) %>% 
+  kable(format = "markdown")
+scores
+```
+
+<!-- NEXT STEP:  try pruning the tree; try omitting some variables -->

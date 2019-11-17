@@ -1,24 +1,25 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Thu Nov 14 12:41:43 2019 ------------------------------
+# Sun Nov 17 17:11:40 2019 ------------------------------
 
 
 #### Loading libraries ----
 
-library(tidyverse)    # For data import and wrangling
-library(skimr)        # For skim()
-library(tidyselect)   # For selecting by string
+#library(skimr)        # For skim()
 library(haven)        # For loading SAS .xpt files
 library(sjlabelled)   # For removing pesky column labels
 library(forcats)      # For handling categorical data
 library(psych)        # For describe()
-library(GGally)       # For ggpairs()
+library(Gifi)         # For princals() (categorical PCA)
 library(gridExtra)    # For grid.arrange()
 library(grid)         # For textGrob() to annotate grid.arrange() elements
 library(rmarkdown)    # For render()
 library(reticulate)   # For interfacing with Python in .Rmd
 library(kableExtra)   # For prettifying output tables
 library(ggthemr)      # For prettifying output plots
+library(GGally)       # For ggpairs()
+library(tidyselect)   # For selecting by string
+library(tidyverse)    # For data import and wrangling
 
 
 ggthemr("fresh")
