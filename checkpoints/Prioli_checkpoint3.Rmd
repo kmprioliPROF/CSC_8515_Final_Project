@@ -12,17 +12,20 @@ geometry: margin = 0.5in
 
 The following progress has been made since Checkpoint 2:
 
-* Refined dataset used in supervised learning; improved mean accuracy from 52% to 75%.
-  * Investigated methods of variable selection for largely categorical data
+* Improved mean accuracy of random forest performance from 52% to 75% via hyperparameter tuning and refinement of dataset
+  * Investigated methods of variable selection for largely categorical data (e.g., PCA approaches for categorical variables) but ultimately these didn't pan out
+* Began unsupervised clustering approach
 * Continued to flesh out the final report with respect to the supervised learning approach, including Methods, Results, and the Limitations part of Discussion
   
 ## **Next Steps**
 
-* 
+* Finish unsupervised clustering approach
+* Continue working on final report
+* Draft presentation slides
   
 ## **Challenges**
 
-
+I have been unable to achieve better than 75% mean performance from the random forest.  Though 75% is a meaningful improvement above last week's 52%, it would not be acceptable in any real-world application.  It's possible that this data is not optimal for modeling via decision trees - for example, I suspect that the inclusion of a category for nonresponses in the categorical variables has introduced noise to the data; however, `randomForestClassifier()` threw an error when running with missing values, and this approach was preferable to omitting cases with missing categorical data.  Additionally, many of the variables included in the analysis are derived from questionnaires, particularly those pertaining to dietary and exercise habits.  Self-reported data can be unreliable, and this may be frustrating my classifier.
 
 ## **Heading**
 
@@ -45,21 +48,6 @@ from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import train_test_split
 ```
 
-<!-- ```{r var_select, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
-<!-- nhanes_cat <- nhanes %>%  -->
-<!--   select(-c("age", "mins_activ", "mins_seden", "dailykcal", "dailykcal_typical", "dailywater")) -->
-
-<!-- nhanes_contin <- nhanes %>%  -->
-<!--   select(age, n_comorbid, mins_activ, mins_seden, dailykcal, dailywater, BMI_cat) -->
-
-<!-- fitord <- princals(select(nhanes_cat, -BMI_cat), ordinal = FALSE) -->
-<!-- summary(fitord) -->
-<!-- plot(fitord, "screeplot") -->
-
-<!-- nhanes_cat_PCA <- nhanes %>%  -->
-<!--   select(educ, famincome_cat, fastfood_eat, BMI_cat) -->
-<!-- ``` -->
-
 ```{python import_subset, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 nhanes_i = r.nhanes
 nhanes_feat_i = nhanes.drop(['BMI_cat'], axis = 1)
@@ -77,21 +65,17 @@ nhanes_labs_f = nhanes.filter(['BMI_cat'])
 # Note: "initial" won't return the true initial results since data wrangling has been refactored
 
 # rfc_i = ensemble.RandomForestClassifier(n_estimators = 100) 
-# rkf_i = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
+# rkf_i = RepeatedKFold(n_repeats = 5, n_splits = 5)   # Reminder:  n = # repeats; k = # splits = # folds
 # 
 # scores_i = cross_val_score(rfc_i, nhanes_feat_i, nhanes_labs_i.values.ravel(), cv = rkf_i)   # Note:  ravel() flattens the array of labels
 # scores_i = pd.DataFrame(scores_i)
 
 rfc_f = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False) #max_depth = 7, 
-rkf_f = RepeatedKFold(n_splits = 3, n_repeats = 10)
+rkf_f = RepeatedKFold(n_repeats = 10, n_splits = 3)
 
 scores_f = cross_val_score(rfc_f, nhanes_feat_f, nhanes_labs_f.values.ravel(), cv = rkf_f)
 scores_f = pd.DataFrame(scores_f)
 ```
-
-<!-- ```{python, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
-<!-- print(scores_f) -->
-<!-- ``` -->
 
 ```{r score_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 # Note: "initial" won't return the true initial results since data wrangling has been refactored
@@ -127,26 +111,5 @@ scores_final <- py$scores_f %>%
 scores_final_kbl <- scores_final %>% 
   kable(format = "markdown")
 scores_final_kbl
-```
-
-
-
-```{python gettree, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-# See checkpoints/rfc_f.dot; can plot this at webgraphviz.com
-
-from sklearn.tree import export_graphviz
-
-model = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False, max_depth = 7)
-model.fit(nhanes_feat_f, nhanes_labs_f.values.ravel())
-
-est = model.estimators_[10]
-
-diag = export_graphviz(est, out_file = "rfc_f2.dot", rounded = False, proportion = False, label = "none", impurity = "False", precision = 2, filled = True, feature_names = nhanes_feat_f.columns, class_names = ["Under/Normal Wt", "Overwt/Obese"])
-```
-
-
-```{python}
-
-cross_val_score(model, nhanes_feat_f, nhanes_labs_f.values.ravel(), cv = 10)
 ```
 
