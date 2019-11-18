@@ -33,7 +33,7 @@ Reducing both the incidence and prevalence of obesity will be critical in managi
 
 ### *Variable Selection*
 
-Variables selected for the study are presented in Table `r i`, with source noted as "native" for variables native to the NHANES dataset or "derived" for variables calculated from native NHANES variables.  These variables were selected because they are attributes known or believed to be correlated with obesity per the scientific literature as informed by both literature search (PubMed and mESH) and prior knowledge.  Derived variables of note included the scored and categorized nine-item Patient Health Questionnaire (PHQ-9), a validated nine-item depression inventory, as well as `BP_cat`, representing clinical categories of blood pressure ranging from hypotension through hypertensive crisis, assigned based on systolic and diastolic blood pressure values.  Additionally, many of the native categorical variables were refactored to group nonresponses (e.g., refusals to respond, "Don't know" responses, and missing values) into a single category.
+Variables selected for the study are presented in Table `r i`, with the source denoted as "native" for variables native to the NHANES dataset or "derived" for variables calculated from native NHANES variables.  These variables were selected because they are attributes known or believed to be correlated with obesity per the scientific literature as informed by both literature search (PubMed and mESH) and prior knowledge.  Derived variables of note included the scored and categorized nine-item Patient Health Questionnaire (PHQ-9), a validated nine-item depression inventory, as well as `BP_cat`, representing clinical categories of blood pressure ranging from hypotension through hypertensive crisis, assigned based on systolic and diastolic blood pressure values.  Additionally, many of the native categorical variables were refactored to group nonresponses (e.g., refusals to respond, "Don't know" responses, and missing values) into a single category.
 
 **Table `r i`.  Variables in initial dataset.**
 
@@ -46,26 +46,26 @@ initvars
 i <- i + 1
 ```
 
-Because BMI categories differ for children and adults, the analysis was limited to ages $\ge$ 20, consistent with the NHANES definition of adult.[8]  Additionally, since `BMI_cat` represents the data labels, all rows with null BMI were excluded.
+Because BMI categories differ for children and adults, the analysis was limited to ages $\ge$ 20, consistent with the NHANES definition of adult.[8]  Additionally, since `BMI_cat` represents the data labels, all rows with null `BMI_cat` were excluded.
 
 Descriptive statistics and frequency tables were generated for continuous and categorical variables respectively to understand data contents and to assess the degree of missingness among the continuous data.  Missing values were imputed for continuous data using the R function `rfImpute()`.  To avoid introducing bias through imputation, two-sided Wilcoxon Rank-Sum tests were performed for each variable on the pre- vs. post-imputation data to identify any statistically significant changes introduced by imputation at the $\alpha = 0.05$ level.  Any variables having statistically different post-imputation data were considered for removal.
 
 
 ### *Supervised Approach*
 
-
+Using algorithms available in ScikitLearn, a random forest of decision tree classifiers was used with $n \times k$-fold crossvalidation to classify cases into BMI category, and descriptive statistics were generated to assess model accuracy.[22-24]  To improve performance, hyperparameters `n_splits` and `n_repeats` (or *k*, number of folds) in `RepeatedKFold()` were tuned, along with hyperparameters *n_estimators* (number of decision trees in the forest), *min_samples_leaf* (minimum cases allowed per terminal node), and *max_depth* (maximum tree depth) in `RandomForestClassifier`.  To further improve accuracy, the labels representing BMI category were recast as dichotomous, grouping together the underweight and healthy weight categories, versus the overweight and obese categories.  Additionally, the six comorbidity variables (pertaining to diabetes, coronary artery disease, myocardial infarction, thyroid disease, hypertension, and depression) were consolidated into one variable representing number of comorbidities, and variables which were suspected not to contribute much information to the model (due to low variation or large amount of missingness) were excluded from this modified dataset.
 
 ### *Unsupervised Approach*
 
 
 ### *Technologies*
 
-Data import, wrangling, and visualization were performed in R using an RMarkdown notebook and relying primarily on the `tidyverse` ecosystem.  The $n \times k$ crossvalidation random forest was implemented via Python code chunks in the notebook leveraging Scikit-Learn along with other common Python libraries as necessary (*e.g.*, `numpy` and `pandas`).  For the agglomerative and divisive clustering, R packages `cluster`, `fpc`, and `CollapsibleTree` were used.  A public GitHub repository was established for this study and contains all raw data files and code along with project documentation.[20]
+Data import, wrangling, and visualization were performed in R using an RMarkdown notebook and relying primarily on the `tidyverse` ecosystem.  The $n \times k$ crossvalidation random forest was implemented via Python code chunks in the notebook leveraging Scikit-Learn along with other common Python libraries as necessary (*e.g.*, `numpy` and `pandas`).[22-24]  For the agglomerative and divisive clustering, R packages `cluster`, `fpc`, and `CollapsibleTree` were used.  A public GitHub repository was established for this study and contains all raw data files and code along with project documentation.[20]
 
 
 ## **Results**
 
-The final analytic dataframe had `r dim(nhanes)[1]` rows and `r dim(nhanes)[2]` columns.  Variables included in the dataset are presented in Table `r i`:
+The final analytic dataframe contained `r dim(nhanes)[1]` rows and `r dim(nhanes)[2]` columns.  Variables included in the dataset are presented in Table `r i`:
 
 **Table `r i`.  Variables in final dataset.**
 
@@ -82,13 +82,8 @@ vardescs <- c("Age",
               "Level of education",
               "Marital status",
               "Family income category",
-              "History of diabetes",
-              "History of coronary artery disease",
-              "History of myocardial infarction",
-              "History of thyroid disease",
-              "Told by doctor to lose weight",
-              "Told by doctor to exercise",
-              "Blood pressure category",
+              "Number of comorbidities",
+              "Told by doctor to lose weight and/or exercise",
               "Daily minutes of moderate to vigorous activity",
               "Daily minutes spent sedentary",
               "Work limitations",
@@ -103,7 +98,6 @@ vardescs <- c("Age",
               "Calories consumed on previous day",
               "Previous day's calorie consumption compared to usual",
               "Previous day's water intake",
-              "PHQ-9 depression category",
               "BMI weight category") %>% 
   as_tibble() %>% 
   rename(Description = value)
@@ -119,17 +113,26 @@ i <- i + 1
 
 ### *Supervised Approach*
 
+The initial model, based on the full dataset and using 5 folds, 5 repeats, and 100 trees in the ensemble, yielded 52% accuracy (range: 49-55%).  Variables included in the reduced dataset included age, gender, race, education level, marital status, family income category, number of comorbidities, number of daily minutes active and sedentary, having eaten fast food or at a restaurant in the past year, daily calories, daily water intake, and having been told by a doctor to lose weight and/or exercise, along with dichotomous BMI category.  The final model based on this reduced dataset yielded `r paste0(scores_final$pct_acc, "%")` accuracy (range: `r scores_final$min_act`-`r paste0(scores_final$max_acc, "%")`), representing a meaningful improvement.
+
 
 ### *Unsupervised Approach*
 
 
 ## **Discussion**
 
+For the supervised approach, the final decision model reached `r paste0(scores_final$pct_acc, "%")` accuracy.  While this is an improvement over the initial model, it generally would be considered poor performance for any real-world implementation.
+
+
 
 ### *Strengths*
 
 
 ### *Limitations*
+
+Because the Scikit-Learn `randomForestClassifier()` function was unable to handle missing data, missing values were handled via imputation (continuous variables) or by creating a "missing" category comprising all-cause nonresponses (categorical variables).  Using a "missing" category in this manner may have introduced noise into the dataset, because it's not known missing values were missing completely at random or missing not at random.  Future iterations of this analysis should include other random forest functions - e.g., those available in the `xgboost` Python library.
+
+Another limitation is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [25-27]
 
 
 ## **Conclusion**
@@ -142,10 +145,10 @@ i <- i + 1
 \begin{flushleft}
 \begin{thebibliography}{99}
 \bibitem[1]
-  `Selected health conditions and risk factors, by age:  United States, selected years 1988-1994 through 2015-2016.  Centers for Disease Control and Prevention.  Health, United States, 2017:  Trend Tables.  Accessed October 20, 2019.  Available online at:  \url{https://www.cdc.gov/nchs/data/hus/2017/053.pdf}.
+  `Selected health conditions and risk factors, by age:  United States, selected years 1988-1994 through 2015-2016.  Centers for Disease Control and Prevention.  Health, United States, 2017:  Trend Tables.  \url{https://www.cdc.gov/nchs/data/hus/2017/053.pdf}.  Accessed October 20, 2019.
 
 \bibitem[2]
-  `Defining Adult Overweight and Obesity.  Centers for Disease Control and Prevention.  Last updated April 11, 2017.  Available online at:  \url{https://www.cdc.gov/obesity/adult/defining.html}.  Accessed October 22, 2019.
+  `Defining Adult Overweight and Obesity.  Centers for Disease Control and Prevention.  \url{https://www.cdc.gov/obesity/adult/defining.html}.  Updated April 11, 2017.  Accessed October 22, 2019.
 
 \bibitem[3]
   `Hruby A, Hu FB.  The Epidemiology of Obesity: A Big Picture. \textit{Pharmacoeconomics}. 2015;33(7):673-89.  doi:10.1007/s40273-014-0243-x.
@@ -154,43 +157,43 @@ i <- i + 1
   `Li Q, Blume SW, Huang JC, Hammer M, Ganz ML.  Prevalence and healthcare costs of obesity-related comorbidities:  evidence from an electronic medical records system in the United States.  \textit{J Med Econ}.  2015;18(12):1020-8.  doi:  10.3111/13696998.2015.1067623.
 	
 \bibitem[5]
-	`National Health and Nutrition Examination Survey.  National Center for Health Statistics.  Available online at:  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Last updated September 24, 2019.  Accessed October 20, 2019.
+	`National Health and Nutrition Examination Survey.  National Center for Health Statistics.  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Updated September 24, 2019.  Accessed October 20, 2019.
 	
 \bibitem[6]
-  `Hales CM, Carroll MD, Fryar CD, Ogden CL.  Prevalence of Obesity Among Adults and Youth:  United States, 2015-2016.  NCHS Data Brief No. 288.  National Center for Health Statistics.  2017.  Accessed October 20, 2019.  Available online at:  \url{https://www.cdc.gov/nchs/data/databriefs/db288.pdf}.
+  `Hales CM, Carroll MD, Fryar CD, Ogden CL.  Prevalence of Obesity Among Adults and Youth:  United States, 2015-2016.  NCHS Data Brief No. 288.  National Center for Health Statistics.  2017.  \url{https://www.cdc.gov/nchs/data/databriefs/db288.pdf}.  Accessed October 20, 2019.  
 	
 \bibitem[7]
   `Ogden CL, Fakhouri TH, Carroll MD, et al. Prevalence of Obesity Among Adults, by Household Income and Education – United States, 2011-2014.  \textit{Morb Mortal Wkly Rep}. 2017;66:1369-1373.  doi:  \url{http://dx.doi.org/10.15585/mmwr.mm6650a1}.
 	
 \bibitem[8]
-  `National Health and Nutrition Examination Survey:  Demographic Variables and Sample Weights (DEMO$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.XPT}.  Last updated September 2017.  Accessed October 27, 2019.
+  `National Health and Nutrition Examination Survey:  Demographic Variables and Sample Weights (DEMO$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.XPT}.  Updated September 2017.  Accessed October 27, 2019.
 	
 \bibitem[9]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diabetes (DIQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DIQ_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diabetes (DIQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DIQ_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
 	
 \bibitem[10]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Medical (MCQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/MCQ_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Medical (MCQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/MCQ_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
 
 \bibitem[11]
-  `National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BPX_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BPX_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
 	
 \bibitem[12]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
 	
 \bibitem[13]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
 	
 \bibitem[14]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT}.  Last updated December 2017.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT}.  Updated December 2017.  Accessed October 29, 2019.
 	
 \bibitem[15]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT}.  Last updated November 2018.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT}.  Updated November 2018.  Accessed October 29, 2019.
 
 \bibitem[16]
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT}.  Last updated July 2018.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT}.  Updated July 2018.  Accessed October 29, 2019.
 
 \bibitem[17]
-  `National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX$\_$I).  National Center for Health Statistics.  Available online at:  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT}.  Last updated September 2017.  Accessed October 29, 2019.
+  `National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
 
 \bibitem[18]
 	`Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  \textit{J Am Coll Cardiol}.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
@@ -199,10 +202,28 @@ i <- i + 1
   `Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. \textit{Psychiatric Annals}. 2002;32(9):1-7  doi:  10.3928/0048-5713-20020901-06.
 
 \bibitem[20]
-  `Prioli KM. CSC$\_$8515$\_$Final$\_$Project. Available online at:  \url{https://github.com/kprioliPROF/CSC_8515_Final_Project}.
+  `Prioli KM. CSC$\_$8515$\_$Final$\_$Project. \url{https://github.com/kprioliPROF/CSC_8515_Final_Project}.
   
 \bibitem[21]
-  `Low Blood Pressure.  US National Library of Medicine:  MedlinePlus.  Last updated November 06, 2019.  Accessed November 10, 2019.  Available online at:  \url{https://medlineplus.gov/ency/article/007278.htm}.
+  `Low Blood Pressure.  US National Library of Medicine:  MedlinePlus.  \url{https://medlineplus.gov/ency/article/007278.htm}.  Updated November 06, 2019.  Accessed November 10, 2019.
+  
+\bibitem[22]
+  `sklearn.ensemble.RandomForestClassifier.  Scikit-learn documentation.  \url{https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html}.  Accessed November 10, 2019.
+  
+\bibitem[23]
+  `sklearn.model$\_$selection.RepeatedKFold.  Scikit-learn documentation.  \url{https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RepeatedKFold.html}.  Accessed November 10, 2019.  
+  
+\bibitem[24]
+  `sklearn.model$\_$selection.cross$\_$val$\_$score.  Scikit-learn documentation.  \url{https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html}.  Accessed November 10, 2019.
+  
+\bibitem[25]
+  `Niitsuma H, Okada T.  Covariance and PCA for Categorical Variables.  Advances in Knowledge Discovery and Data Mining.  Ho TB, Cheung D, Liu H, eds.  \textit{Advances in Knowledge Discovery and Data Mining}.  Berlin:  Springer; 2005.  doi:  10.1007/11430919_61.  {\tt 	arXiv:0711.4452 [cs.LG]}
+  
+\bibitem[26]
+  `princals:  Categorical principal component analysis (PRINCALS).  Gifi Multivariate Analysis with Optimal Scaling documentation.  \url{https://cran.r-project.org/web/packages/Gifi/index.html}.  Updated June 25, 2019.  Accessed November 17, 2019.
+  
+\bibitem[27]
+  `Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  {\tt 	arXiv:1411.4911v4 [stat.CO]}  Updated December 8, 2017.  Accessed November 17, 2019.
 
 
 \end{thebibliography}

@@ -12,7 +12,9 @@ geometry: margin = 0.5in
 
 The following progress has been made since Checkpoint 2:
 
-* 
+* Refined dataset used in supervised learning; improved mean accuracy from 52% to 75%.
+  * Investigated methods of variable selection for largely categorical data
+* Continued to flesh out the final report with respect to the supervised learning approach, including Methods, Results, and the Limitations part of Discussion
   
 ## **Next Steps**
 
@@ -43,73 +45,104 @@ from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import train_test_split
 ```
 
-```{r var_select, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-nhanes_cat <- nhanes %>% 
-  select(-c("age", "mins_activ", "mins_seden", "dailykcal", "dailykcal_typical", "dailywater"))
+<!-- ```{r var_select, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
+<!-- nhanes_cat <- nhanes %>%  -->
+<!--   select(-c("age", "mins_activ", "mins_seden", "dailykcal", "dailykcal_typical", "dailywater")) -->
 
-nhanes_contin <- nhanes %>% 
-  select(age, n_comorbid, mins_activ, mins_seden, dailykcal, dailywater, BMI_cat)
+<!-- nhanes_contin <- nhanes %>%  -->
+<!--   select(age, n_comorbid, mins_activ, mins_seden, dailykcal, dailywater, BMI_cat) -->
 
-fitord <- princals(select(nhanes_cat, -BMI_cat), ordinal = FALSE)
-summary(fitord)
-plot(fitord, "screeplot")
+<!-- fitord <- princals(select(nhanes_cat, -BMI_cat), ordinal = FALSE) -->
+<!-- summary(fitord) -->
+<!-- plot(fitord, "screeplot") -->
 
-nhanes_cat_PCA <- nhanes %>% 
-  select(educ, famincome_cat, fastfood_eat, BMI_cat)
-```
-
+<!-- nhanes_cat_PCA <- nhanes %>%  -->
+<!--   select(educ, famincome_cat, fastfood_eat, BMI_cat) -->
+<!-- ``` -->
 
 ```{python import_subset, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-#nhanes = r.nhanes
-nhanes = r.nhanes_trim_dichot
-nhanes_feat = nhanes.drop(['BMI_cat'], axis = 1)
-nhanes_labs = nhanes.filter(['BMI_cat'])   # .filter() works as a `keep` or dplyr::select()
+nhanes_i = r.nhanes
+nhanes_feat_i = nhanes.drop(['BMI_cat'], axis = 1)
+nhanes_labs_i = nhanes.filter(['BMI_cat'])   # .filter() works as a `keep` or dplyr::select()
+
+nhanes_f = r.nhanes_trim_dichot
+nhanes_feat_f = nhanes.drop(['BMI_cat'], axis = 1)
+nhanes_labs_f = nhanes.filter(['BMI_cat'])
 
 # nhanes.head(6)   # Eyeballing to make sure it all looks good
 # np.all(np.isfinite(nhanes))   # Double-checking that nothing converted to NAN or Inf
 ```
 
-<!-- IGNORE THE BELOW CODE (don't think I'll need it) -->
+```{python nxk_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+# Note: "initial" won't return the true initial results since data wrangling has been refactored
 
-<!-- ```{python xgboost, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
-<!-- rkf = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats -->
-<!-- for train_index, test_index in rkf.split(nhanes_feat): -->
-<!--   rf = xgb.XGBRFClassifier().fit(nhanes_feat[train_index], nhanes_labs[test_index]) -->
-<!-- ``` -->
+# rfc_i = ensemble.RandomForestClassifier(n_estimators = 100) 
+# rkf_i = RepeatedKFold(n_splits = 5, n_repeats = 5)   # Reminder:  n = # splits = # folds; k = # repeats
+# 
+# scores_i = cross_val_score(rfc_i, nhanes_feat_i, nhanes_labs_i.values.ravel(), cv = rkf_i)   # Note:  ravel() flattens the array of labels
+# scores_i = pd.DataFrame(scores_i)
 
-```{python nxk_rkf}
-rfc = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False) #max_depth = 7, 
-rkf = RepeatedKFold(n_splits = 20, n_repeats = 15)   # Reminder:  n = # splits = # folds; k = # repeats
+rfc_f = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False) #max_depth = 7, 
+rkf_f = RepeatedKFold(n_splits = 3, n_repeats = 10)
 
-scores = cross_val_score(rfc, nhanes_feat, nhanes_labs.values.ravel(), cv = rkf)   # Note:  ravel() flattens the array of labels
-scores = pd.DataFrame(scores)
-# print(scores)
+scores_f = cross_val_score(rfc_f, nhanes_feat_f, nhanes_labs_f.values.ravel(), cv = rkf_f)
+scores_f = pd.DataFrame(scores_f)
 ```
 
-```{r score_rkf}
-scores <- py$scores %>% 
+<!-- ```{python, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
+<!-- print(scores_f) -->
+<!-- ``` -->
+
+```{r score_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+# Note: "initial" won't return the true initial results since data wrangling has been refactored
+
+# scores_init <- py$scores_i %>% 
+#   unlist() %>% 
+#   as_tibble() %>% 
+#   rename(score = value) %>% 
+#   select(score) %>% 
+#   mutate(score = as.numeric(score)) %>% 
+#   summarize(n_runs = n(),
+#             pct_acc = paste0(round(mean(score), digits = 4) * 100, "%"),
+#             sd_acc = (round(sd(score), digits = 4) * 100),
+#             min_acc = paste0(round(min(score), digits = 4) * 100, "%"),
+#             max_acc = paste0(round(max(score), digits = 4) * 100, "%"))
+# 
+# scores_init_kbl <- scores_init %>% 
+#   kable(format = "markdown")
+# scores_init_kbl
+
+scores_final <- py$scores_f %>% 
   unlist() %>% 
   as_tibble() %>% 
   rename(score = value) %>% 
   select(score) %>% 
   mutate(score = as.numeric(score)) %>% 
   summarize(n_runs = n(),
-            pct_acc = paste0(round(mean(score), digits = 4) * 100, "%"),
+            pct_acc = round(mean(score), digits = 4) * 100,
             sd_acc = (round(sd(score), digits = 4) * 100),
-            min_acc = paste0(round(min(score), digits = 4) * 100, "%"),
-            max_acc = paste0(round(max(score), digits = 4) * 100, "%")) %>% 
+            min_acc = round(min(score), digits = 4) * 100,
+            max_acc = round(max(score), digits = 4) * 100)
+
+scores_final_kbl <- scores_final %>% 
   kable(format = "markdown")
-scores
+scores_final_kbl
 ```
 
-<!-- NEXT STEP:  try pruning the tree; try omitting some variables -->
 
-```{r}
-nhanes_BMIcat <- nhanes %>% 
-  mutate(BMI_cat = factor(BMI_cat, levels = c(1, 2, 3, 4), labels = c("Underweight", "Healthy weight", "Overweight", "Obese")))
+```{python gettree, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+from sklearn.tree import export_graphviz
 
-nhanes_rf <- randomForest(BMI_cat ~ ., data = nhanes_BMIcat)
+rfc_f_single = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False)
+rfc_f_single.fit(nhanes_feat_f, nhanes_labs_f.values.ravel())
 
-round(importance(nhanes_rf), digits = 2)
+est = rfc_f_single.estimators_[10]
+
+export_graphviz(est, out_file = "rfc_f.dot", rounded = False, proportion = False, precision = 2, filled = False) # feature_names = nhanes_feat_f.feature_names, class_names = nhanes_labs_f)
+
+from subprocess import call
+call(["dot", "-Tpng", "rfc_f.dot", "-o", "rfc_f.png", "-Gdpi = 1000"])
+
 ```
+
 
