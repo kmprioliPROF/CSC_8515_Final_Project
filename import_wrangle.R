@@ -532,7 +532,7 @@ BMI_cat_summ <- categsumm(nhanes_fct, quo(BMI_cat_fct))
 #### Omitting variables not needed ----
 
 nhanes_stag2 <- nhanes_stag %>%
-  filter(!is.na(BMI) == TRUE) %>%     # Omitting because I don't want to impute BMI or BMI_cat (this is the label)
+  filter(!is.na(BMI_cat) == TRUE) %>%     # Omitting because I don't want to impute BMI or BMI_cat (this is the label)
   mutate(losewt_exer = case_when(
     doc_losewt == 1 & doc_exer == 1 ~ 2,
     (doc_losewt == 1 & doc_exer == 0) | (doc_losewt == 0 & doc_exer == 1) ~ 1,
@@ -548,11 +548,7 @@ nhanes_stag2 <- nhanes_stag %>%
 
 #### Imputing missing values for continuous data ----
 
-# Running `rfImpute()`
-
-set.seed(20191110)
 nhanes_imputed <- rfImpute(BMI_cat ~ ., nhanes_stag2)
-set.seed(NULL)
 
 # Looking at descriptives for `nhanes_stag2` vs `nhanes_imputed`
 
@@ -591,13 +587,17 @@ nhanes_contin_imp_kable
 
 # Comparing descriptives from `nhanes_stag2` to `nhanes_imputed`
 
+# famincome_povratio_wilcox <- wilcox.test(nhanes_stag2$famincome_povratio, nhanes_imputed$famincome_povratio, 
+#                                          alternative = "two.sided", 
+#                                          conf.int = TRUE)
+
+# PHQ9_score_wilcox <- wilcox.test(nhanes_stag2$PHQ9_score, nhanes_imputed$PHQ9_score,
+#                                  alternative = "two.sided",
+#                                  conf.int = TRUE)
+
 age_wilcox <- wilcox.test(nhanes_stag2$age, nhanes_imputed$age, 
                           alternative = "two.sided", 
                           conf.int = TRUE)
-
-famincome_povratio_wilcox <- wilcox.test(nhanes_stag2$famincome_povratio, nhanes_imputed$famincome_povratio, 
-                                         alternative = "two.sided", 
-                                         conf.int = TRUE)
 
 mins_activ_wilcox <- wilcox.test(nhanes_stag2$mins_activ, nhanes_imputed$mins_activ,
                                  alternative = "two.sided", 
@@ -615,21 +615,23 @@ dailywater_wilcox <- wilcox.test(nhanes_stag2$dailywater, nhanes_imputed$dailywa
                                  alternative = "two.sided",
                                  conf.int = TRUE)
 
-PHQ9_score_wilcox <- wilcox.test(nhanes_stag2$PHQ9_score, nhanes_imputed$PHQ9_score,
-                                 alternative = "two.sided",
-                                 conf.int = TRUE)
-
-wilcox_vars <- c("age", "famincome_povratio", "mins_activ", "mins_seden", "dailykcal", "dailywater", "PHQ9_score") %>% 
+wilcox_vars <- c(#"PHQ9_score",
+                 #"famincome_povratio", 
+                 "age", 
+                 "mins_activ", 
+                 "mins_seden", 
+                 "dailykcal", 
+                 "dailywater") %>% 
   as_tibble() %>% 
   rename(variable = value)
 
-wilcox_pvals <- c(age_wilcox$p.value,
-                  famincome_povratio_wilcox$p.value,
+wilcox_pvals <- c(#famincome_povratio_wilcox$p.value,
+                  #PHQ9_score_wilcox$p.value,
+                  age_wilcox$p.value,
                   mins_activ_wilcox$p.value,
                   mins_seden_wilcox$p.value,
                   dailykcal_wilcox$p.value,
-                  dailywater_wilcox$p.value,
-                  PHQ9_score_wilcox$p.value) %>% 
+                  dailywater_wilcox$p.value) %>% 
   as_tibble() %>% 
   rename(p_value = value)
 
@@ -644,7 +646,7 @@ omits <- wilcox_results %>%
 #### Finalizing analytic dataset ----
 
 nhanes_stag3 <- nhanes_imputed %>% 
-  select(-one_of(!!quo(omits$variable)), -seqn)
+  select(-one_of(!!quo(omits$variable)), -seqn, -famincome_povratio, -PHQ9_score)
 
 stag3width <- dim(nhanes_stag3)[2]
 
@@ -660,11 +662,11 @@ nhanes_dichot <- nhanes %>%   # Creating a dichotomous BMI variable bucketing un
   rename(BMI_cat = BMI_dichot)
 
 nhanes_trim <- nhanes %>%   # Creating a smaller dataset that omits some variables which are largely NA or may not be useful
-  select(-c("worklim", "walklim", "dailykcal_typical", "fastfood_usednutrit", "fastfood_woulduse", 
+  select(-c("worklim", "walklim", "dailykcal_typical", "diethealthy", "fastfood_usednutrit", "fastfood_woulduse", 
             "restaur_usednutrit", "restaur_woulduse"))
 
 nhanes_trim_dichot <- nhanes_dichot %>%
-  select(-c("worklim", "walklim", "dailykcal_typical", "fastfood_usednutrit", "fastfood_woulduse", 
+  select(-c("worklim", "walklim", "dailykcal_typical", "diethealthy", "fastfood_usednutrit", "fastfood_woulduse", 
             "restaur_usednutrit", "restaur_woulduse"))
 
 # Removing staging and other unnecessary dataframes

@@ -130,19 +130,23 @@ scores_final_kbl
 ```
 
 
+
 ```{python gettree, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+# See checkpoints/rfc_f.dot; can plot this at webgraphviz.com
+
 from sklearn.tree import export_graphviz
 
-rfc_f_single = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False)
-rfc_f_single.fit(nhanes_feat_f, nhanes_labs_f.values.ravel())
+model = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False, max_depth = 7)
+model.fit(nhanes_feat_f, nhanes_labs_f.values.ravel())
 
-est = rfc_f_single.estimators_[10]
+est = model.estimators_[10]
 
-export_graphviz(est, out_file = "rfc_f.dot", rounded = False, proportion = False, precision = 2, filled = False) # feature_names = nhanes_feat_f.feature_names, class_names = nhanes_labs_f)
-
-from subprocess import call
-call(["dot", "-Tpng", "rfc_f.dot", "-o", "rfc_f.png", "-Gdpi = 1000"])
-
+diag = export_graphviz(est, out_file = "rfc_f2.dot", rounded = False, proportion = False, label = "none", impurity = "False", precision = 2, filled = True, feature_names = nhanes_feat_f.columns, class_names = ["Under/Normal Wt", "Overwt/Obese"])
 ```
 
+
+```{python}
+
+cross_val_score(model, nhanes_feat_f, nhanes_labs_f.values.ravel(), cv = 10)
+```
 
