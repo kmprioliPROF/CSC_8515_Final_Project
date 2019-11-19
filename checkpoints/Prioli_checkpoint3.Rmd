@@ -116,25 +116,34 @@ scores_final_kbl
 
 ## **Unsupervised Approach**
 
-Dissimilarity matrix based on Gower distance:
+Data was subset to variables with $\ge 90 \%$ non-missing values.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.
 
 ```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-dissim_mat <- daisy(nhanes_unsup[ ,2:dim(nhanes_unsup)[2]], metric = "gower")
+dissim_mat <- daisy(nhanes_unsup_trim[ ,2:dim(nhanes_unsup_trim)[2]], metric = "gower")
 summary(dissim_mat)
 ```
 
-Dendrogram for agglomerative clustering/nesting (AGNES) using the dissimilarity matrix:
+Dendrogram for AGNES:
 
 ```{r agnes_dend, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-
+agnes_dend <- agnes(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE) %>%
+  as.dendrogram() %>%
+  ggdendrogram()
+agnes_dend
 ```
 
 
-Dendrogram for divisive clustering/analysis (DIANA), again using the dissimilarity matrix:
+Dendrogram for DIANA:
 
 ```{r diana_dend, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-diana_dend <- diana(x = (dissim_mat %>% as_matrix()), diss = TRUE, keep.diss = TRUE) %>% 
+diana_dend <- diana(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE) %>% 
   as.dendrogram() %>% 
   ggdendrogram()
 diana_dend
 ```
+
+As visual tools, these dendrograms will not be of much use due to the number of cases.
+
+<!-- CONTINUE HERE -->
+
+<!-- Next step is to do stratified sampling (perhaps 5% or 10% of cases), then re-run dissimilarity matrix and dendrograms. -->

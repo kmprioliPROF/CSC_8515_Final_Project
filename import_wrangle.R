@@ -721,6 +721,10 @@ nhanes_unsup <- nhanes %>%
       restaur_woulduse_fct != "Missing" ~ restaur_woulduse_fct,
       TRUE ~ as.ordered(NA)))
 
+nhanes_unsup_trim <- nhanes_unsup %>%   # Removing rows that are <90% complete
+  select(-c("walklim_fct", "fastfood_usednutrit_fct", "fastfood_woulduse_fct", 
+            "restaur_usednutrit_fct", "restaur_woulduse_fct"))
+
 
 #### Removing staging and other unnecessary dataframes ----
 
