@@ -54,12 +54,12 @@ from sklearn.model_selection import RepeatedKFold
 # Note:  "initial" commented out because it won't return the true initial results since data wrangling has been refactored
 
 # nhanes_i = r.nhanes
-# nhanes_feat_i = nhanes_i.drop(['BMI_cat'], axis = 1)
-# nhanes_labs_i = nhanes_i.filter(['BMI_cat'])   # .filter() works as a `keep` or dplyr::select()
+# nhanes_feat_i = nhanes_i.drop(["BMI_cat"], axis = 1)
+# nhanes_labs_i = nhanes_i.filter(["BMI_cat"])   # .filter() works as a `keep` or dplyr::select()
 
 nhanes_f = r.nhanes_sup_trim_dichot
-nhanes_feat_f = nhanes_f.drop(['BMI_cat'], axis = 1)
-nhanes_labs_f = nhanes_f.filter(['BMI_cat'])
+nhanes_feat_f = nhanes_f.drop(["BMI_cat"], axis = 1)
+nhanes_labs_f = nhanes_f.filter(["BMI_cat"])
 ```
 
 ```{python nxk_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
@@ -116,3 +116,25 @@ scores_final_kbl
 
 ## **Unsupervised Approach**
 
+Dissimilarity matrix based on Gower distance:
+
+```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+dissim_mat <- daisy(nhanes_unsup[ ,2:dim(nhanes_unsup)[2]], metric = "gower")
+summary(dissim_mat)
+```
+
+Dendrogram for agglomerative clustering/nesting (AGNES) using the dissimilarity matrix:
+
+```{r agnes_dend, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+
+```
+
+
+Dendrogram for divisive clustering/analysis (DIANA), again using the dissimilarity matrix:
+
+```{r diana_dend, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+diana_dend <- diana(x = (dissim_mat %>% as_matrix()), diss = TRUE, keep.diss = TRUE) %>% 
+  as.dendrogram() %>% 
+  ggdendrogram()
+diana_dend
+```

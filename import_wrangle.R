@@ -10,7 +10,11 @@ library(sjlabelled)     # For removing pesky column labels
 library(forcats)        # For handling categorical data
 library(psych)          # For describe()
 library(randomForest)   # For rfImpute()
-library(Gifi)           # For princals() (categorical PCA)
+#library(Gifi)           # For princals() (categorical PCA)   # This didn't pan out
+library(cluster)        # For daisy() (computing Gower distance)
+library(fpc)            # For cluster.stats()
+library(ggdendro)       # For ggplot dendrograms
+library(dendextend)     # For as.ggdend() to create a ggplot dendrogram object
 library(gridExtra)      # For grid.arrange()
 library(grid)           # For textGrob() to annotate grid.arrange() elements
 library(rmarkdown)      # For render()
@@ -537,6 +541,7 @@ nhanes_stag2 <- nhanes_stag %>%
     (doc_losewt == 1 & doc_exer == 0) | (doc_losewt == 0 & doc_exer == 1) ~ 1,
     doc_losewt == 0 & doc_exer == 0 ~ 0,
     TRUE ~ 3)) %>% 
+  select(1:38, 41, 40, 39) %>%   # Reordering such that BMI_cat is last listed
   select(
     # -BMI_cat_fct, -gender_fct, -race_fct, -educ_fct, -marital_fct, -famincome_cat_fct, 
     # -worklim_fct, -walklim_fct, -diethealthy_fct, -fastfood_eat_fct, -fastfood_usednutrit_fct, 
@@ -548,7 +553,7 @@ nhanes_stag2 <- nhanes_stag %>%
 
 #### Imputing missing values for continuous data ----
 
-nhanes_imputed <- rfImpute(BMI_cat ~ ., nhanes_stag2)
+nhanes_imputed <- rfImpute(BMI_cat ~ . -seqn, nhanes_stag2)   # Ensuring seqn doesn't get used for imputation
 
 # Looking at descriptives for `nhanes_stag2` vs `nhanes_imputed`
 
@@ -643,23 +648,15 @@ omits <- wilcox_results %>%
   as.list()
 
 
-
-#### CONTINUE HERE ----
-
-# Next step is to make subsets as appropriate for _fct (unsupervised) and non-_fct (supervised)
-
-
-
-
 #### Finalizing analytic dataset ----
 
 nhanes_stag3 <- nhanes_imputed %>% 
-  select(-one_of(!!quo(omits$variable)), -seqn, -famincome_povratio, -PHQ9_score)
+  select(-one_of(!!quo(omits$variable)), -famincome_povratio, -PHQ9_score)
 
-stag3width <- dim(nhanes_stag3)[2]
+#stag3width <- dim(nhanes_stag3)[2]
 
-nhanes <- nhanes_stag3 %>% 
-  select(2:stag3width, 1)   # Rearranging because I'm neurotic
+nhanes <- nhanes_stag3 #%>% 
+  # select(2:stag3width, 1)   # Rearranging because I'm neurotic
 
 nhanes_dichot <- nhanes %>%   # Creating a dichotomous BMI variable bucketing under/normal with over/obese
   mutate(BMI_dichot = case_when(
@@ -679,13 +676,50 @@ nhanes_sup_trim_dichot <- nhanes_dichot %>%
   select(age, gender, race, educ, marital, famincome_cat, n_comorbid, mins_activ, mins_seden, fastfood_eat, 
          restaur_eat, dailykcal, dailywater, losewt_exer, BMI_cat)
 
-# Creating final unsupervised approach dataset (retains factors for categorical variables)
+# Creating final unsupervised approach dataset (retains factors for categorical variables; NAs are OK)
 
 nhanes_unsup <- nhanes %>% 
-  select(age, gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, n_comorbid, mins_activ,
+  select(seqn, age, gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, n_comorbid, mins_activ,
          mins_seden, worklim_fct, walklim_fct, diethealthy_fct, fastfood_eat_fct, fastfood_usednutrit_fct,
          fastfood_woulduse_fct, restaur_eat_fct, restaur_usednutrit_fct, restaur_woulduse_fct, dailykcal,
-         dailywater, losewt_exer, BMI_cat_fct)
+         dailywater, losewt_exer, BMI_cat_fct) %>% 
+  mutate(
+    educ_fct = case_when(
+      educ_fct != "Missing" ~ educ_fct,
+      TRUE ~ as.ordered(NA)),
+    marital_fct = case_when(
+      marital_fct != "Missing" ~ marital_fct,
+      TRUE ~ as.factor(NA)),
+    famincome_cat_fct = case_when(
+      famincome_cat_fct != "Missing" ~ famincome_cat_fct,
+      TRUE ~ as.ordered(NA)),
+    worklim_fct = case_when(
+      worklim_fct != "Missing" ~ worklim_fct,
+      TRUE ~ as.factor(NA)),
+    walklim_fct = case_when(
+      walklim_fct != "Missing" ~ walklim_fct,
+      TRUE ~ as.ordered(NA)),
+    diethealthy_fct = case_when(
+      diethealthy_fct != "Missing" ~ diethealthy_fct,
+      TRUE ~ as.ordered(NA)),
+    fastfood_eat_fct = case_when(
+      fastfood_eat_fct != "Missing" ~ fastfood_eat_fct,
+      TRUE ~ as.factor(NA)),
+    fastfood_usednutrit_fct = case_when(
+      fastfood_usednutrit_fct != "Missing" ~ fastfood_usednutrit_fct,
+      TRUE ~ as.factor(NA)),
+    fastfood_woulduse_fct = case_when(
+      fastfood_woulduse_fct != "Missing" ~ fastfood_woulduse_fct,
+      TRUE ~ as.ordered(NA)),
+    restaur_eat_fct = case_when(
+      restaur_eat_fct != "Missing" ~ restaur_eat_fct,
+      TRUE ~ as.factor(NA)),
+    restaur_usednutrit_fct = case_when(
+      restaur_usednutrit_fct != "Missing" ~ restaur_usednutrit_fct,
+      TRUE ~ as.factor(NA)),
+    restaur_woulduse_fct = case_when(
+      restaur_woulduse_fct != "Missing" ~ restaur_woulduse_fct,
+      TRUE ~ as.ordered(NA)))
 
 
 #### Removing staging and other unnecessary dataframes ----
