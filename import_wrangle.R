@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Sun Nov 17 17:11:40 2019 ------------------------------
+# Mon Nov 18 21:52:44 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -126,43 +126,43 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
     diethealthy = case_when(
       dbq700 > 0 & dbq700 < 6 ~ dbq700,
       TRUE ~ 6),
-    diethealthy_fct = factor(diethealthy,
+    diethealthy_fct = factor(diethealthy, ordered = TRUE,
                              levels = c(1, 2, 3, 4, 5, 6),
                              labels = c("Excellent", "Very good", "Good", "Fair", "Poor", "Missing")),
     fastfood_eat = case_when(
       cbq505 > 0 & cbq505 < 3 ~ cbq505,
       TRUE ~ 3),
-    fastfood_eat_fct = factor(fastfood_eat,
+    fastfood_eat_fct = factor(fastfood_eat, ordered = FALSE,
                               levels = c(1, 2, 3),
                               labels = c("Yes", "No", "Missing")),
     fastfood_usednutrit = case_when(
       cbq540 > 0 & cbq540 < 3 ~ cbq540,
       TRUE ~ 3),
-    fastfood_usednutrit_fct = factor(fastfood_usednutrit,
+    fastfood_usednutrit_fct = factor(fastfood_usednutrit, ordered = FALSE,
                                      levels = c(1, 2, 3),
                                      labels = c("Yes", "No", "Missing")),
     fastfood_woulduse = case_when(
       cbq545 > 0 & cbq545 < 5 ~ cbq545,
       TRUE ~ 5),
-    fastfood_woulduse_fct = factor(fastfood_woulduse,
+    fastfood_woulduse_fct = factor(fastfood_woulduse, ordered = TRUE,
                                    levels = c(1, 2, 3, 4, 5),
                                    labels = c("Often", "Sometimes", "Rarely", "Never", "Missing")),
     restaur_eat = case_when(
       cbq550 > 0 & cbq550 < 3 ~ cbq550,
       TRUE ~ 3),
-    restaur_eat_fct = factor(restaur_eat,
+    restaur_eat_fct = factor(restaur_eat, ordered = FALSE,
                              levels = c(1, 2, 3),
                              labels = c("Yes", "No", "Missing")),
     restaur_usednutrit = case_when(
       cbq585 > 0 & cbq585 < 3 ~ cbq585,
       TRUE ~ 3),
-    restaur_usednutrit_fct = factor(restaur_usednutrit,
+    restaur_usednutrit_fct = factor(restaur_usednutrit, ordered = FALSE,
                                     levels = c(1, 2, 3),
                                     labels = c("Yes", "No", "Missing")),
     restaur_woulduse = case_when(
       cbq590 > 0 & cbq590 < 5 ~ cbq590,
       TRUE ~ 5),
-    restaur_woulduse_fct = factor(restaur_woulduse,
+    restaur_woulduse_fct = factor(restaur_woulduse, ordered = TRUE,
                                   levels = c(1, 2, 3, 4, 5),
                                   labels = c("Often", "Sometimes", "Rarely", "Never", "Missing"))) %>% 
   select(-dbq700, -cbq505, -cbq540, -cbq545, -cbq550, -cbq585, -cbq590) %>% 
@@ -175,7 +175,7 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
     dailykcal_typical = case_when(
       dr1_300 > 0 & dr1_300 < 4 ~ dr1_300,
       TRUE ~ 4),
-    dailykcal_typical_fct = factor(dailykcal_typical,
+    dailykcal_typical_fct = factor(dailykcal_typical, ordered = TRUE,
                                    levels = c(1, 2, 3, 4),
                                    labels = c("Much more than usual",
                                               "Usual",
@@ -222,7 +222,7 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
            PHQ9_score >= 15 & PHQ9_score <= 19 ~ 3,       # Moderately severe
            PHQ9_score >= 20 & PHQ9_score <= 27 ~ 4,       # Severe
            TRUE ~ 5),
-         PHQ9_cat_fct = factor(PHQ9_cat,
+         PHQ9_cat_fct = factor(PHQ9_cat, ordered = TRUE,
                                levels = c(0, 1, 2, 3, 4, 5),
                                labels = c("None to minimal",
                                           "Mild",
@@ -244,7 +244,7 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
     (systolic >= 140 & systolic <= 180) | (diastolic >= 90 & diastolic <= 120) ~ 4,   # Stage 2 HTN
     systolic > 180 | diastolic > 120 ~ 5,                                             # Hypertensive crisis
     is.na(systolic) == TRUE | is.na(diastolic) == TRUE ~ 6),
-    BP_cat_fct = factor(BP_cat,
+    BP_cat_fct = factor(BP_cat, ordered = TRUE,
                         levels = c(0, 1, 2, 3, 4, 5, 6),
                         labels = c("Hypotensive", "Normal", "Elevated", "Stage 1 HTN", "Stage 2 HTN", "Hypertensive crisis", "Missing"))) %>% 
   
@@ -268,13 +268,13 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
          age = ridageyr,
          race = ridreth3,
          famincome_povratio = indfmpir) %>% 
-  mutate(gender_fct = factor(gender,
+  mutate(gender_fct = factor(gender, ordered = FALSE,
                              levels = c(1, 2),
                              labels = c("Male", "Female")),
          race = case_when(
            race == 1 | race == 2 ~ 1,
            TRUE ~ race),
-         race_fct = factor(race,
+         race_fct = factor(race, ordered = FALSE,
                            levels = c(1, 3, 4, 6, 7),
                            labels = c("Hispanic",
                                       "Non-Hispanic white",
@@ -284,7 +284,7 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
          educ = case_when(
            dmdeduc2 > 0 & dmdeduc2 < 6 ~ dmdeduc2,
            TRUE ~ 6),
-         educ_fct = factor(educ,
+         educ_fct = factor(educ, ordered = TRUE,
                            levels = c(1, 2, 3, 4, 5, 6),
                            labels = c("Less than 9th grade",
                                       "9th-12th grade, no HS diploma",
@@ -295,7 +295,7 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
          marital = case_when(
            dmdmartl > 0 & dmdmartl < 7 ~ dmdmartl,
            TRUE ~ 7),
-         marital_fct = factor(marital,
+         marital_fct = factor(marital, ordered = FALSE,
                               levels = c(1, 2, 3, 4, 5, 6, 7),
                               labels = c("Married",
                                          "Widowed",
@@ -308,7 +308,7 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
            is.na(indfmin2) == TRUE ~ 16,
            (indfmin2 >= 11 & indfmin2 <= 13) | indfmin2 > 15 ~ 16,
            TRUE ~ indfmin2),
-         famincome_cat_fct = factor(famincome_cat,
+         famincome_cat_fct = factor(famincome_cat, ordered = TRUE,
                                     levels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 16),
                                     labels = c("$0 to $4,999",       # 1
                                                "$5,000 to $9,999",   # 2
@@ -331,7 +331,7 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
     diabet_hx = case_when(
       diq010 > 0 & diq010 < 4 ~ diq010,
       TRUE ~ 4),
-    diabet_hx_fct = factor(diabet_hx,
+    diabet_hx_fct = factor(diabet_hx, ordered = FALSE,
                            levels = c(1, 2, 3, 4),
                            labels = c("Yes", "No", "Borderline", "Missing")),
     hba1c = case_when(
@@ -345,31 +345,31 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
     CAD_hx = case_when(
       mcq160c > 0 & mcq160c < 3 ~ mcq160c,
       TRUE ~ 3),
-    CAD_hx_fct = factor(CAD_hx,
+    CAD_hx_fct = factor(CAD_hx, ordered = FALSE,
                         levels = c(1, 2, 3),
                         labels = c("Yes", "No", "Missing")),
     MI_hx = case_when(
       mcq160e > 0 & mcq160e < 3 ~ mcq160e,
       TRUE ~ 3),
-    MI_hx_fct = factor(MI_hx,
+    MI_hx_fct = factor(MI_hx, ordered = FALSE,
                        levels = c(1, 2, 3),
                        labels = c("Yes", "No", "Missing")),
     thy_hx = case_when(
       mcq160m > 0 & mcq160m < 3 ~ mcq160m,
       TRUE ~ 3),
-    thy_hx_fct = factor(thy_hx,
+    thy_hx_fct = factor(thy_hx, ordered = FALSE,
                         levels = c(1, 2, 3),
                         labels = c("Yes", "No", "Missing")),
     doc_losewt = case_when(
       mcq365a > 0 & mcq365a < 3 ~ mcq365a,
       TRUE ~ 3),
-    doc_losewt_fct = factor(doc_losewt,
+    doc_losewt_fct = factor(doc_losewt, ordered = FALSE,
                             levels = c(1, 2, 3),
                             labels = c("Yes", "No", "Missing")),
     doc_exer = case_when(
       mcq365b > 0 & mcq365b < 3 ~ mcq365b,
       TRUE ~ 3),
-    doc_exer_fct = factor(doc_exer,
+    doc_exer_fct = factor(doc_exer, ordered = FALSE,
                           levels = c(1, 2, 3),
                           labels = c("Yes", "No", "Missing"))) %>% 
   select(-mcq160c, -mcq160e, -mcq160m, -mcq365a, -mcq365b) %>% 
@@ -403,13 +403,13 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
     worklim = case_when(
       pfq049 > 0 & pfq049 < 3 ~ pfq049,
       TRUE ~ 3),
-    worklim_fct = factor(worklim,
+    worklim_fct = factor(worklim, ordered = FALSE,
                          levels = c(1, 2, 3),
                          labels = c("Yes", "No", "Missing")),
     walklim = case_when(
       pfq061b > 0 & pfq061b < 6 ~ pfq061b,
       TRUE ~ 6),
-    walklim_fct = factor(walklim,
+    walklim_fct = factor(walklim, ordered = TRUE,
                          levels = c(1, 2, 3, 4, 5, 6),
                          labels = c("No difficulty", "Some difficulty", "Much difficulty", "Unable to do", 
                                     "Do not do this activity", "Missing"))) %>% 
@@ -433,7 +433,7 @@ nhanes_stag <- allseqn %>%   # These joins will throw a warning; ignore it - thi
       PHQ9_cat >= 1 & PHQ9_cat <=4 ~ 1,
       TRUE ~ 0)) %>% 
   mutate(n_comorbid = comorbid_diabet + comorbid_thy + comorbid_MI + comorbid_CAD + comorbid_HTN + comorbid_depr) %>% 
-  filter(age >= 20) %>% 
+  filter(age >= 20 & !is.na(BMI) == TRUE) %>%   # Ensuring all cases are adult subjects with known BMI
   select(seqn, age, gender, gender_fct, race, race_fct, educ, educ_fct, marital, marital_fct, famincome_cat, famincome_cat_fct, famincome_povratio,
          diabet_hx, diabet_hx_fct, hba1c, CAD_hx, CAD_hx_fct, MI_hx, MI_hx_fct, thy_hx, thy_hx_fct, 
          doc_losewt, doc_losewt_fct, doc_exer, doc_exer_fct,
@@ -532,18 +532,18 @@ BMI_cat_summ <- categsumm(nhanes_fct, quo(BMI_cat_fct))
 #### Omitting variables not needed ----
 
 nhanes_stag2 <- nhanes_stag %>%
-  filter(!is.na(BMI_cat) == TRUE) %>%     # Omitting because I don't want to impute BMI or BMI_cat (this is the label)
   mutate(losewt_exer = case_when(
     doc_losewt == 1 & doc_exer == 1 ~ 2,
     (doc_losewt == 1 & doc_exer == 0) | (doc_losewt == 0 & doc_exer == 1) ~ 1,
     doc_losewt == 0 & doc_exer == 0 ~ 0,
     TRUE ~ 3)) %>% 
-  select(-BMI, -hba1c, -systolic, -diastolic, 
-         -gender_fct, -race_fct, -educ_fct, -marital_fct, -famincome_cat_fct, -diabet_hx, -diabet_hx_fct, 
-         -CAD_hx, -CAD_hx_fct, -MI_hx, -MI_hx_fct, -thy_hx, -thy_hx_fct, -doc_losewt, -doc_losewt_fct, 
-         -doc_exer, -doc_exer_fct, -BP_cat, -BP_cat_fct, -worklim_fct, -walklim_fct, -diethealthy_fct, 
-         -fastfood_eat_fct, -fastfood_usednutrit_fct, -fastfood_woulduse_fct, -restaur_eat_fct, -restaur_usednutrit_fct, 
-         -restaur_woulduse_fct, -dailykcal_typical_fct, -PHQ9_cat, -PHQ9_cat_fct, -BMI_cat_fct)
+  select(
+    # -BMI_cat_fct, -gender_fct, -race_fct, -educ_fct, -marital_fct, -famincome_cat_fct, 
+    # -worklim_fct, -walklim_fct, -diethealthy_fct, -fastfood_eat_fct, -fastfood_usednutrit_fct, 
+    # -fastfood_woulduse_fct, -restaur_eat_fct, -restaur_usednutrit_fct, -restaur_woulduse_fct
+    -BMI, -hba1c, -systolic, -diastolic, -diabet_hx, -diabet_hx_fct, -CAD_hx, -CAD_hx_fct, -MI_hx, 
+    -MI_hx_fct, -thy_hx, -thy_hx_fct, -doc_losewt, -doc_losewt_fct, -doc_exer, -doc_exer_fct, -BP_cat, 
+    -BP_cat_fct, -dailykcal_typical_fct, -PHQ9_cat, -PHQ9_cat_fct)
 
 
 #### Imputing missing values for continuous data ----
@@ -643,6 +643,14 @@ omits <- wilcox_results %>%
   as.list()
 
 
+
+#### CONTINUE HERE ----
+
+# Next step is to make subsets as appropriate for _fct (unsupervised) and non-_fct (supervised)
+
+
+
+
 #### Finalizing analytic dataset ----
 
 nhanes_stag3 <- nhanes_imputed %>% 
@@ -671,8 +679,9 @@ nhanes_trim_dichot <- nhanes_dichot %>%
 
 # Removing staging and other unnecessary dataframes
 
-rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_contin", "nhanes_contin2", "nhanes_contin_desc", 
-            "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", "nhanes_fct", "nhanes_imputed"))
+rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_stag3", "nhanes_contin", "nhanes_contin2", 
+            "nhanes_contin_desc", "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", 
+            "nhanes_fct", "nhanes_imputed", "omits", "wilcox_pvals", "wilcox_results", "wilcox_vars"))
 
 
 #### Rendering .Rmd ----

@@ -125,6 +125,11 @@ For the supervised approach, the final decision model reached `r paste0(scores_f
 ### *Strengths*
 
 
+
+
+<!-- Elaborate on the below or omit it -->
+<!-- Aside from the stated scientific objectives, learning objectives for this project were to understand how to use Python and R together in an RMarkdown environment using the `reticulate` package for R. -->
+
 ### *Limitations*
 
 Because the Scikit-Learn `randomForestClassifier()` function was unable to handle missing data, missing values were handled via imputation (continuous variables) or by creating a "missing" category comprising all-cause nonresponses (categorical variables).  Using a "missing" category in this manner may have introduced noise into the dataset, because it's not known missing values were missing completely at random or missing not at random.  Future iterations of this analysis should include other random forest functions - e.g., those available in the `xgboost` Python library.

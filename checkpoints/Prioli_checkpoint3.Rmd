@@ -25,9 +25,11 @@ The following progress has been made since Checkpoint 2:
   
 ## **Challenges**
 
-I have been unable to achieve better than 75% mean performance from the random forest.  Though 75% is a meaningful improvement above last week's 52%, it would not be acceptable in any real-world application.  It's possible that this data is not optimal for modeling via decision trees - for example, I suspect that the inclusion of a category for nonresponses in the categorical variables has introduced noise to the data; however, `randomForestClassifier()` threw an error when running with missing values, and this approach was preferable to omitting cases with missing categorical data.  Additionally, many of the variables included in the analysis are derived from questionnaires, particularly those pertaining to dietary and exercise habits.  Self-reported data can be unreliable, and this may be frustrating my classifier.
+I have been unable to achieve better than 75% mean performance from the random forest.  Though 75% is a meaningful improvement above last week's 52%, it would not be acceptable in any real-world application.  It's possible that this data is not optimal for modeling via decision trees - for example, I suspect that the inclusion of a category for nonresponses in the categorical variables has introduced noise to the data; however, `randomForestClassifier()` threw an error when running with missing values, and this approach was preferable to omitting cases with missing categorical data.  Additionally, many of the variables included in the analysis are derived from questionnaires, particularly those pertaining to dietary and exercise habits.  Self-reported data can be unreliable, and this may be frustrating my classifier.  Additionally, I had planned to generate a "mean" confusion matrix aggregating all runs for this data but am omitting this objective in favor of working on the unsupervised approach.
 
-## **Heading**
+No changes to the timeline are proposed at this point.
+
+## **Supervised Approach:  Final Model Results**
 
 ```{python libs, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 # Importing libraries
@@ -49,20 +51,19 @@ from sklearn.model_selection import train_test_split
 ```
 
 ```{python import_subset, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-nhanes_i = r.nhanes
-nhanes_feat_i = nhanes.drop(['BMI_cat'], axis = 1)
-nhanes_labs_i = nhanes.filter(['BMI_cat'])   # .filter() works as a `keep` or dplyr::select()
+# Note:  "initial" commented out because it won't return the true initial results since data wrangling has been refactored
+
+# nhanes_i = r.nhanes
+# nhanes_feat_i = nhanes_i.drop(['BMI_cat'], axis = 1)
+# nhanes_labs_i = nhanes_i.filter(['BMI_cat'])   # .filter() works as a `keep` or dplyr::select()
 
 nhanes_f = r.nhanes_trim_dichot
-nhanes_feat_f = nhanes.drop(['BMI_cat'], axis = 1)
-nhanes_labs_f = nhanes.filter(['BMI_cat'])
-
-# nhanes.head(6)   # Eyeballing to make sure it all looks good
-# np.all(np.isfinite(nhanes))   # Double-checking that nothing converted to NAN or Inf
+nhanes_feat_f = nhanes_f.drop(['BMI_cat'], axis = 1)
+nhanes_labs_f = nhanes_f.filter(['BMI_cat'])
 ```
 
 ```{python nxk_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-# Note: "initial" won't return the true initial results since data wrangling has been refactored
+# Note:  "initial" commented out because it won't return the true initial results since data wrangling has been refactored
 
 # rfc_i = ensemble.RandomForestClassifier(n_estimators = 100) 
 # rkf_i = RepeatedKFold(n_repeats = 5, n_splits = 5)   # Reminder:  n = # repeats; k = # splits = # folds
@@ -78,7 +79,7 @@ scores_f = pd.DataFrame(scores_f)
 ```
 
 ```{r score_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-# Note: "initial" won't return the true initial results since data wrangling has been refactored
+# Note:  "initial" commented out because it won't return the true initial results since data wrangling has been refactored
 
 # scores_init <- py$scores_i %>% 
 #   unlist() %>% 
@@ -112,4 +113,6 @@ scores_final_kbl <- scores_final %>%
   kable(format = "markdown")
 scores_final_kbl
 ```
+
+## **Unsupervised Approach**
 
