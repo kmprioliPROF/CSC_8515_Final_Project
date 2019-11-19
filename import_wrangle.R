@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Mon Nov 18 21:52:44 2019 ------------------------------
+# Tue Nov 19 09:36:17 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -659,7 +659,7 @@ nhanes_stag3 <- nhanes_imputed %>%
 stag3width <- dim(nhanes_stag3)[2]
 
 nhanes <- nhanes_stag3 %>% 
-  select(2:stag3width, 1)
+  select(2:stag3width, 1)   # Rearranging because I'm neurotic
 
 nhanes_dichot <- nhanes %>%   # Creating a dichotomous BMI variable bucketing under/normal with over/obese
   mutate(BMI_dichot = case_when(
@@ -669,15 +669,26 @@ nhanes_dichot <- nhanes %>%   # Creating a dichotomous BMI variable bucketing un
   select(-BMI_cat) %>% 
   rename(BMI_cat = BMI_dichot)
 
-nhanes_trim <- nhanes %>%   # Creating a smaller dataset that omits some variables which are largely NA or may not be useful
-  select(-c("worklim", "walklim", "dailykcal_typical", "diethealthy", "fastfood_usednutrit", "fastfood_woulduse", 
-            "restaur_usednutrit", "restaur_woulduse"))
+# Creating smaller datasets for supervised approach that omit some variables which are largely NA or may not be useful
 
-nhanes_trim_dichot <- nhanes_dichot %>%
-  select(-c("worklim", "walklim", "dailykcal_typical", "diethealthy", "fastfood_usednutrit", "fastfood_woulduse", 
-            "restaur_usednutrit", "restaur_woulduse"))
+nhanes_sup_trim <- nhanes %>%
+  select(age, gender, race, educ, marital, famincome_cat, n_comorbid, mins_activ, mins_seden, fastfood_eat, 
+         restaur_eat, dailykcal, dailywater, losewt_exer, BMI_cat)
 
-# Removing staging and other unnecessary dataframes
+nhanes_sup_trim_dichot <- nhanes_dichot %>%
+  select(age, gender, race, educ, marital, famincome_cat, n_comorbid, mins_activ, mins_seden, fastfood_eat, 
+         restaur_eat, dailykcal, dailywater, losewt_exer, BMI_cat)
+
+# Creating final unsupervised approach dataset (retains factors for categorical variables)
+
+nhanes_unsup <- nhanes %>% 
+  select(age, gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, n_comorbid, mins_activ,
+         mins_seden, worklim_fct, walklim_fct, diethealthy_fct, fastfood_eat_fct, fastfood_usednutrit_fct,
+         fastfood_woulduse_fct, restaur_eat_fct, restaur_usednutrit_fct, restaur_woulduse_fct, dailykcal,
+         dailywater, losewt_exer, BMI_cat_fct)
+
+
+#### Removing staging and other unnecessary dataframes ----
 
 rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_stag3", "nhanes_contin", "nhanes_contin2", 
             "nhanes_contin_desc", "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", 
