@@ -1,5 +1,5 @@
 # Katherine M. Prioli
-# CSC 8515 Final Project
+# CSC 8515 Final Project - import & wrangle data
 # Sat Nov 23 14:17:20 2019 ------------------------------
 
 
@@ -11,7 +11,7 @@ library(forcats)        # For handling categorical data
 library(psych)          # For describe()
 library(randomForest)   # For rfImpute()
 library(cluster)        # For daisy() (computing Gower distance)
-library(fpc)            # For cluster.stats()
+library(fpc)            # For cqcluster.stats()
 library(ggdendro)       # For ggplot dendrograms
 library(dendextend)     # For as.ggdend() to create a ggplot dendrogram object
 library(gridExtra)      # For grid.arrange()
