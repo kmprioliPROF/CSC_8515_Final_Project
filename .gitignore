@@ -4,3 +4,6 @@
 .Ruserdata
 Notes for final report.docx
 init_vars_final_rept.csv
+checkpoints/*.tex
+checkpoints/*.pdf
+checkpoints/*.dot
