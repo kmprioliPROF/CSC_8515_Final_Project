@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project
-# Tue Nov 19 09:36:17 2019 ------------------------------
+# Sat Nov 23 14:17:20 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -10,7 +10,6 @@ library(sjlabelled)     # For removing pesky column labels
 library(forcats)        # For handling categorical data
 library(psych)          # For describe()
 library(randomForest)   # For rfImpute()
-#library(Gifi)           # For princals() (categorical PCA)   # This didn't pan out
 library(cluster)        # For daisy() (computing Gower distance)
 library(fpc)            # For cluster.stats()
 library(ggdendro)       # For ggplot dendrograms
@@ -537,18 +536,14 @@ BMI_cat_summ <- categsumm(nhanes_fct, quo(BMI_cat_fct))
 
 nhanes_stag2 <- nhanes_stag %>%
   mutate(losewt_exer = case_when(
-    doc_losewt == 1 & doc_exer == 1 ~ 2,
-    (doc_losewt == 1 & doc_exer == 0) | (doc_losewt == 0 & doc_exer == 1) ~ 1,
-    doc_losewt == 0 & doc_exer == 0 ~ 0,
-    TRUE ~ 3)) %>% 
-  select(1:38, 41, 40, 39) %>%   # Reordering such that BMI_cat is last listed
-  select(
-    # -BMI_cat_fct, -gender_fct, -race_fct, -educ_fct, -marital_fct, -famincome_cat_fct, 
-    # -worklim_fct, -walklim_fct, -diethealthy_fct, -fastfood_eat_fct, -fastfood_usednutrit_fct, 
-    # -fastfood_woulduse_fct, -restaur_eat_fct, -restaur_usednutrit_fct, -restaur_woulduse_fct
-    -BMI, -hba1c, -systolic, -diastolic, -diabet_hx, -diabet_hx_fct, -CAD_hx, -CAD_hx_fct, -MI_hx, 
+    doc_losewt == 1 & doc_exer == 1 ~ 2,   # Both lose weight & exercise (expect 1367)
+    (doc_losewt == 1 & doc_exer == 2) | (doc_losewt == 2 & doc_exer == 1) ~ 1,   # Either lose weight or exercise (expect 1053)
+    doc_losewt == 2 & doc_exer == 2 ~ 0,   # Neither lose weight nor exercise (expect 2984)
+    TRUE ~ 3)) %>%   # Missing (expect 2)
+  select(-BMI, -hba1c, -systolic, -diastolic, -diabet_hx, -diabet_hx_fct, -CAD_hx, -CAD_hx_fct, -MI_hx, 
     -MI_hx_fct, -thy_hx, -thy_hx_fct, -doc_losewt, -doc_losewt_fct, -doc_exer, -doc_exer_fct, -BP_cat, 
-    -BP_cat_fct, -dailykcal_typical_fct, -PHQ9_cat, -PHQ9_cat_fct)
+    -BP_cat_fct, -dailykcal_typical_fct, -PHQ9_cat, -PHQ9_cat_fct) %>% 
+  select(1:38, 41, 40, 39)   # Reordering such that BMI_cat is last listed
 
 
 #### Imputing missing values for continuous data ----
@@ -648,15 +643,10 @@ omits <- wilcox_results %>%
   as.list()
 
 
-#### Finalizing analytic dataset ----
+#### Finalizing analytic datasets ----
 
-nhanes_stag3 <- nhanes_imputed %>% 
+nhanes <- nhanes_imputed %>% 
   select(-one_of(!!quo(omits$variable)), -famincome_povratio, -PHQ9_score)
-
-#stag3width <- dim(nhanes_stag3)[2]
-
-nhanes <- nhanes_stag3 #%>% 
-  # select(2:stag3width, 1)   # Rearranging because I'm neurotic
 
 nhanes_dichot <- nhanes %>%   # Creating a dichotomous BMI variable bucketing under/normal with over/obese
   mutate(BMI_dichot = case_when(
@@ -678,7 +668,7 @@ nhanes_sup_trim_dichot <- nhanes_dichot %>%
 
 # Creating final unsupervised approach dataset (retains factors for categorical variables; NAs are OK)
 
-nhanes_unsup <- nhanes %>% 
+nhanes_unsup_stag <- nhanes %>% 
   select(seqn, age, gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, n_comorbid, mins_activ,
          mins_seden, worklim_fct, walklim_fct, diethealthy_fct, fastfood_eat_fct, fastfood_usednutrit_fct,
          fastfood_woulduse_fct, restaur_eat_fct, restaur_usednutrit_fct, restaur_woulduse_fct, dailykcal,
@@ -719,18 +709,28 @@ nhanes_unsup <- nhanes %>%
       TRUE ~ as.factor(NA)),
     restaur_woulduse_fct = case_when(
       restaur_woulduse_fct != "Missing" ~ restaur_woulduse_fct,
-      TRUE ~ as.ordered(NA)))
+      TRUE ~ as.ordered(NA)),
+    losewt_exer = case_when(
+      losewt_exer != 3 ~ losewt_exer,
+      TRUE ~ as.numeric(NA)),
+    losewt_exer_fct = factor(losewt_exer, levels = c(0, 1, 2), labels = c("Neither", "Either lose weight or exercise", "Both")))
 
-nhanes_unsup_trim <- nhanes_unsup %>%   # Removing rows that are <90% complete
-  select(-c("walklim_fct", "fastfood_usednutrit_fct", "fastfood_woulduse_fct", 
-            "restaur_usednutrit_fct", "restaur_woulduse_fct"))
+nhanes_unsup_full <- nhanes_unsup_stag %>% 
+  select(-c("walklim_fct", "fastfood_usednutrit_fct", "fastfood_woulduse_fct",   # Removing cols that are <90% complete
+            "restaur_usednutrit_fct", "restaur_woulduse_fct")) %>% 
+  drop_na()   # Removing cases with incomplete data
+
+nhanes_unsup <- nhanes_unsup_full %>% 
+  group_by(BMI_cat_fct) %>% 
+  sample_frac(0.05) %>%   # Creating stratified 5% sample for use in unsupervised analysis
+  ungroup()
 
 
 #### Removing staging and other unnecessary dataframes ----
 
-rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_stag3", "nhanes_contin", "nhanes_contin2", 
-            "nhanes_contin_desc", "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", 
-            "nhanes_fct", "nhanes_imputed", "omits", "wilcox_pvals", "wilcox_results", "wilcox_vars"))
+rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_contin", "nhanes_contin2", "nhanes_contin_desc",
+            "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", "nhanes_fct", "nhanes_imputed",
+            "omits", "wilcox_pvals", "wilcox_results", "wilcox_vars", "nhanes_unsup_stag"))
 
 
 #### Rendering .Rmd ----
