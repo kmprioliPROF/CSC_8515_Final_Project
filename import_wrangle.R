@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Sat Nov 23 22:52:53 2019 ------------------------------
+# Sun Nov 24 00:03:05 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -11,7 +11,8 @@ library(sjlabelled)     # For removing pesky column labels
 library(forcats)        # For handling categorical data
 library(psych)          # For describe()
 library(randomForest)   # For rfImpute()
-library(cluster)        # For daisy() (computing Gower distance)
+library(vegan)          # For vegdist() (computing Gower distance)
+library(cluster)        # For daisy() (alternate means of computing Gower distance)
 library(fpc)            # For cqcluster.stats()
 library(ggdendro)       # For ggplot dendrograms
 library(dendextend)     # For as.ggdend() to create a ggplot dendrogram object
@@ -668,84 +669,9 @@ nhanes_sup_trim_dichot <- nhanes_dichot %>%
   select(age, gender, race, educ, marital, famincome_cat, n_comorbid, mins_activ, mins_seden, fastfood_eat, 
          restaur_eat, dailykcal, dailywater, losewt_exer, BMI_cat)
 
-# Creating final unsupervised approach dataset (retains factors for categorical variables; NAs are OK)
+# Creating final unsupervised approach dataset (no factors, no NAs)
 
 nhanes_unsup_stag <- nhanes %>% 
-  select(seqn, age, gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, n_comorbid, mins_activ,
-         mins_seden, worklim_fct, walklim_fct, diethealthy_fct, fastfood_eat_fct, fastfood_usednutrit_fct,
-         fastfood_woulduse_fct, restaur_eat_fct, restaur_usednutrit_fct, restaur_woulduse_fct, dailykcal,
-         dailywater, losewt_exer, BMI_cat_fct) %>% 
-  mutate(
-    educ_fct = case_when(
-      educ_fct != "Missing" ~ educ_fct,
-      TRUE ~ as.ordered(NA)),
-    marital_fct = case_when(
-      marital_fct != "Missing" ~ marital_fct,
-      TRUE ~ as.factor(NA)),
-    famincome_cat_fct = case_when(
-      famincome_cat_fct != "Missing" ~ famincome_cat_fct,
-      TRUE ~ as.ordered(NA)),
-    worklim_fct = case_when(
-      worklim_fct != "Missing" ~ worklim_fct,
-      TRUE ~ as.factor(NA)),
-    walklim_fct = case_when(
-      walklim_fct != "Missing" ~ walklim_fct,
-      TRUE ~ as.ordered(NA)),
-    diethealthy_fct = case_when(
-      diethealthy_fct != "Missing" ~ diethealthy_fct,
-      TRUE ~ as.ordered(NA)),
-    fastfood_eat_fct = case_when(
-      fastfood_eat_fct != "Missing" ~ fastfood_eat_fct,
-      TRUE ~ as.factor(NA)),
-    fastfood_usednutrit_fct = case_when(
-      fastfood_usednutrit_fct != "Missing" ~ fastfood_usednutrit_fct,
-      TRUE ~ as.factor(NA)),
-    fastfood_woulduse_fct = case_when(
-      fastfood_woulduse_fct != "Missing" ~ fastfood_woulduse_fct,
-      TRUE ~ as.ordered(NA)),
-    restaur_eat_fct = case_when(
-      restaur_eat_fct != "Missing" ~ restaur_eat_fct,
-      TRUE ~ as.factor(NA)),
-    restaur_usednutrit_fct = case_when(
-      restaur_usednutrit_fct != "Missing" ~ restaur_usednutrit_fct,
-      TRUE ~ as.factor(NA)),
-    restaur_woulduse_fct = case_when(
-      restaur_woulduse_fct != "Missing" ~ restaur_woulduse_fct,
-      TRUE ~ as.ordered(NA)),
-    losewt_exer = case_when(
-      losewt_exer != 3 ~ losewt_exer,
-      TRUE ~ as.numeric(NA)),
-    losewt_exer_fct = factor(losewt_exer, levels = c(0, 1, 2), labels = c("Neither", "Either lose weight or exercise", "Both")))
-
-nhanes_unsup_full <- nhanes_unsup_stag %>% 
-  select(-c("walklim_fct", "fastfood_usednutrit_fct", "fastfood_woulduse_fct",   # Removing cols that are <90% complete
-            "restaur_usednutrit_fct", "restaur_woulduse_fct")) %>% 
-  drop_na()   # Removing cases with incomplete data
-
-nhanes_unsup_stag2 <- nhanes_unsup_full %>% 
-  group_by(BMI_cat_fct) %>% 
-  sample_frac(0.05) %>%   # Creating stratified 5% sample for use in unsupervised analysis
-  ungroup()
-
-unsup_labs <- nhanes_unsup_stag2 %>% 
-  select(BMI_cat_fct, seqn) %>% 
-  mutate(rnames = paste0(BMI_cat_fct, "_", seqn)) %>% 
-  select(rnames) %>% 
-  as_vector()
-
-unsup_seqn <- nhanes_unsup_stag2$seqn
-
-nhanes_unsup <- nhanes_unsup_stag2 %>% 
-  select(-seqn)
-
-rownames(nhanes_unsup) <- unsup_labs
-
-
-
-
-# Testing an alternative means (no factors) for use with vegan::vegdist(method = "gower")
-
-nhanes_unsup_alt_stag <- nhanes %>% 
   select(seqn, age, gender, race, educ, marital, famincome_cat, n_comorbid, mins_activ,
          mins_seden, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit,
          fastfood_woulduse, restaur_eat, restaur_usednutrit, restaur_woulduse, dailykcal,
@@ -791,29 +717,106 @@ nhanes_unsup_alt_stag <- nhanes %>%
       losewt_exer != 3 ~ losewt_exer,
       TRUE ~ as.numeric(NA)))
 
-nhanes_unsup_alt_full <- nhanes_unsup_alt_stag %>% 
+nhanes_unsup_full <- nhanes_unsup_stag %>% 
   select(-c("walklim", "fastfood_usednutrit", "fastfood_woulduse",   # Removing cols that are <90% complete
             "restaur_usednutrit", "restaur_woulduse")) %>% 
   drop_na()   # Removing cases with incomplete data
 
-nhanes_unsup_alt_stag2 <- nhanes_unsup_alt_full %>% 
+nhanes_unsup_stag2 <- nhanes_unsup_full %>% 
   group_by(BMI_cat) %>% 
   sample_frac(0.05) %>%   # Creating stratified 5% sample for use in unsupervised analysis
   ungroup()
 
-unsup_alt_labs <- nhanes_unsup_alt_stag2 %>% 
+unsup_labs <- nhanes_unsup_stag2 %>% 
   select(BMI_cat, seqn) %>% 
   mutate(rnames = paste0(BMI_cat, "_", seqn)) %>% 
   select(rnames) %>% 
   as_vector()
 
-unsup_alt_seqn <- nhanes_unsup_alt_stag2$seqn
+unsup_seqn <- nhanes_unsup_stag2$seqn   # Just in case I need this later
 
-nhanes_unsup_mat <- nhanes_unsup_alt_stag2 %>% 
+nhanes_unsup_mat <- nhanes_unsup_stag2 %>% 
   select(-seqn) %>% 
   as.matrix()
 
-rownames(nhanes_unsup_mat) <- unsup_alt_labs
+rownames(nhanes_unsup_mat) <- unsup_labs
+
+# Alternative means (first attempt):  retained factors
+
+# nhanes_unsup_old_stag <- nhanes %>% 
+#   select(seqn, age, gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, n_comorbid, mins_activ,
+#          mins_seden, worklim_fct, walklim_fct, diethealthy_fct, fastfood_eat_fct, fastfood_usednutrit_fct,
+#          fastfood_woulduse_fct, restaur_eat_fct, restaur_usednutrit_fct, restaur_woulduse_fct, dailykcal,
+#          dailywater, losewt_exer, BMI_cat_fct) %>% 
+#   mutate(
+#     educ_fct = case_when(
+#       educ_fct != "Missing" ~ educ_fct,
+#       TRUE ~ as.ordered(NA)),
+#     marital_fct = case_when(
+#       marital_fct != "Missing" ~ marital_fct,
+#       TRUE ~ as.factor(NA)),
+#     famincome_cat_fct = case_when(
+#       famincome_cat_fct != "Missing" ~ famincome_cat_fct,
+#       TRUE ~ as.ordered(NA)),
+#     worklim_fct = case_when(
+#       worklim_fct != "Missing" ~ worklim_fct,
+#       TRUE ~ as.factor(NA)),
+#     walklim_fct = case_when(
+#       walklim_fct != "Missing" ~ walklim_fct,
+#       TRUE ~ as.ordered(NA)),
+#     diethealthy_fct = case_when(
+#       diethealthy_fct != "Missing" ~ diethealthy_fct,
+#       TRUE ~ as.ordered(NA)),
+#     fastfood_eat_fct = case_when(
+#       fastfood_eat_fct != "Missing" ~ fastfood_eat_fct,
+#       TRUE ~ as.factor(NA)),
+#     fastfood_usednutrit_fct = case_when(
+#       fastfood_usednutrit_fct != "Missing" ~ fastfood_usednutrit_fct,
+#       TRUE ~ as.factor(NA)),
+#     fastfood_woulduse_fct = case_when(
+#       fastfood_woulduse_fct != "Missing" ~ fastfood_woulduse_fct,
+#       TRUE ~ as.ordered(NA)),
+#     restaur_eat_fct = case_when(
+#       restaur_eat_fct != "Missing" ~ restaur_eat_fct,
+#       TRUE ~ as.factor(NA)),
+#     restaur_usednutrit_fct = case_when(
+#       restaur_usednutrit_fct != "Missing" ~ restaur_usednutrit_fct,
+#       TRUE ~ as.factor(NA)),
+#     restaur_woulduse_fct = case_when(
+#       restaur_woulduse_fct != "Missing" ~ restaur_woulduse_fct,
+#       TRUE ~ as.ordered(NA)),
+#     losewt_exer = case_when(
+#       losewt_exer != 3 ~ losewt_exer,
+#       TRUE ~ as.numeric(NA)),
+#     losewt_exer_fct = factor(losewt_exer, levels = c(0, 1, 2), labels = c("Neither", "Either lose weight or exercise", "Both")))
+# 
+# nhanes_unsup_old_full <- nhanes_unsup_old_stag %>% 
+#   select(-c("walklim_fct", "fastfood_usednutrit_fct", "fastfood_woulduse_fct",   # Removing cols that are <90% complete
+#             "restaur_usednutrit_fct", "restaur_woulduse_fct")) %>% 
+#   drop_na()   # Removing cases with incomplete data
+# 
+# nhanes_unsup_old_stag2 <- nhanes_unsup_old_full %>% 
+#   group_by(BMI_cat_fct) %>% 
+#   sample_frac(0.05) %>%   # Creating stratified 5% sample for use in unsup_oldervised analysis
+#   ungroup()
+# 
+# unsup_old_labs <- nhanes_unsup_old_stag2 %>% 
+#   select(BMI_cat_fct, seqn) %>% 
+#   mutate(rnames = paste0(BMI_cat_fct, "_", seqn)) %>% 
+#   select(rnames) %>% 
+#   as_vector()
+# 
+# unsup_old_seqn <- nhanes_unsup_old_stag2$seqn
+# 
+# nhanes_unsup_old <- nhanes_unsup_old_stag2 %>% 
+#   select(-seqn)
+# 
+# rownames(nhanes_unsup_old) <- unsup_old_labs
+
+
+
+
+
 
 
 

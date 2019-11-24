@@ -77,36 +77,23 @@ scores_final_kbl
 
 For the unsupervised component of this analysis, data was subset to variables with $\ge 90 \%$ non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was subset via a random 5% sample within each BMI category to allow for sensible, interpretable dendrograms.  The analytic dataset thus comprised `r dim(nhanes_unsup)[1]` cases having `r dim(nhanes_unsup)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).
 
-```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-dissim_mat <- daisy(nhanes_unsup[ ,1:dim(nhanes_unsup)[2]], metric = "gower")
-summary(dissim_mat)
-```
+<!-- ```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
+<!-- dissim_mat <- daisy(nhanes_unsup[ ,1:dim(nhanes_unsup)[2]], metric = "gower") -->
+<!-- summary(dissim_mat) -->
+<!-- ``` -->
 
 
-
-
-
-
-
-```{r}
-# nhanes_unsup_mat <- nhanes_unsup %>% 
-#   as.matrix()
-# rownames(nhanes_unsup_mat) <- unsup_labs
-
-
-nhanes_unsup_mat <- nhanes_alt_unsup %>%
-  as.matrix()
-rownames(nhanes_unsup_mat) <- unsup_alt_labs
-```
 
 
 
 Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters and yielded the following dendrogram:
 
-```{r agnes_dend, echo = FALSE, paged.print = FALSE, fig.width = 18, fig.height = 8}
-nhanes_agnes <- hclust(d = vegan::vegdist(nhanes_unsup_mat, method = "gower"), method = "ward.D2")
+```{r agnes_dend, warning = FALSE, message = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 18, fig.height = 8}
+dissim_mat <- vegdist(nhanes_unsup_mat, method = "gower")
 
-unsup_alt_labs_reord <- unsup_alt_labs[nhanes_agnes$order] %>%    # Reordering leaf labels
+nhanes_agnes <- hclust(d = dissim_mat, method = "ward.D2")
+
+unsup_labs_reord <- unsup_labs[nhanes_agnes$order] %>%    # Reordering leaf labels
   str_sub(start = 1L, end = 1L) %>% 
   as_tibble() %>% 
   mutate(BMI_cat = case_when(   # Modifying leaf labels to show BMI category abbreviations
@@ -120,7 +107,7 @@ unsup_alt_labs_reord <- unsup_alt_labs[nhanes_agnes$order] %>%    # Reordering l
 
 agnes_dend <- nhanes_agnes %>% 
   as.dendrogram() %>% 
-  set("labels", unsup_alt_labs_reord$BMI_cat)
+  set("labels", unsup_labs_reord$BMI_cat)
 
 agnes_dend_gg <- agnes_dend %>% 
   ggdendrogram(theme_dendro = FALSE) + #, rotate = TRUE) +   # Landscape by default; rotate becomes portrait but root is at right >:(
@@ -137,7 +124,7 @@ agnes_dend_gg
 
 DIANA yielded the following dendrogram:
 
-```{r diana_dend, echo = FALSE, warnings = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
+```{r diana_dend, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
 # nhanes_diana <- diana(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE) %>% as.hclust()
 
 # diana_dend <- nhanes_diana %>% 
@@ -192,11 +179,21 @@ diana_scree <- ggplot(data = diana_screedata, aes(x = n_clusters, y = withinss))
   ylab("Within-Cluster Sum of Squares") +
   ggtitle("DIANA")
 
-grid.arrange(agnes_scree, diana_scree, nrow = 1, 
+grid.arrange(agnes_scree, diana_scree, nrow = 1,
              top = textGrob("Scree Plots, Hierarchical Clustering Analysis",
                             gp = gpar(fontsize = 16, fontface = "bold", col = "#545454"),
                             x = 0.025, hjust = 0))
 ```
 
-For AGNES, a clear elbow is seen at 5 clusters; however, for Diana, two possible elbows are seen at 4 and 8 clusters.
+The AGNES scree plot shows a relatively smooth curve without strong elbows; possible elbows occur at 4 and 7 clusters.
+
+```{r silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+agnes_sil <- ggplot(data = agnes_screedata, aes(x = n_clusters, y = asw)) +
+  geom_line() +
+  geom_point() +
+  xlab("Number of Clusters") +
+  ylab("Average Silhouette Width") +
+  ggtitle("AGNES")
+agnes_sil
+```
 
