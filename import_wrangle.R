@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Sun Nov 24 00:03:05 2019 ------------------------------
+# Sun Nov 24 18:56:26 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -12,23 +12,24 @@ library(forcats)        # For handling categorical data
 library(psych)          # For describe()
 library(randomForest)   # For rfImpute()
 library(vegan)          # For vegdist() (computing Gower distance)
-library(cluster)        # For daisy() (alternate means of computing Gower distance)
+# library(cluster)        # For daisy() (alternate means of computing Gower distance)   # Omitted in favor of vegan::vegdist()
 library(fpc)            # For cqcluster.stats()
-library(ggdendro)       # For ggplot dendrograms
-library(dendextend)     # For as.ggdend() to create a ggplot dendrogram object
-library(factoextra)     # For visualizing dendrograms
+library(ggdendro)       # For ggdendrogram()
+library(dendextend)     # For coloring dendrogram labels by BMI_cat
+# library(factoextra)     # For visualizing dendrograms   # Don't think I'm using this
 library(gridExtra)      # For grid.arrange()
 library(grid)           # For textGrob() to annotate grid.arrange() elements
 library(rmarkdown)      # For render()
 library(reticulate)     # For interfacing with Python in .Rmd
 library(kableExtra)     # For prettifying output tables
+library(broom)          # For tidy()
 library(ggthemr)        # For prettifying output plots
-library(GGally)         # For ggpairs()
+# library(GGally)         # For ggpairs()
 library(tidyselect)     # For selecting by string
 library(tidyverse)      # For data import and wrangling
 
 
-ggthemr("fresh")
+ggthemr("flat")
 
 
 #### Importing datasets ----

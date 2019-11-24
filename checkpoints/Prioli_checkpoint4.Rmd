@@ -90,14 +90,14 @@ Descriptives for the dissimilarity matrix:
 dissim_mat <- vegdist(nhanes_unsup_mat, method = "gower")
 summary(dissim_mat) %>% 
   round(digits = 2) %>% 
-  broom::tidy() %>% 
+  tidy() %>% 
   setNames(., c("Min", "Q1", "Median", "Mean", "Q3", "Max")) %>% 
   kable(format = "markdown")
 ```
 
 Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters and yielded the following dendrogram:
 
-```{r agnes_dend, warning = FALSE, message = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 18, fig.height = 8}
+```{r agnes_dend, warning = FALSE, message = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 18, fig.height = 4}
 nhanes_agnes <- hclust(d = dissim_mat, method = "ward.D2")
 
 unsup_labs_reord_ag <- unsup_labs[nhanes_agnes$order] %>%    # Reordering leaf labels
@@ -122,7 +122,8 @@ agnes_dend_gg <- agnes_dend %>%
          axis.text.x = element_text(size = 6),
          axis.text.y = element_blank(),
          axis.ticks = element_blank(),
-         panel.grid = element_blank()) +
+         panel.grid = element_blank(),
+         panel.background = element_blank()) +
   xlab("") +
   ylab("") +
   ggtitle("AGNES Dendrogram")
@@ -131,7 +132,7 @@ agnes_dend_gg
 
 DIANA yielded the following dendrogram:
 
-```{r diana_dend, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
+```{r diana_dend, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 18, fig.height = 4}
 nhanes_diana <- diana(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE) %>% 
   as.hclust()
 
@@ -157,7 +158,8 @@ diana_dend_gg <- diana_dend %>%
          axis.text.x = element_text(size = 6),
          axis.text.y = element_blank(),
          axis.ticks = element_blank(),
-         panel.grid = element_blank()) +
+         panel.grid = element_blank(),
+         panel.background = element_blank()) +
   xlab("") +
   ylab("") +
   ggtitle("DIANA Dendrogram")
@@ -180,7 +182,7 @@ agnes_clustsize <- ggplot(data = agnes_sizes, aes(x = cluster_no, y = cluster_si
 
 agnes_sizedesc <- summary(agnes_sizes$cluster_size) %>% 
   round(digits = 2) %>% 
-  broom::tidy() %>% 
+  tidy() %>% 
   setNames(., c("Min", "Q1", "Median", "Mean", "Q3", "Max")) %>% 
   t() %>% 
   tableGrob(theme = ttheme_minimal(base_size = 10, padding = unit(c(2, 2), "mm")))
@@ -194,7 +196,7 @@ diana_clustsize <- ggplot(data = diana_sizes, aes(x = cluster_no, y = cluster_si
 
 diana_sizedesc <- summary(diana_sizes$cluster_size) %>% 
   round(digits = 2) %>% 
-  broom::tidy() %>% 
+  tidy() %>% 
   setNames(., c("Min", "Q1", "Median", "Mean", "Q3", "Max")) %>% 
   t() %>% 
   tableGrob(theme = ttheme_minimal(base_size = 10, padding = unit(c(2, 2), "mm")))
@@ -202,7 +204,7 @@ diana_sizedesc <- summary(diana_sizes$cluster_size) %>%
 grid.arrange(agnes_sizedesc, agnes_clustsize, textGrob(" "), diana_sizedesc, diana_clustsize, 
              nrow = 1, ncol = 5, widths = c(0.25, 0.7, 0.1, 0.25, 0.7),
              top = textGrob("Cluster Sizes, k = 15 Clusters, Hierarchical Clustering Analysis",
-                            gp = gpar(fontsize = 16, fontface = "bold", col = "#545454"),
+                            gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
                             x = 0.025, hjust = 0))
 ```
 
@@ -225,7 +227,7 @@ diana_scree <- ggplot(data = diana_statdata, aes(x = n_clusters, y = withinss)) 
 
 grid.arrange(agnes_scree, diana_scree, nrow = 1,
              top = textGrob("Scree Plots, Hierarchical Clustering Analysis",
-                            gp = gpar(fontsize = 16, fontface = "bold", col = "#545454"),
+                            gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
                             x = 0.025, hjust = 0))
 ```
 
@@ -248,10 +250,104 @@ diana_sil <- ggplot(data = diana_statdata, aes(x = n_clusters, y = asw)) +
 
 grid.arrange(agnes_sil, diana_sil, nrow = 1,
              top = textGrob("Silhouette Plots, Hierarchical Clustering Analysis",
-                            gp = gpar(fontsize = 16, fontface = "bold", col = "#545454"),
+                            gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
                             x = 0.025, hjust = 0))
 ```
 
 Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  Other local maxima appear at 6 clusters for AGNES and 5-7 clusters for DIANA.
 
 The AGNES scree and silhouette plots indicate that 7 or 6 clusters respectively may be sufficient.  Since the evidence for 7 clusters is weak per the scree plot, 6 clusters will be chosen for AGNES.  For DIANA, both the scree and silhouette plots indicate that 5 clusters should suffice.
+
+```{r agnes_dend_clust, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
+# 6 clusters for AGNES
+
+ag_labcolors <- unsup_labs_reord_ag %>% 
+  as_tibble() %>% 
+  mutate(x = row_number(),
+         labcolor = case_when(
+           BMI_cat == "UW" ~ "#B0B000", # Old value dark purple: "#3F345E"
+           BMI_cat == "HW" ~ "#008318", # Old value slate bue: "#34495E"
+           BMI_cat == "OW" ~ "#FF8D03", # Old value dark green: "#355E44"
+           BMI_cat == "OB" ~ "#FF0000", # Old value dark rose "#5E343F"
+           ),
+         leafcolor = case_when(
+           BMI_cat == "UW" ~ "#FFFF00", # Old value dark purple: "#3F345E"
+           BMI_cat == "HW" ~ "#008318", # Old value slate bue: "#34495E"
+           BMI_cat == "OW" ~ "#FF8D03", # Old value dark green: "#355E44"
+           BMI_cat == "OB" ~ "#FF0000", # Old value dark rose "#5E343F"
+  )) %>% 
+  select(x, BMI_cat, labcolor, leafcolor)
+
+agnes_dend_clust <- nhanes_agnes %>% 
+  as.dendrogram() %>% 
+  #set("labels", unsup_labs_reord_ag$BMI_cat) %>% 
+  #set("labels_cex", 0.75) %>% 
+  #set("labels_colors", ag_labcolors$labcolor) %>% 
+  set("leaves_pch", 19, col = ag_labcolors$leafcolor) %>% 
+  set("leaves_col", ag_labcolors$leafcolor) %>% 
+  set("branches_k_col", k = 6, c("#3498DB",
+                                 "#2ECC71",
+                                 "#F39C12",
+                                 "#E74C3C",
+                                 "#9B59B6",
+                                 "#1ABCB4"))
+
+agnes_dend_clust_ggd <- agnes_dend_clust %>% 
+  as.ggdend()
+
+agnes_dend_clust_gg <- ggplot(agnes_dend_clust_ggd, labels = FALSE) +
+  scale_y_reverse() +
+  coord_polar(theta = "x") +
+  theme(text = element_text(face = "bold"),
+        axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(angle = 0)) +
+  xlab("") +
+  ylab("") +
+  ggtitle("AGNES Dendrogram, k = 6 Clusters")
+agnes_dend_clust_gg
+```
+
+
+```{r diana_dend_clust, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
+# 5 clusters for DIANA
+
+di_labcolors <- unsup_labs_reord_di %>% 
+  as_tibble() %>% 
+  mutate(labcolor = case_when(
+    BMI_cat == "UW" ~ "#355E44",
+    BMI_cat == "HW" ~ "#34495E",
+    BMI_cat == "OW" ~ "#3F345E",
+    BMI_cat == "OB" ~ "#5E343F",
+  ))
+
+diana_dend_clust <- nhanes_diana %>% 
+  as.dendrogram() %>% 
+  set("labels", unsup_labs_reord_di$BMI_cat) %>% 
+  set("labels_cex", 0.5) %>% 
+  set("labels_colors", di_labcolors$labcolor) %>% 
+  set("branches_k_col", k = 5, c("#3498DB",
+                                 "#2ECC71",
+                                 "#F39C12",
+                                 "#E74C3C",
+                                 "#9B59B6")) #,
+                                 #"#1ABCB4"))
+
+diana_dend_clust_ggd <- diana_dend_clust %>% 
+  as.ggdend()
+
+diana_dend_clust_gg <- ggplot(diana_dend_clust_ggd) +
+  theme(axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()) +
+  xlab("") +
+  ylab("") +
+  ggtitle("DIANA Dendrogram, k = 5 Clusters")
+diana_dend_clust_gg
+```
+
