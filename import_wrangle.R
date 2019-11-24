@@ -1,10 +1,11 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Sat Nov 23 14:17:20 2019 ------------------------------
+# Sat Nov 23 22:52:53 2019 ------------------------------
 
 
 #### Loading libraries ----
 
+library(here)           # For easy sourcing from project directory
 library(haven)          # For loading SAS .xpt files
 library(sjlabelled)     # For removing pesky column labels
 library(forcats)        # For handling categorical data
@@ -14,6 +15,7 @@ library(cluster)        # For daisy() (computing Gower distance)
 library(fpc)            # For cqcluster.stats()
 library(ggdendro)       # For ggplot dendrograms
 library(dendextend)     # For as.ggdend() to create a ggplot dendrogram object
+library(factoextra)     # For visualizing dendrograms
 library(gridExtra)      # For grid.arrange()
 library(grid)           # For textGrob() to annotate grid.arrange() elements
 library(rmarkdown)      # For render()
@@ -720,10 +722,102 @@ nhanes_unsup_full <- nhanes_unsup_stag %>%
             "restaur_usednutrit_fct", "restaur_woulduse_fct")) %>% 
   drop_na()   # Removing cases with incomplete data
 
-nhanes_unsup <- nhanes_unsup_full %>% 
+nhanes_unsup_stag2 <- nhanes_unsup_full %>% 
   group_by(BMI_cat_fct) %>% 
   sample_frac(0.05) %>%   # Creating stratified 5% sample for use in unsupervised analysis
   ungroup()
+
+unsup_labs <- nhanes_unsup_stag2 %>% 
+  select(BMI_cat_fct, seqn) %>% 
+  mutate(rnames = paste0(BMI_cat_fct, "_", seqn)) %>% 
+  select(rnames) %>% 
+  as_vector()
+
+unsup_seqn <- nhanes_unsup_stag2$seqn
+
+nhanes_unsup <- nhanes_unsup_stag2 %>% 
+  select(-seqn)
+
+rownames(nhanes_unsup) <- unsup_labs
+
+
+
+
+# Testing an alternative means (no factors) for use with vegan::vegdist(method = "gower")
+
+nhanes_unsup_alt_stag <- nhanes %>% 
+  select(seqn, age, gender, race, educ, marital, famincome_cat, n_comorbid, mins_activ,
+         mins_seden, worklim, walklim, diethealthy, fastfood_eat, fastfood_usednutrit,
+         fastfood_woulduse, restaur_eat, restaur_usednutrit, restaur_woulduse, dailykcal,
+         dailywater, losewt_exer, BMI_cat) %>% 
+  mutate(
+    educ = case_when(
+      educ != 6 ~ educ,
+      TRUE ~ as.numeric(NA)),
+    marital = case_when(
+      marital != 7 ~ marital,
+      TRUE ~ as.numeric(NA)),
+    famincome_cat = case_when(
+      famincome_cat != 16 ~ famincome_cat,
+      TRUE ~ as.numeric(NA)),
+    worklim = case_when(
+      worklim != 3 ~ worklim,
+      TRUE ~ as.numeric(NA)),
+    walklim = case_when(
+      walklim != 6 ~ walklim,
+      TRUE ~ as.numeric(NA)),
+    diethealthy = case_when(
+      diethealthy != 6 ~ diethealthy,
+      TRUE ~ as.numeric(NA)),
+    fastfood_eat = case_when(
+      fastfood_eat != 3 ~ fastfood_eat,
+      TRUE ~ as.numeric(NA)),
+    fastfood_usednutrit = case_when(
+      fastfood_usednutrit != 3 ~ fastfood_usednutrit,
+      TRUE ~ as.numeric(NA)),
+    fastfood_woulduse = case_when(
+      fastfood_woulduse != 5 ~ fastfood_woulduse,
+      TRUE ~ as.numeric(NA)),
+    restaur_eat = case_when(
+      restaur_eat != 3 ~ restaur_eat,
+      TRUE ~ as.numeric(NA)),
+    restaur_usednutrit = case_when(
+      restaur_usednutrit != 3 ~ restaur_usednutrit,
+      TRUE ~ as.numeric(NA)),
+    restaur_woulduse = case_when(
+      restaur_woulduse != 5 ~ restaur_woulduse,
+      TRUE ~ as.numeric(NA)),
+    losewt_exer = case_when(
+      losewt_exer != 3 ~ losewt_exer,
+      TRUE ~ as.numeric(NA)))
+
+nhanes_unsup_alt_full <- nhanes_unsup_alt_stag %>% 
+  select(-c("walklim", "fastfood_usednutrit", "fastfood_woulduse",   # Removing cols that are <90% complete
+            "restaur_usednutrit", "restaur_woulduse")) %>% 
+  drop_na()   # Removing cases with incomplete data
+
+nhanes_unsup_alt_stag2 <- nhanes_unsup_alt_full %>% 
+  group_by(BMI_cat) %>% 
+  sample_frac(0.05) %>%   # Creating stratified 5% sample for use in unsupervised analysis
+  ungroup()
+
+unsup_alt_labs <- nhanes_unsup_alt_stag2 %>% 
+  select(BMI_cat, seqn) %>% 
+  mutate(rnames = paste0(BMI_cat, "_", seqn)) %>% 
+  select(rnames) %>% 
+  as_vector()
+
+unsup_alt_seqn <- nhanes_unsup_alt_stag2$seqn
+
+nhanes_unsup_mat <- nhanes_unsup_alt_stag2 %>% 
+  select(-seqn) %>% 
+  as.matrix()
+
+rownames(nhanes_unsup_mat) <- unsup_alt_labs
+
+
+
+
 
 
 #### Removing staging and other unnecessary dataframes ----

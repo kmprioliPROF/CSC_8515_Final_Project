@@ -78,33 +78,104 @@ scores_final_kbl
 For the unsupervised component of this analysis, data was subset to variables with $\ge 90 \%$ non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was subset via a random 5% sample within each BMI category to allow for sensible, interpretable dendrograms.  The analytic dataset thus comprised `r dim(nhanes_unsup)[1]` cases having `r dim(nhanes_unsup)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).
 
 ```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-dissim_mat <- daisy(nhanes_unsup[ ,2:dim(nhanes_unsup)[2]], metric = "gower")   # Omitting seqn from the dissim matrix
+dissim_mat <- daisy(nhanes_unsup[ ,1:dim(nhanes_unsup)[2]], metric = "gower")
 summary(dissim_mat)
 ```
 
+
+
+
+
+
+
+```{r}
+# nhanes_unsup_mat <- nhanes_unsup %>% 
+#   as.matrix()
+# rownames(nhanes_unsup_mat) <- unsup_labs
+
+
+nhanes_unsup_mat <- nhanes_alt_unsup %>%
+  as.matrix()
+rownames(nhanes_unsup_mat) <- unsup_alt_labs
+```
+
+
+
 Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters and yielded the following dendrogram:
 
-```{r agnes_dend, echo = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
-nhanes_agnes <- agnes(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE, method = "complete") 
+```{r agnes_dend, echo = FALSE, paged.print = FALSE, fig.width = 18, fig.height = 8}
+nhanes_agnes <- hclust(d = vegan::vegdist(nhanes_unsup_mat, method = "gower"), method = "ward.D2")
 
-agnes_dend <- nhanes_agnes %>%
-  as.dendrogram() %>%
-  ggdendrogram()
-agnes_dend
+unsup_alt_labs_reord <- unsup_alt_labs[nhanes_agnes$order] %>%    # Reordering leaf labels
+  str_sub(start = 1L, end = 1L) %>% 
+  as_tibble() %>% 
+  mutate(BMI_cat = case_when(   # Modifying leaf labels to show BMI category abbreviations
+    value == "1" ~ "UW",        # Underweight
+    value == "2" ~ "HW",        # Healthy weight
+    value == "3" ~ "OW",        # Overweight
+    value == "4" ~ "OB"         # Obese
+  )) %>% 
+  select(BMI_cat) %>% 
+  as.vector()
+
+agnes_dend <- nhanes_agnes %>% 
+  as.dendrogram() %>% 
+  set("labels", unsup_alt_labs_reord$BMI_cat)
+
+agnes_dend_gg <- agnes_dend %>% 
+  ggdendrogram(theme_dendro = FALSE) + #, rotate = TRUE) +   # Landscape by default; rotate becomes portrait but root is at right >:(
+   theme(axis.line = element_blank(),
+         axis.text.x = element_text(size = 6),
+         axis.text.y = element_blank(),
+         axis.ticks = element_blank(),
+         panel.grid = element_blank()) +
+  xlab("") +
+  ylab("") +
+  ggtitle("AGNES Dendrogram")
+agnes_dend_gg
 ```
 
 DIANA yielded the following dendrogram:
 
-```{r diana_dend, echo = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
-nhanes_diana <- diana(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE)
+```{r diana_dend, echo = FALSE, warnings = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
+# nhanes_diana <- diana(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE) %>% as.hclust()
 
-diana_dend <- nhanes_diana %>% 
-  as.dendrogram() %>% 
-  ggdendrogram()
-diana_dend
+# diana_dend <- nhanes_diana %>% 
+#   as.dendrogram() %>% 
+#   as.gg
+# diana_dend
+
+# diana_dend_ggd <- nhanes_diana %>%
+#   as.dendrogram() %>%
+#   ggdendrogram(theme_dendro = FALSE)
+# 
+# diana_dend <- diana_dend_ggd +
+#   theme(axis.line = element_blank(),
+#         axis.text.y = element_blank(),
+#         axis.ticks = element_blank(),
+#         axis.title = element_blank(),
+#         panel.grid = element_blank()) +
+#   coord_polar(theta = "x")
+# diana_dend
+
+# diana_dend <- nhanes_diana %>% 
+#   as.dendrogram %>% 
+#   as.ggdend(, type)
+# diana_dend
+# 
+# diana_dend_data <- dendro_data(nhanes_diana %>% as.dendro(class = c("diana", "twins")))
+# diana_dend_gg <- ggplot(segment(diana_dend_data)) + 
+#   geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) +
+#   geom_text(data = diana_dend_data$leaf_labels, aes(x = x, y = y, label = label))
+# diana_dend_gg
+
 ```
 
 For both AGNES and DIANA, within-cluster sums of squares were calculated and used to generate scree-like plots:
+
+```{r clust_stats, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+source(here("clustering_stats.R"), echo = FALSE)
+```
 
 ```{r scree, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 agnes_scree <- ggplot(data = agnes_screedata, aes(x = n_clusters, y = withinss)) +
