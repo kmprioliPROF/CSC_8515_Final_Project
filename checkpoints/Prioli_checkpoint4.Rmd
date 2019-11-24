@@ -77,23 +77,20 @@ scores_final_kbl
 
 For the unsupervised component of this analysis, data was subset to variables with $\ge 90 \%$ non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was subset via a random 5% sample within each BMI category to allow for sensible, interpretable dendrograms.  The analytic dataset thus comprised `r dim(nhanes_unsup)[1]` cases having `r dim(nhanes_unsup)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).
 
-<!-- ```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
-<!-- dissim_mat <- daisy(nhanes_unsup[ ,1:dim(nhanes_unsup)[2]], metric = "gower") -->
-<!-- summary(dissim_mat) -->
-<!-- ``` -->
+```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+# dissim_mat <- daisy(nhanes_unsup[ ,1:dim(nhanes_unsup)[2]], metric = "gower")
+# summary(dissim_mat)
 
-
-
-
+dissim_mat <- vegdist(nhanes_unsup_mat, method = "gower")
+summary(dissim_mat)
+```
 
 Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters and yielded the following dendrogram:
 
 ```{r agnes_dend, warning = FALSE, message = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 18, fig.height = 8}
-dissim_mat <- vegdist(nhanes_unsup_mat, method = "gower")
-
 nhanes_agnes <- hclust(d = dissim_mat, method = "ward.D2")
 
-unsup_labs_reord <- unsup_labs[nhanes_agnes$order] %>%    # Reordering leaf labels
+unsup_labs_reord_ag <- unsup_labs[nhanes_agnes$order] %>%    # Reordering leaf labels
   str_sub(start = 1L, end = 1L) %>% 
   as_tibble() %>% 
   mutate(BMI_cat = case_when(   # Modifying leaf labels to show BMI category abbreviations
@@ -107,7 +104,7 @@ unsup_labs_reord <- unsup_labs[nhanes_agnes$order] %>%    # Reordering leaf labe
 
 agnes_dend <- nhanes_agnes %>% 
   as.dendrogram() %>% 
-  set("labels", unsup_labs_reord$BMI_cat)
+  set("labels", unsup_labs_reord_ag$BMI_cat)
 
 agnes_dend_gg <- agnes_dend %>% 
   ggdendrogram(theme_dendro = FALSE) + #, rotate = TRUE) +   # Landscape by default; rotate becomes portrait but root is at right >:(
@@ -125,54 +122,91 @@ agnes_dend_gg
 DIANA yielded the following dendrogram:
 
 ```{r diana_dend, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
-# nhanes_diana <- diana(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE) %>% as.hclust()
+nhanes_diana <- diana(x = (dissim_mat %>% as.matrix()), diss = TRUE, keep.diss = TRUE) %>% 
+  as.hclust()
 
-# diana_dend <- nhanes_diana %>% 
-#   as.dendrogram() %>% 
-#   as.gg
-# diana_dend
+unsup_labs_reord_di <- unsup_labs[nhanes_diana$order] %>%    # Reordering leaf labels
+  str_sub(start = 1L, end = 1L) %>% 
+  as_tibble() %>% 
+  mutate(BMI_cat = case_when(   # Modifying leaf labels to show BMI category abbreviations
+    value == "1" ~ "UW",        # Underweight
+    value == "2" ~ "HW",        # Healthy weight
+    value == "3" ~ "OW",        # Overweight
+    value == "4" ~ "OB"         # Obese
+  )) %>% 
+  select(BMI_cat) %>% 
+  as.vector()
 
-# diana_dend_ggd <- nhanes_diana %>%
-#   as.dendrogram() %>%
-#   ggdendrogram(theme_dendro = FALSE)
-# 
-# diana_dend <- diana_dend_ggd +
-#   theme(axis.line = element_blank(),
-#         axis.text.y = element_blank(),
-#         axis.ticks = element_blank(),
-#         axis.title = element_blank(),
-#         panel.grid = element_blank()) +
-#   coord_polar(theta = "x")
-# diana_dend
+diana_dend <- nhanes_diana %>% 
+  as.dendrogram() %>% 
+  set("labels", unsup_labs_reord_di$BMI_cat)
 
-# diana_dend <- nhanes_diana %>% 
-#   as.dendrogram %>% 
-#   as.ggdend(, type)
-# diana_dend
-# 
-# diana_dend_data <- dendro_data(nhanes_diana %>% as.dendro(class = c("diana", "twins")))
-# diana_dend_gg <- ggplot(segment(diana_dend_data)) + 
-#   geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) +
-#   geom_text(data = diana_dend_data$leaf_labels, aes(x = x, y = y, label = label))
-# diana_dend_gg
-
+diana_dend_gg <- diana_dend %>% 
+  ggdendrogram(theme_dendro = FALSE) +
+   theme(axis.line = element_blank(),
+         axis.text.x = element_text(size = 6),
+         axis.text.y = element_blank(),
+         axis.ticks = element_blank(),
+         panel.grid = element_blank()) +
+  xlab("") +
+  ylab("") +
+  ggtitle("DIANA Dendrogram")
+diana_dend_gg
 ```
-
-For both AGNES and DIANA, within-cluster sums of squares were calculated and used to generate scree-like plots:
 
 ```{r clust_stats, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 source(here("clustering_stats.R"), echo = FALSE)
 ```
 
-```{r scree, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-agnes_scree <- ggplot(data = agnes_screedata, aes(x = n_clusters, y = withinss)) +
+For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based on an upper limit of 15 clusters; these latter two metrics were used to generate scree and silhouette plots.  With 15 clusters each, AGNES and DIANA had cluster sizes as follows:
+
+```{r clust_sizes, echo = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
+agnes_clustsize <- ggplot(data = agnes_sizes, aes(x = cluster_no, y = cluster_size)) +
+  geom_col() +
+  ylim(0, 40) +
+  xlab("Cluster Number") +
+  ylab("Cluster Size") +
+  ggtitle("AGNES")
+
+agnes_sizedesc <- summary(agnes_sizes$cluster_size) %>% 
+  round(digits = 2) %>% 
+  broom::tidy() %>% 
+  setNames(., c("Min", "Q1", "Median", "Mean", "Q3", "Max")) %>% 
+  t() %>% 
+  tableGrob(theme = ttheme_minimal(base_size = 10, padding = unit(c(2, 2), "mm")))
+
+diana_clustsize <- ggplot(data = diana_sizes, aes(x = cluster_no, y = cluster_size)) +
+  geom_col() +
+  ylim(0, 40) +
+  xlab("Cluster Number") +
+  ylab("Cluster Size") +
+  ggtitle("DIANA")
+
+diana_sizedesc <- summary(diana_sizes$cluster_size) %>% 
+  round(digits = 2) %>% 
+  broom::tidy() %>% 
+  setNames(., c("Min", "Q1", "Median", "Mean", "Q3", "Max")) %>% 
+  t() %>% 
+  tableGrob(theme = ttheme_minimal(base_size = 10, padding = unit(c(2, 2), "mm")))
+
+grid.arrange(agnes_sizedesc, agnes_clustsize, textGrob(" "), diana_sizedesc, diana_clustsize, 
+             nrow = 1, ncol = 5, widths = c(0.25, 0.7, 0.1, 0.25, 0.7),
+             top = textGrob("Cluster Sizes, k = 15 Clusters, Hierarchical Clustering Analysis",
+                            gp = gpar(fontsize = 16, fontface = "bold", col = "#545454"),
+                            x = 0.025, hjust = 0))
+```
+
+Though neither plot shows an even distribution in cluster size, AGNES' cluster sizes are less varied than those of DIANA.
+
+```{r scree, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+agnes_scree <- ggplot(data = agnes_statdata, aes(x = n_clusters, y = withinss)) +
   geom_line() +
   geom_point() +
   xlab("Number of Clusters") +
   ylab("Within-Cluster Sum of Squares") +
   ggtitle("AGNES")
 
-diana_scree <- ggplot(data = diana_screedata, aes(x = n_clusters, y = withinss)) +
+diana_scree <- ggplot(data = diana_statdata, aes(x = n_clusters, y = withinss)) +
   geom_line() +
   geom_point() +
   xlab("Number of Clusters") +
@@ -185,15 +219,27 @@ grid.arrange(agnes_scree, diana_scree, nrow = 1,
                             x = 0.025, hjust = 0))
 ```
 
-The AGNES scree plot shows a relatively smooth curve without strong elbows; possible elbows occur at 4 and 7 clusters.
+The AGNES scree plot shows a relatively smooth curve without strong elbows; possible elbows occur at 4 and 7 clusters.  For DIANA, two obvious elbows are seen:  one at 5 clusters and one at 9.
 
-```{r silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-agnes_sil <- ggplot(data = agnes_screedata, aes(x = n_clusters, y = asw)) +
+```{r silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+agnes_sil <- ggplot(data = agnes_statdata, aes(x = n_clusters, y = asw)) +
   geom_line() +
   geom_point() +
   xlab("Number of Clusters") +
   ylab("Average Silhouette Width") +
   ggtitle("AGNES")
-agnes_sil
+
+diana_sil <- ggplot(data = diana_statdata, aes(x = n_clusters, y = asw)) +
+  geom_line() +
+  geom_point() +
+  xlab("Number of Clusters") +
+  ylab("Average Silhouette Width") +
+  ggtitle("DIANA")
+
+grid.arrange(agnes_sil, diana_sil, nrow = 1,
+             top = textGrob("Silhouette Plots, Hierarchical Clustering Analysis",
+                            gp = gpar(fontsize = 16, fontface = "bold", col = "#545454"),
+                            x = 0.025, hjust = 0))
 ```
 
+Both the AGNES and DIANA silhouette plots show maximum silhouette width at 2 clusters, which is unlikely to 

@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - finding clustering statistics
-# Sat Nov 23 23:57:03 2019 ------------------------------
+# Sun Nov 24 14:02:57 2019 ------------------------------
 
 
 clust_stats <- function(approach, k) {
@@ -42,14 +42,17 @@ clust_stats <- function(approach, k) {
 agnes_stats <- clust_stats(nhanes_agnes, 15)
 diana_stats <- clust_stats(nhanes_diana, 15)
 
-agnes_screedata <- agnes_stats$cluster_stats %>% 
+agnes_sizes <- agnes_stats$cluster_sizes
+diana_sizes <- diana_stats$cluster_sizes
+
+agnes_statdata <- agnes_stats$cluster_stats %>% 
   t() %>% 
   as_tibble() %>% 
   rename(n_clusters = "Number of Clusters",
          withinss = "Within-Cluster Sum of Squares",
          asw = "Average Silhouette Width")
 
-diana_screedata <- diana_stats$cluster_stats %>% 
+diana_statdata <- diana_stats$cluster_stats %>% 
   t() %>% 
   as_tibble() %>% 
   rename(n_clusters = "Number of Clusters",
