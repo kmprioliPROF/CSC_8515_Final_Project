@@ -1,46 +1,53 @@
 # Katherine M. Prioli
-# CSC 8515 Final Project - working file for tinkering with logic to extract clustering statistics
-# Sat Nov 23 17:17:20 2019 ------------------------------
+# CSC 8515 Final Project - finding clustering statistics
+# Sat Nov 23 18:50:00 2019 ------------------------------
 
 
 clust_stats <- function(approach, k) {
-  # metrics <- c("cluster.number",  # Could use this to make a for-loop (to clean up the loop below)
-  #              "withinss",
-  #              "avewithin",
-  #              "asw")
+  metrics <- c("cluster.number",
+               "withinss")
   
-  metrics_prett <- c("Cluster No.",
-                     "Within-cluster Sum of Squares",
-                     "Average Within-Cluster Distance",
-                     "Average Silhouette Width")
+  metrics_prett <- c("Number of Clusters",
+                     "Within-Cluster Sum of Squares")
   
-  stats_mat <- matrix(nrow = 4, ncol = k - 1)
+  stats_mat <- matrix(nrow = length(metrics), ncol = k - 1)
   rownames(stats_mat) <- metrics_prett
   
   iterations <- c() %>% as.vector()
   
   for(i in 2:k){
-    iterations[i - 1] <- paste0("Iteration ", i - 1)
+    iterations[i - 1] <- paste0("Iter. ", i - 1)
     
-    stats_mat[1, i - 1] <- round(cqcluster.stats(d = dissim_mat, clustering = cutree(approach, i))$cluster.number, digits = 0)
-    stats_mat[2, i - 1] <- round(cqcluster.stats(d = dissim_mat, clustering = cutree(approach, i))$withinss, digits = 3)
-    stats_mat[3, i - 1] <- round(cqcluster.stats(d = dissim_mat, clustering = cutree(approach, i))$avewithin, digits = 3)
-    stats_mat[4, i - 1] <- round(cqcluster.stats(d = dissim_mat, clustering = cutree(approach, i))$asw, digits = 3)
-    
-    # for(j in 1:length(metrics_prett)){   # Flesh this logic out per above note
-    #   stats_mat[j, i - 1] <- cqcluster.stats(d = dissim_mat, clustering = cutree(approach, i))
-    # }
+    for(j in 1:length(metrics_prett)){
+      stats_mat[j, i - 1] <- unlist(cqcluster.stats(d = dissim_mat, clustering = cutree(approach, i)))[metrics[j]] %>% round(digits = 3)
+    }
   }
   
   colnames(stats_mat) <- iterations
+  cluster_stats <- stats_mat
   
-  cluster_sizes <- cqcluster.stats(d = dissim_mat, clustering = cutree(approach, k))$cluster.size
+  cluster_sizes <- cqcluster.stats(d = dissim_mat, clustering = cutree(approach, k))$cluster.size %>% 
+    as_tibble() %>% 
+    mutate(cluster_no = row_number()) %>% 
+    rename(cluster_size = value) %>% 
+    select(cluster_no, cluster_size)
   
-  return(stats_mat)
-  return(cluster_sizes)
+  results <- list(cluster_stats = cluster_stats, cluster_sizes = cluster_sizes)
+  return(results)
   
 }
 
-agnes_stats <- clust_stats(nhanes_agnes, 10)
+agnes_stats <- clust_stats(nhanes_agnes, 15)
+diana_stats <- clust_stats(nhanes_diana, 15)
 
-#diana_stats <- clust_stats(nhanes_diana, 10)
+agnes_screedata <- agnes_stats$cluster_stats %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(n_clusters = "Number of Clusters",
+         withinss = "Within-Cluster Sum of Squares")
+
+diana_screedata <- diana_stats$cluster_stats %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rename(n_clusters = "Number of Clusters",
+         withinss = "Within-Cluster Sum of Squares")
