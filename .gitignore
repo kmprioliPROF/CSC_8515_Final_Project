@@ -7,3 +7,5 @@ init_vars_final_rept.csv
 checkpoints/*.tex
 checkpoints/*.pdf
 checkpoints/*.dot
+proposals/
+Final project assignment parameters.pdf
