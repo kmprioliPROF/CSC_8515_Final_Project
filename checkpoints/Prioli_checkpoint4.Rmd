@@ -33,7 +33,7 @@ The following progress has been made since Checkpoint 3:
 I experienced some technical challenges with getting different packages for perfomring AGNES and DIANA to work well with each other.  Sspecifically, the dissimilarity matrix as calculated per `daisy()` didn't retain class labels in its output (as mentiond above), but I needed these for the dendrogram plots, so I needed to find an alternative package that would enable me to calculate a dissimilarity matrix using the Gower distance *and* retain class labels for later use.  Additionally, when generating dendrogram plots, the output object of the function I was previously using could not be coerced to the correct input object type for the next function in the chain, which was from a different package.  This required some searching on CRAN and Stack Overflow for alternative packages that would work better.  I was able to solve both of these issues.
 
 
-```{python libs, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+```{python libs, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 # Importing libraries
 
 import math
@@ -50,13 +50,13 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import RepeatedKFold
 ```
 
-```{python import_subset, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+```{python import_subset, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 nhanes_f = r.nhanes_sup_trim_dichot
 nhanes_feat_f = nhanes_f.drop(["BMI_cat"], axis = 1)
 nhanes_labs_f = nhanes_f.filter(["BMI_cat"])
 ```
 
-```{python nxk_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+```{python nxk_rkf, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 rfc_f = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False) #max_depth = 7, 
 rkf_f = RepeatedKFold(n_repeats = 10, n_splits = 3)
 
@@ -64,7 +64,7 @@ scores_f = cross_val_score(rfc_f, nhanes_feat_f, nhanes_labs_f.values.ravel(), c
 scores_f = pd.DataFrame(scores_f)
 ```
 
-```{r score_rkf, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
+```{r score_rkf, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 scores_final <- py$scores_f %>% 
   unlist() %>% 
   as_tibble() %>% 
@@ -84,7 +84,7 @@ scores_final_kbl
 
 ## **Unsupervised Approach**
 
-For the unsupervised component of this analysis, data was subset to variables with $\ge 90 \%$ non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was subset via a random 5% sample within each BMI category to allow for sensible, interpretable dendrograms.  The analytic dataset thus comprised `r dim(nhanes_unsup)[1]` cases having `r dim(nhanes_unsup)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).
+For the unsupervised component of this analysis, data was subset to variables with $\ge 90 \%$ non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was subset via a random 5% sample within each BMI category to allow for sensible, interpretable dendrograms.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).
 
 Descriptives for the dissimilarity matrix:
 
@@ -296,7 +296,7 @@ grid.arrange(agnes_scree, diana_scree, nrow = 1,
                             x = 0.025, hjust = 0))
 ```
 
-The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 8 clusters.  For DIANA, two obvious elbows are seen:  one at 6 clusters and one at 10.
+The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two obvious elbows are seen:  one at 5 clusters and one at 6.
 
 ```{r silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 agnes_sil <- ggplot(data = agnes_statdata, aes(x = n_clusters, y = asw)) +
@@ -321,32 +321,32 @@ grid.arrange(agnes_sil, diana_sil, nrow = 1,
                             x = 0.025, hjust = 0))
 ```
 
-Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 5 clusters.  The plot for DIANA is less clear, but shows possible maxima at 4 and 12 clusters.
+Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.
 
-The AGNES scree and silhouette plots indicate that 5 clusters may be sufficient.  Six clusters were chosen for DIANA on the strength of the scree plot.
+The AGNES scree and silhouette plots indicate that 7 clusters may be sufficient.  Six clusters were chosen for DIANA.
 
 ```{r agnes_dend_clust_k5, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
-# 5 clusters for AGNES
+# 7 clusters for AGNES
 ggthemr("flat", spacing = 0.1)
 
-agnes_dend_clust5 <- nhanes_agnes %>% 
+agnes_dend_clust7 <- nhanes_agnes %>% 
   as.dendrogram() %>% 
   set("leaves_pch", 19, col = ag_labcolors$leafcolor) %>% 
   set("leaves_col", ag_labcolors$leafcolor) %>% 
-  set("branches_k_col", k = 5, c("#3498DB",    # Blue
+  set("branches_k_col", k = 7, c("#3498DB",    # Blue
                                  "#2ECC71",    # Green
                                  "#F39C12",    # Gold/orange
                                  "#E74C3C",    # Red
-                                 #"#D979C9",    # Pink
-                                 "#9B59B6"))#,    # Purple
+                                 "#D979C9",    # Pink
+                                 "#9B59B6",    # Purple
                                  #"#9F83D4",    # Grape
-                                 #"#1ABCB4",    # Teal
+                                 "#1ABCB4")) #,    # Teal
                                  #"#34495E"))   # Slate blue
 
-agnes_dend_clust5_ggd <- agnes_dend_clust5 %>% 
+agnes_dend_clust7_ggd <- agnes_dend_clust7 %>% 
   as.ggdend()
 
-agnes_dend_clust5_gg <- ggplot(agnes_dend_clust5_ggd, labels = FALSE) +
+agnes_dend_clust7_gg <- ggplot(agnes_dend_clust7_ggd, labels = FALSE) +
   scale_y_reverse() +
   coord_polar(theta = "x") +
   theme(axis.line = element_blank(),
@@ -356,8 +356,8 @@ agnes_dend_clust5_gg <- ggplot(agnes_dend_clust5_ggd, labels = FALSE) +
         panel.grid = element_blank()) +
   xlab("") +
   ylab("") +
-  ggtitle("AGNES Dendrogram, k = 5 Clusters")
-agnes_dend_clust5_gg
+  ggtitle("AGNES Dendrogram, k = 7 Clusters")
+agnes_dend_clust7_gg
 
 ggthemr("flat")
 ```

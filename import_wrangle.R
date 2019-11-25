@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Sun Nov 24 23:33:04 2019 ------------------------------
+# Mon Nov 25 00:02:41 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -27,7 +27,7 @@ library(tidyselect)     # For selecting by string
 library(tidyverse)      # For data import and wrangling
 
 ggthemr("flat")
-
+set.seed(20191205)      # Setting seed to ensure stable results
 
 #### Importing datasets ----
 
@@ -549,9 +549,7 @@ nhanes_stag2 <- nhanes_stag %>%
 
 #### Imputing missing values for continuous data ----
 
-set.seed(20191205)   # Setting seed to ensure stable results
 nhanes_imputed <- rfImpute(BMI_cat ~ . -seqn, nhanes_stag2)   # Ensuring seqn doesn't get used for imputation
-set.seed(NULL)
 
 # Looking at descriptives for `nhanes_stag2` vs `nhanes_imputed`
 
@@ -753,4 +751,5 @@ rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_contin", "nhanes_c
 # render("checkpoints/Prioli_checkpoint1.Rmd")
 # render("checkpoints/Prioli_checkpoint2.Rmd")
 # render("checkpoints/Prioli_checkpoint3.Rmd")
+# render("checkpoints/Prioli_checkpoint4.Rmd")
 # render("Prioli_final_report.Rmd")
