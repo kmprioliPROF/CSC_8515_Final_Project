@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Sun Nov 24 18:56:26 2019 ------------------------------
+# Sun Nov 24 23:33:04 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -12,11 +12,10 @@ library(forcats)        # For handling categorical data
 library(psych)          # For describe()
 library(randomForest)   # For rfImpute()
 library(vegan)          # For vegdist() (computing Gower distance)
-# library(cluster)        # For daisy() (alternate means of computing Gower distance)   # Omitted in favor of vegan::vegdist()
+library(cluster)        # For diana()
 library(fpc)            # For cqcluster.stats()
 library(ggdendro)       # For ggdendrogram()
 library(dendextend)     # For coloring dendrogram labels by BMI_cat
-# library(factoextra)     # For visualizing dendrograms   # Don't think I'm using this
 library(gridExtra)      # For grid.arrange()
 library(grid)           # For textGrob() to annotate grid.arrange() elements
 library(rmarkdown)      # For render()
@@ -24,10 +23,8 @@ library(reticulate)     # For interfacing with Python in .Rmd
 library(kableExtra)     # For prettifying output tables
 library(broom)          # For tidy()
 library(ggthemr)        # For prettifying output plots
-# library(GGally)         # For ggpairs()
 library(tidyselect)     # For selecting by string
 library(tidyverse)      # For data import and wrangling
-
 
 ggthemr("flat")
 
@@ -552,7 +549,9 @@ nhanes_stag2 <- nhanes_stag %>%
 
 #### Imputing missing values for continuous data ----
 
+set.seed(20191205)   # Setting seed to ensure stable results
 nhanes_imputed <- rfImpute(BMI_cat ~ . -seqn, nhanes_stag2)   # Ensuring seqn doesn't get used for imputation
+set.seed(NULL)
 
 # Looking at descriptives for `nhanes_stag2` vs `nhanes_imputed`
 
@@ -737,91 +736,10 @@ unsup_labs <- nhanes_unsup_stag2 %>%
 unsup_seqn <- nhanes_unsup_stag2$seqn   # Just in case I need this later
 
 nhanes_unsup_mat <- nhanes_unsup_stag2 %>% 
-  select(-seqn) %>% 
+  select(-seqn, BMI_cat) %>% 
   as.matrix()
 
 rownames(nhanes_unsup_mat) <- unsup_labs
-
-# Alternative means (first attempt):  retained factors
-
-# nhanes_unsup_old_stag <- nhanes %>% 
-#   select(seqn, age, gender_fct, race_fct, educ_fct, marital_fct, famincome_cat_fct, n_comorbid, mins_activ,
-#          mins_seden, worklim_fct, walklim_fct, diethealthy_fct, fastfood_eat_fct, fastfood_usednutrit_fct,
-#          fastfood_woulduse_fct, restaur_eat_fct, restaur_usednutrit_fct, restaur_woulduse_fct, dailykcal,
-#          dailywater, losewt_exer, BMI_cat_fct) %>% 
-#   mutate(
-#     educ_fct = case_when(
-#       educ_fct != "Missing" ~ educ_fct,
-#       TRUE ~ as.ordered(NA)),
-#     marital_fct = case_when(
-#       marital_fct != "Missing" ~ marital_fct,
-#       TRUE ~ as.factor(NA)),
-#     famincome_cat_fct = case_when(
-#       famincome_cat_fct != "Missing" ~ famincome_cat_fct,
-#       TRUE ~ as.ordered(NA)),
-#     worklim_fct = case_when(
-#       worklim_fct != "Missing" ~ worklim_fct,
-#       TRUE ~ as.factor(NA)),
-#     walklim_fct = case_when(
-#       walklim_fct != "Missing" ~ walklim_fct,
-#       TRUE ~ as.ordered(NA)),
-#     diethealthy_fct = case_when(
-#       diethealthy_fct != "Missing" ~ diethealthy_fct,
-#       TRUE ~ as.ordered(NA)),
-#     fastfood_eat_fct = case_when(
-#       fastfood_eat_fct != "Missing" ~ fastfood_eat_fct,
-#       TRUE ~ as.factor(NA)),
-#     fastfood_usednutrit_fct = case_when(
-#       fastfood_usednutrit_fct != "Missing" ~ fastfood_usednutrit_fct,
-#       TRUE ~ as.factor(NA)),
-#     fastfood_woulduse_fct = case_when(
-#       fastfood_woulduse_fct != "Missing" ~ fastfood_woulduse_fct,
-#       TRUE ~ as.ordered(NA)),
-#     restaur_eat_fct = case_when(
-#       restaur_eat_fct != "Missing" ~ restaur_eat_fct,
-#       TRUE ~ as.factor(NA)),
-#     restaur_usednutrit_fct = case_when(
-#       restaur_usednutrit_fct != "Missing" ~ restaur_usednutrit_fct,
-#       TRUE ~ as.factor(NA)),
-#     restaur_woulduse_fct = case_when(
-#       restaur_woulduse_fct != "Missing" ~ restaur_woulduse_fct,
-#       TRUE ~ as.ordered(NA)),
-#     losewt_exer = case_when(
-#       losewt_exer != 3 ~ losewt_exer,
-#       TRUE ~ as.numeric(NA)),
-#     losewt_exer_fct = factor(losewt_exer, levels = c(0, 1, 2), labels = c("Neither", "Either lose weight or exercise", "Both")))
-# 
-# nhanes_unsup_old_full <- nhanes_unsup_old_stag %>% 
-#   select(-c("walklim_fct", "fastfood_usednutrit_fct", "fastfood_woulduse_fct",   # Removing cols that are <90% complete
-#             "restaur_usednutrit_fct", "restaur_woulduse_fct")) %>% 
-#   drop_na()   # Removing cases with incomplete data
-# 
-# nhanes_unsup_old_stag2 <- nhanes_unsup_old_full %>% 
-#   group_by(BMI_cat_fct) %>% 
-#   sample_frac(0.05) %>%   # Creating stratified 5% sample for use in unsup_oldervised analysis
-#   ungroup()
-# 
-# unsup_old_labs <- nhanes_unsup_old_stag2 %>% 
-#   select(BMI_cat_fct, seqn) %>% 
-#   mutate(rnames = paste0(BMI_cat_fct, "_", seqn)) %>% 
-#   select(rnames) %>% 
-#   as_vector()
-# 
-# unsup_old_seqn <- nhanes_unsup_old_stag2$seqn
-# 
-# nhanes_unsup_old <- nhanes_unsup_old_stag2 %>% 
-#   select(-seqn)
-# 
-# rownames(nhanes_unsup_old) <- unsup_old_labs
-
-
-
-
-
-
-
-
-
 
 
 #### Removing staging and other unnecessary dataframes ----
