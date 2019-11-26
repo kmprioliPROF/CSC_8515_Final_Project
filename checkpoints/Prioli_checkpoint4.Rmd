@@ -14,14 +14,14 @@ The following progress has been made since Checkpoint 3:
 
 ### Unsupervised Analysis
 
-* Subset data to variables having $\ge 90%$ complete data, then omitted rows with incomplete data (i.e., omitted all cases having any NAs)
+* Subset data to variables having $\ge 90\%$ complete data, then omitted rows with incomplete data (i.e., omitted all cases having any NAs)
 * Selected a random 5% sample of this data, stratified by BMI
 * Refactored calculation of dissimilarity matrix to use `vegdist()` instead of `daisy()` (`daisy()` doesn't retain labels in its output object, and those are needed for the visualizations)
 * Reran dendrograms based on 5% sample and applied BMI labels to output figures
 * Generated clustering statistics (within-cluster sum of squares and average silhouette width) for both approaches
 * Determined the correct number of clusters to use for both AGNES and DIANA via scree and silhouette plots
 * Generated a new set of dendrograms based on number of clusters chosen for each approach and began initial evaluation of performance
-* Began organizing thoughts for presentation slides
+* Began drafting presentation slides
   
 ## **Next Steps**
 
@@ -30,7 +30,7 @@ The following progress has been made since Checkpoint 3:
   
 ## **Challenges**
 
-I experienced some technical challenges with getting different packages for perfomring AGNES and DIANA to work well with each other.  Sspecifically, the dissimilarity matrix as calculated per `daisy()` didn't retain class labels in its output (as mentiond above), but I needed these for the dendrogram plots, so I needed to find an alternative package that would enable me to calculate a dissimilarity matrix using the Gower distance *and* retain class labels for later use.  Additionally, when generating dendrogram plots, the output object of the function I was previously using could not be coerced to the correct input object type for the next function in the chain, which was from a different package.  This required some searching on CRAN and Stack Overflow for alternative packages that would work better.  I was able to solve both of these issues.
+I experienced some technical challenges with getting different packages for perfomring AGNES and DIANA to work well with each other.  Sspecifically, the dissimilarity matrix as calculated per `daisy()` didn't retain class labels in its output (as mentiond above), but I needed these for the dendrogram plots, so I had to find an alternative package that would enable me to calculate a dissimilarity matrix using the Gower distance *and* retain class labels for later use.  Additionally, when generating dendrogram plots, the output object of the function I was previously using could not be coerced to the correct input object type for the next function in the chain, which was from a different package.  This required some searching on CRAN and Stack Overflow for alternative packages that would work better.  I was able to solve both of these issues.
 
 
 ```{python libs, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
@@ -408,7 +408,7 @@ diana_dend_clust6_gg
 ggthemr("flat")
 ```
 
-
+Though there are some clusters in each of these dendrograms having low heterogeneity among BMI category labels, the plots indicate that there are an insufficient number of clusters to discriminate well among the groups.  The next step is to rerun each of these dendrograms using higher cluster numbers.
 
 
 
@@ -431,78 +431,79 @@ ggthemr("flat")
 
 
 
-The colored dendrograms for both AGNES and DIANA indicates that there are an insufficient number of clusters to discriminate well among the groups.  These dendrograms were re-run using $k = 6$ clusters for AGNES and $k = 9$ clusters for DIANA; output is shown below.
 
-```{r agnes_dend_clust_k9, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
-# 6 clusters for AGNES
-ggthemr("flat", spacing = 0.1)
+<!-- These dendrograms were re-run using $k = 6$ clusters for AGNES and $k = 9$ clusters for DIANA; output is shown below. -->
 
-agnes_dend_clust6 <- nhanes_agnes %>% 
-  as.dendrogram() %>% 
-  set("leaves_pch", 19, col = ag_labcolors$leafcolor) %>% 
-  set("leaves_col", ag_labcolors$leafcolor) %>% 
-  set("branches_k_col", k = 6, c("#3498DB",    # Blue
-                                 "#2ECC71",    # Green
-                                 "#F39C12",    # Gold/orange
-                                 "#E74C3C",    # Red
-                                 #"#D979C9",    # Pink
-                                 "#9B59B6",    # Purple
-                                 #"#9F83D4",    # Grape
-                                 #"#1ABCB4",    # Teal
-                                 "#34495E"))   # Slate blue
+<!-- ```{r agnes_dend_clust_k9, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11} -->
+<!-- # 6 clusters for AGNES -->
+<!-- ggthemr("flat", spacing = 0.1) -->
 
-agnes_dend_clust6_ggd <- agnes_dend_clust6 %>% 
-  as.ggdend()
+<!-- agnes_dend_clust6 <- nhanes_agnes %>%  -->
+<!--   as.dendrogram() %>%  -->
+<!--   set("leaves_pch", 19, col = ag_labcolors$leafcolor) %>%  -->
+<!--   set("leaves_col", ag_labcolors$leafcolor) %>%  -->
+<!--   set("branches_k_col", k = 6, c("#3498DB",    # Blue -->
+<!--                                  "#2ECC71",    # Green -->
+<!--                                  "#F39C12",    # Gold/orange -->
+<!--                                  "#E74C3C",    # Red -->
+<!--                                  #"#D979C9",    # Pink -->
+<!--                                  "#9B59B6",    # Purple -->
+<!--                                  #"#9F83D4",    # Grape -->
+<!--                                  #"#1ABCB4",    # Teal -->
+<!--                                  "#34495E"))   # Slate blue -->
 
-agnes_dend_clust6_gg <- ggplot(agnes_dend_clust6_ggd, labels = FALSE) +
-  scale_y_reverse() +
-  coord_polar(theta = "x") +
-  theme(axis.line = element_blank(),
-        axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid = element_blank()) +
-  xlab("") +
-  ylab("") +
-  ggtitle("AGNES Dendrogram, k = 6 Clusters")
-agnes_dend_clust6_gg
+<!-- agnes_dend_clust6_ggd <- agnes_dend_clust6 %>%  -->
+<!--   as.ggdend() -->
 
-ggthemr("flat")
-```
+<!-- agnes_dend_clust6_gg <- ggplot(agnes_dend_clust6_ggd, labels = FALSE) + -->
+<!--   scale_y_reverse() + -->
+<!--   coord_polar(theta = "x") + -->
+<!--   theme(axis.line = element_blank(), -->
+<!--         axis.text.x = element_blank(), -->
+<!--         axis.text.y = element_blank(), -->
+<!--         axis.ticks = element_blank(), -->
+<!--         panel.grid = element_blank()) + -->
+<!--   xlab("") + -->
+<!--   ylab("") + -->
+<!--   ggtitle("AGNES Dendrogram, k = 6 Clusters") -->
+<!-- agnes_dend_clust6_gg -->
 
-```{r diana_dend_clust_k9, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
-# 9 clusters for DIANA
-ggthemr("flat", spacing = 0.1)
+<!-- ggthemr("flat") -->
+<!-- ``` -->
 
-diana_dend_clust9 <- nhanes_diana %>% 
-  as.dendrogram() %>% 
-  set("leaves_pch", 19, col = di_labcolors$leafcolor) %>% 
-  set("leaves_col", di_labcolors$leafcolor) %>% 
-  set("branches_k_col", k = 9, c("#3498DB",    # Blue
-                                 "#2ECC71",    # Green
-                                 "#F39C12",    # Gold/orange
-                                 "#E74C3C",    # Red
-                                 "#D979C9",    # Pink
-                                 "#9B59B6",    # Purple
-                                 "#9F83D4",    # Grape
-                                 "#1ABCB4",    # Teal
-                                 "#34495E"))   # Slate blue
+<!-- ```{r diana_dend_clust_k9, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11} -->
+<!-- # 9 clusters for DIANA -->
+<!-- ggthemr("flat", spacing = 0.1) -->
 
-diana_dend_clust9_ggd <- diana_dend_clust9 %>% 
-  as.ggdend()
+<!-- diana_dend_clust9 <- nhanes_diana %>%  -->
+<!--   as.dendrogram() %>%  -->
+<!--   set("leaves_pch", 19, col = di_labcolors$leafcolor) %>%  -->
+<!--   set("leaves_col", di_labcolors$leafcolor) %>%  -->
+<!--   set("branches_k_col", k = 9, c("#3498DB",    # Blue -->
+<!--                                  "#2ECC71",    # Green -->
+<!--                                  "#F39C12",    # Gold/orange -->
+<!--                                  "#E74C3C",    # Red -->
+<!--                                  "#D979C9",    # Pink -->
+<!--                                  "#9B59B6",    # Purple -->
+<!--                                  "#9F83D4",    # Grape -->
+<!--                                  "#1ABCB4",    # Teal -->
+<!--                                  "#34495E"))   # Slate blue -->
 
-diana_dend_clust9_gg <- ggplot(diana_dend_clust9_ggd, labels = FALSE) +
-  scale_y_reverse() +
-  coord_polar(theta = "x") +
-  theme(axis.line = element_blank(),
-        axis.text.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid = element_blank()) +
-  xlab("") +
-  ylab("") +
-  ggtitle("DIANA Dendrogram, k = 9 Clusters")
-diana_dend_clust9_gg
+<!-- diana_dend_clust9_ggd <- diana_dend_clust9 %>%  -->
+<!--   as.ggdend() -->
 
-ggthemr("flat")
-```
+<!-- diana_dend_clust9_gg <- ggplot(diana_dend_clust9_ggd, labels = FALSE) + -->
+<!--   scale_y_reverse() + -->
+<!--   coord_polar(theta = "x") + -->
+<!--   theme(axis.line = element_blank(), -->
+<!--         axis.text.x = element_blank(), -->
+<!--         axis.text.y = element_blank(), -->
+<!--         axis.ticks = element_blank(), -->
+<!--         panel.grid = element_blank()) + -->
+<!--   xlab("") + -->
+<!--   ylab("") + -->
+<!--   ggtitle("DIANA Dendrogram, k = 9 Clusters") -->
+<!-- diana_dend_clust9_gg -->
+
+<!-- ggthemr("flat") -->
+<!-- ``` -->
