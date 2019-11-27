@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Mon Nov 25 00:02:41 2019 ------------------------------
+# Wed Nov 27 17:17:44 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -28,6 +28,7 @@ library(tidyverse)      # For data import and wrangling
 
 ggthemr("flat")
 set.seed(20191205)      # Setting seed to ensure stable results
+
 
 #### Importing datasets ----
 
@@ -501,12 +502,6 @@ categsumm <- function(df, x){
   dfout <- return(summdf) %>% kable(format = "markdown")
 }
 
-# For loop isn't working; not worth spending the time to fix it
-
-# for(i in 1:length(nhanes_categvars)){
-#   assign(paste0("summ_", nhanes_categvars[[i]]), categsumm(nhanes, quo(nhanes_categvars[[i]])))
-# }
-
 gender_summ <- categsumm(nhanes_fct, quo(gender_fct))
 race_summ <- categsumm(nhanes_fct, quo(race_fct))
 educ_summ <- categsumm(nhanes_fct, quo(educ_fct))
@@ -587,6 +582,9 @@ nhanes_contin2_kable
 nhanes_contin_imp_kable
 
 # Comparing descriptives from `nhanes_stag2` to `nhanes_imputed`
+
+# Have decided to omit famincome_povratio and PHQ9_score in favor of their categorical counterparts
+# (I do this below when I create `nhanes`)
 
 # famincome_povratio_wilcox <- wilcox.test(nhanes_stag2$famincome_povratio, nhanes_imputed$famincome_povratio, 
 #                                          alternative = "two.sided", 
@@ -715,6 +713,8 @@ nhanes_unsup_stag <- nhanes %>%
       losewt_exer != 3 ~ losewt_exer,
       TRUE ~ as.numeric(NA)))
 
+# Creating smaller dataset for unsupervised approach based on 5% sample of rows with no NAs
+
 nhanes_unsup_full <- nhanes_unsup_stag %>% 
   select(-c("walklim", "fastfood_usednutrit", "fastfood_woulduse",   # Removing cols that are <90% complete
             "restaur_usednutrit", "restaur_woulduse")) %>% 
@@ -744,12 +744,12 @@ rownames(nhanes_unsup_mat) <- unsup_labs
 
 rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_contin", "nhanes_contin2", "nhanes_contin_desc",
             "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", "nhanes_fct", "nhanes_imputed",
-            "omits", "wilcox_pvals", "wilcox_results", "wilcox_vars", "nhanes_unsup_stag"))
+            "age_wilcox", "mins_activ_wilcox", "mins_seden_wilcox", "dailykcal_wilcox", "dailywater_wilcox",
+            "omits", "wilcox_pvals", "wilcox_results", "wilcox_vars", "nhanes_unsup_stag", "nhanes_unsup_full",
+            "nhanes_unsup_stag2"))
 
 
 #### Rendering .Rmd ----
-# render("checkpoints/Prioli_checkpoint1.Rmd")
-# render("checkpoints/Prioli_checkpoint2.Rmd")
-# render("checkpoints/Prioli_checkpoint3.Rmd")
-# render("checkpoints/Prioli_checkpoint4.Rmd")
+# render("random_forest.Rmd")
+# render("clustering_analysis.Rmd")
 # render("Prioli_final_report.Rmd")
