@@ -1,88 +1,13 @@
 ---
-title: "Final Project:  Checkpoint 4"
+title: "Final Project:  Clustering Analysis"
 author: "Katherine M. Prioli"
-date: "November 26, 2019"
+date: "December 05, 2019"
 output:
   pdf_document: default
   html_document: default
 geometry: margin = 0.5in
 ---
 
-## **Progress to Date**
-
-The following progress has been made since Checkpoint 3:
-
-### Unsupervised Analysis
-
-* Subset data to variables having $\ge 90\%$ complete data, then omitted rows with incomplete data (i.e., omitted all cases having any NAs)
-* Selected a random 5% sample of this data, stratified by BMI
-* Refactored calculation of dissimilarity matrix to use `vegdist()` instead of `daisy()` (`daisy()` doesn't retain labels in its output object, and those are needed for the visualizations)
-* Reran dendrograms based on 5% sample and applied BMI labels to output figures
-* Generated clustering statistics (within-cluster sum of squares and average silhouette width) for both approaches
-* Determined the correct number of clusters to use for both AGNES and DIANA via scree and silhouette plots
-* Generated a new set of dendrograms based on number of clusters chosen for each approach and began initial evaluation of performance
-* Began drafting presentation slides
-  
-## **Next Steps**
-
-* Finish evaluation of dendrogram plots; adjust cluster number and replot if needed
-* Continue working on final report and slides
-  
-## **Challenges**
-
-I experienced some technical challenges with getting different packages for perfomring AGNES and DIANA to work well with each other.  Sspecifically, the dissimilarity matrix as calculated per `daisy()` didn't retain class labels in its output (as mentiond above), but I needed these for the dendrogram plots, so I had to find an alternative package that would enable me to calculate a dissimilarity matrix using the Gower distance *and* retain class labels for later use.  Additionally, when generating dendrogram plots, the output object of the function I was previously using could not be coerced to the correct input object type for the next function in the chain, which was from a different package.  This required some searching on CRAN and Stack Overflow for alternative packages that would work better.  I was able to solve both of these issues.
-
-
-```{python libs, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-# Importing libraries
-
-import math
-import numpy as np
-import pandas as pd
-# import xgboost as xgb   # Circle back to this if I have time
-
-from sklearn import ensemble
-from sklearn import tree
-
-from sklearn.metrics import confusion_matrix
-
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import RepeatedKFold
-```
-
-```{python import_subset, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-nhanes_f = r.nhanes_sup_trim_dichot
-nhanes_feat_f = nhanes_f.drop(["BMI_cat"], axis = 1)
-nhanes_labs_f = nhanes_f.filter(["BMI_cat"])
-```
-
-```{python nxk_rkf, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-rfc_f = ensemble.RandomForestClassifier(n_estimators = 200, min_samples_leaf = 25, bootstrap = False) #max_depth = 7, 
-rkf_f = RepeatedKFold(n_repeats = 10, n_splits = 3)
-
-scores_f = cross_val_score(rfc_f, nhanes_feat_f, nhanes_labs_f.values.ravel(), cv = rkf_f)
-scores_f = pd.DataFrame(scores_f)
-```
-
-```{r score_rkf, eval = FALSE, include = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-scores_final <- py$scores_f %>% 
-  unlist() %>% 
-  as_tibble() %>% 
-  rename(score = value) %>% 
-  select(score) %>% 
-  mutate(score = as.numeric(score)) %>% 
-  summarize(n_runs = n(),
-            pct_acc = round(mean(score), digits = 4) * 100,
-            sd_acc = (round(sd(score), digits = 4) * 100),
-            min_acc = round(min(score), digits = 4) * 100,
-            max_acc = round(max(score), digits = 4) * 100)
-
-scores_final_kbl <- scores_final %>% 
-  kable(format = "markdown")
-scores_final_kbl
-```
-
-## **Unsupervised Approach**
 
 For the unsupervised component of this analysis, data was subset to variables with $\ge 90 \%$ non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was subset via a random 5% sample within each BMI category to allow for sensible, interpretable dendrograms.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).
 

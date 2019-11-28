@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Wed Nov 27 17:17:44 2019 ------------------------------
+# Wed Nov 27 21:21:39 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -645,7 +645,8 @@ omits <- wilcox_results %>%
 #### Finalizing analytic datasets ----
 
 nhanes <- nhanes_imputed %>% 
-  select(-one_of(!!quo(omits$variable)), -famincome_povratio, -PHQ9_score)
+  select(-one_of(!!quo(omits$variable)), -famincome_povratio, -PHQ9_score) %>% 
+  select_at(vars(-contains("_fct")))   # Didn't end up needing these for the unsupervised analysis
 
 nhanes_dichot <- nhanes %>%   # Creating a dichotomous BMI variable bucketing under/normal with over/obese
   mutate(BMI_dichot = case_when(
@@ -740,12 +741,17 @@ nhanes_unsup_mat <- nhanes_unsup_stag2 %>%
 rownames(nhanes_unsup_mat) <- unsup_labs
 
 
+# Save analytic datasets to .Rdata
+
+# save(nhanes, nhanes_sup_trim_dichot, nhanes_unsup_mat, unsup_labs, file = "data/analytic_datasets.RData")
+
+
 #### Removing staging and other unnecessary dataframes ----
 
 rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_contin", "nhanes_contin2", "nhanes_contin_desc",
-            "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", "nhanes_fct", "nhanes_imputed",
-            "age_wilcox", "mins_activ_wilcox", "mins_seden_wilcox", "dailykcal_wilcox", "dailywater_wilcox",
-            "omits", "wilcox_pvals", "wilcox_results", "wilcox_vars", "nhanes_unsup_stag", "nhanes_unsup_full",
+            "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", "nhanes_fct", "age_wilcox", 
+            "mins_activ_wilcox", "mins_seden_wilcox", "dailykcal_wilcox", "dailywater_wilcox", "omits", 
+            "wilcox_pvals", "wilcox_results", "wilcox_vars", "nhanes_unsup_stag", "nhanes_unsup_full",
             "nhanes_unsup_stag2"))
 
 

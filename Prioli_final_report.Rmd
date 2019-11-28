@@ -50,14 +50,18 @@ Descriptive statistics and frequency tables were generated for continuous and ca
 
 ### *Supervised Approach*
 
-Using algorithms available in Scikit-learn, a random forest of decision tree classifiers was used with $n \times k$-fold crossvalidation to classify cases into BMI category, and descriptive statistics were generated to assess model accuracy.[22-24]  To improve performance, hyperparameters `n_repeats` (or *n*, number of times crossvalidation was performed) and `n_splits` (or *k*, number of folds) in `RepeatedKFold()` were tuned, along with hyperparameters *n_estimators* (number of decision trees in the forest), *min_samples_leaf* (minimum cases allowed per terminal node), and *max_depth* (maximum tree depth) in `RandomForestClassifier`.  To further improve accuracy, the labels representing BMI category were recast as dichotomous, grouping together the underweight and healthy weight categories, versus the overweight and obese categories.  Additionally, the six comorbidity variables (pertaining to diabetes, coronary artery disease, myocardial infarction, thyroid disease, hypertension, and depression) were consolidated into one variable representing number of comorbidities, and variables which were suspected not to contribute much information to the model (due to low variation or large amount of missingness) were excluded from this modified dataset.
+Using algorithms available in Scikit-learn, a random forest of decision tree classifiers was used with $n \times k$-fold crossvalidation to classify cases into BMI category, and descriptive statistics were generated to assess model accuracy.[22-24]  To improve performance, hyperparameters `n_repeats` (or *n*, number of times crossvalidation was performed) and `n_splits` (or *k*, number of folds) in `RepeatedKFold()` were tuned, along with hyperparameters *n_estimators* (number of decision trees in the forest), *min_samples_leaf* (minimum cases allowed per terminal node), and *max_depth* (maximum tree depth) in `RandomForestClassifier`.
+
+To further improve accuracy, the labels representing BMI category were recast as dichotomous, grouping together the underweight and healthy weight categories, versus the overweight and obese categories.  Additionally, the six comorbidity variables (pertaining to diabetes, coronary artery disease, myocardial infarction, thyroid disease, hypertension, and depression) were consolidated into one variable representing number of comorbidities, and variables which were suspected not to contribute much information to the model (due to low variation or large amount of missingness) were excluded.  This modified dataset was then run through $N \times k$-fold crossvalidation with hyperparameter tuning and model accuracy assessment as previously described.
 
 ### *Unsupervised Approach*
+
+For the unsupervised component of this analysis, data was subset to variables with $\ge 90 \%$ non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was further subset to a random 5% sample within each BMI category to allow for sensible, interpretable dendrogram plots.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.[28]  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).  Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters.
 
 
 ### *Technologies*
 
-Data import, wrangling, and visualization were performed in R using an RMarkdown notebook and relying primarily on the `tidyverse` ecosystem.  The $n \times k$ crossvalidation random forest was implemented via Python code chunks in the notebook leveraging Scikit-Learn along with other common Python libraries as necessary (*e.g.*, `numpy` and `pandas`).[22-24]  For the agglomerative and divisive clustering, R packages `cluster`, `fpc`, and `CollapsibleTree` were used.  A public GitHub repository was established for this study and contains all raw data files and code along with project documentation.[20]
+Data import, wrangling, and visualization were performed in R using an RMarkdown notebook and relying primarily on the `tidyverse` ecosystem.  The $n \times k$ crossvalidation random forest was implemented via Python code chunks in the notebook leveraging Scikit-Learn along with other common Python libraries as necessary (*e.g.*, `numpy` and `pandas`).[22-24]  For the agglomerative and divisive clustering, R packages `cluster`, `fpc`, `dendrogram` and `dendextend` were used.  A public GitHub repository was established for this study and contains all raw data files and code along with project documentation.[20]
 
 
 ## **Results**
@@ -69,33 +73,33 @@ The final analytic dataframe contained `r dim(nhanes)[1]` rows and `r dim(nhanes
 ```{r analytic_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 varnames <- colnames(nhanes) %>% 
   as_tibble() %>% 
-  rename(Variable = value)
-
-# Double-check that this matches after fixing seed for rfImpute()
+  rename(Variable = value) %>% 
+  arrange(Variable)
 
 vardescs <- c("Age",
-              "Gender",
-              "Race",
-              "Level of education",
-              "Marital status",
-              "Family income category",
-              "Number of comorbidities",
-              "Told by doctor to lose weight and/or exercise",
-              "Daily minutes of moderate to vigorous activity",
-              "Daily minutes spent sedentary",
-              "Work limitations",
-              "Walking limitations",
-              "Feels diet is healthy",
-              "Has eaten fast food in past 12 months",
-              "Has used nutrition information to select fast food",
-              "Would use nutrition information to select fast food",
-              "Has eaten at a restaurant in past 12 months",
-              "Has used nutrition information to select restaurant meal",
-              "Would use nutrition information to select restaurant meal",
+              "BMI weight category",
               "Calories consumed on previous day",
               "Previous day's calorie consumption compared to usual",
               "Previous day's water intake",
-              "BMI weight category") %>% 
+              "Feels diet is healthy",
+              "Level of education",
+              "Family income category",
+              "Has eaten fast food in past 12 months",
+              "Has used nutrition information to select fast food",
+              "Would use nutrition information to select fast food",
+              "Gender",
+              "Told by doctor to lose weight and/or exercise",
+              "Marital status",
+              "Daily minutes of moderate to vigorous activity",
+              "Daily minutes spent sedentary",
+              "Number of comorbidities",
+              "Race",
+              "Has eaten at a restaurant in past 12 months",
+              "Has used nutrition information to select restaurant meal",
+              "Would use nutrition information to select restaurant meal",
+              "Unique identifier (omitted from analyses)",
+              "Walking limitations",
+              "Work limitations") %>% 
   as_tibble() %>% 
   rename(Description = value)
 
@@ -226,6 +230,9 @@ Another limitation is that variable selection is difficult with continuous varia
   
 \bibitem[27]
   `Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  {\tt 	arXiv:1411.4911v4 [stat.CO]}  Updated December 8, 2017.  Accessed November 17, 2019.
+  
+\bibitem[28]
+`Gower JC. A General Coefficient of Similarity and Some of Its Properties.  \textit{Biometrics}.  1971;27(4):857-71.  doi:  10.2307/2528823.
 
 
 \end{thebibliography}

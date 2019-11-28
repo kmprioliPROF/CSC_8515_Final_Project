@@ -1,7 +1,7 @@
 ---
 title: "README"
 author: "Katherine M. Prioli"
-date: "December 05, 2019"
+date: "November 27, 2019"
 output: html_document
 ---
 
@@ -24,18 +24,19 @@ Using a carefully selected a carefully selected set of variables from the 2015-2
 
 The repo is organized as follows:
   
-  | **Content**                  | **Description**                                                    	                                      |
-  |------------------------------|----------------------------------------------------------------------------------------------------------- |
-  | checkpoints/                 | Contains intermediate "checkpoint" project status reports                                                  |
-  | data/                        | Contains source datasets used in the analysis                                                              |
-  | presentation/                | Contains final presentation slides and any supporting files                                                |
-  | CSC_8515_final_project.Rproj | .Rproj project container                                                                                   |
-  | clustering_analysis.Rmd      | RMarkdown notebook containing the hierarchical clustering analysis                                         |
-  | clustering_stats.R           | R script used to generate clustering statistics for scree and silhouette plots                             |
-  | import_wrangle.R             | R script used to import raw data and generate analytic datasets; **_must be run before all other files_**  |
-  | Prioli_final_report.Rmd      | RMarkdown notebook containing final report                                                                 |
-  | Prioli_final_report.pdf      | .pdf of final report                                                                                       |
-  | random_forest.Rmd            | RMarkdown notebook containing the $n \times k$-fold crossvalidation Random Forest analysis                 |
+  | **Content**                  | **Description**                                                    	                         |
+  |------------------------------|---------------------------------------------------------------------------------------------- |
+  | checkpoints/                 | Contains intermediate "checkpoint" project status reports                                     |
+  | data/                        | Contains raw source datasets and .RData file with analytic datasets used in the analysis      |
+  | presentation/                | Contains final presentation slides and any supporting files                                   |
+  | CSC_8515_final_project.Rproj | .Rproj project container                                                                      |
+  | clustering_analysis.Rmd      | RMarkdown notebook containing the hierarchical clustering analysis                            |
+  | clustering_stats.R           | R script used to generate clustering statistics for scree and silhouette plots                |
+  | import_wrangle.R             | R script used to import raw data and generate analytic datasets                               |
+  | load_data.R                  | R script used to load analytic dataset from .RData; **_must be run before any other files_**  |
+  | Prioli_final_report.Rmd      | RMarkdown notebook containing final report                                                    |
+  | Prioli_final_report.pdf      | .pdf of final report                                                                          |
+  | random_forest.Rmd            | RMarkdown notebook containing the $n \times k$-fold crossvalidation Random Forest analysis    |
 
 
 ## **Technologies and Dependencies**
@@ -93,7 +94,7 @@ install.packages(c("broom",
 
 ## **Usage**
 
-The script `import_wrangle.R` must be run before any other file.  It will take about 5 minutes to run (there is a computationally intense imputation step).  From there, you can run either `random_forest.Rmd` for the supervised analysis, or `clustering_analysis.Rmd` for the unsupervised analysis.  The script `clustering_stats.R` is automatically called from within `clustering_analysis.Rmd` so no need to run it separately.
+The script `load_data.R` must be run before any other file.  From there, you can run either `random_forest.Rmd` for the supervised analysis, or `clustering_analysis.Rmd` for the unsupervised analysis.  The script `clustering_stats.R` is automatically called from within `clustering_analysis.Rmd` so no need to run it separately.
 
 
 ## **Data Source**
