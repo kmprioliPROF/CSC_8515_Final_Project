@@ -250,11 +250,11 @@ Both the AGNES and DIANA silhouette plots show maximum average silhouette width 
 
 The AGNES scree and silhouette plots indicate that 7 clusters may be sufficient.  Six clusters were chosen for DIANA.
 
-```{r agnes_dend_clust_k5, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
+```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
 # 7 clusters for AGNES
 ggthemr("flat", spacing = 0.1)
 
-agnes_dend_clust7 <- nhanes_agnes %>% 
+agnes_dend_clust_init <- nhanes_agnes %>% 
   as.dendrogram() %>% 
   set("leaves_pch", 19, col = ag_labcolors$leafcolor) %>% 
   set("leaves_col", ag_labcolors$leafcolor) %>% 
@@ -268,10 +268,10 @@ agnes_dend_clust7 <- nhanes_agnes %>%
                                  "#1ABCB4")) #,    # Teal
                                  #"#34495E"))   # Slate blue
 
-agnes_dend_clust7_ggd <- agnes_dend_clust7 %>% 
+agnes_dend_clust_init_ggd <- agnes_dend_clust_init %>% 
   as.ggdend()
 
-agnes_dend_clust7_gg <- ggplot(agnes_dend_clust7_ggd, labels = FALSE) +
+agnes_dend_clust_init_gg <- ggplot(agnes_dend_clust_init_ggd, labels = FALSE) +
   scale_y_reverse() +
   coord_polar(theta = "x") +
   theme(axis.line = element_blank(),
@@ -282,7 +282,7 @@ agnes_dend_clust7_gg <- ggplot(agnes_dend_clust7_ggd, labels = FALSE) +
   xlab("") +
   ylab("") +
   ggtitle("AGNES Dendrogram, k = 7 Clusters")
-agnes_dend_clust7_gg
+agnes_dend_clust_init_gg
 
 ggthemr("flat")
 ```
@@ -300,7 +300,7 @@ di_labcolors <- unsup_labs_reord_di %>%
     BMI_cat == "OB" ~ "#5E343F",
   ))
 
-diana_dend_clust6 <- nhanes_diana %>% 
+diana_dend_clust_init <- nhanes_diana %>% 
   as.dendrogram() %>% 
   set("leaves_pch", 19, col = di_labcolors$leafcolor) %>% 
   set("leaves_col", di_labcolors$leafcolor) %>% 
@@ -314,10 +314,10 @@ diana_dend_clust6 <- nhanes_diana %>%
                                  #"#1ABCB4",    # Teal
                                  #"#34495E"))   # Slate blue
 
-diana_dend_clust6_ggd <- diana_dend_clust6 %>% 
+diana_dend_clust_init_ggd <- diana_dend_clust_init %>% 
   as.ggdend()
 
-diana_dend_clust6_gg <- ggplot(diana_dend_clust6_ggd, labels = FALSE) +
+diana_dend_clust_init_gg <- ggplot(diana_dend_clust_init_ggd, labels = FALSE) +
   scale_y_reverse() +
   coord_polar(theta = "x") +
   theme(axis.line = element_blank(),
@@ -328,7 +328,7 @@ diana_dend_clust6_gg <- ggplot(diana_dend_clust6_ggd, labels = FALSE) +
   xlab("") +
   ylab("") +
   ggtitle("DIANA Dendrogram, k = 6 Clusters")
-diana_dend_clust6_gg
+diana_dend_clust_init_gg
 
 ggthemr("flat")
 ```
@@ -359,11 +359,11 @@ Though there are some clusters in each of these dendrograms having low heterogen
 
 <!-- These dendrograms were re-run using $k = 6$ clusters for AGNES and $k = 9$ clusters for DIANA; output is shown below. -->
 
-<!-- ```{r agnes_dend_clust_k9, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11} -->
+<!-- ```{r agnes_dend_clust_v2, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11} -->
 <!-- # 6 clusters for AGNES -->
 <!-- ggthemr("flat", spacing = 0.1) -->
 
-<!-- agnes_dend_clust6 <- nhanes_agnes %>%  -->
+<!-- agnes_dend_clust_v2 <- nhanes_agnes %>%  -->
 <!--   as.dendrogram() %>%  -->
 <!--   set("leaves_pch", 19, col = ag_labcolors$leafcolor) %>%  -->
 <!--   set("leaves_col", ag_labcolors$leafcolor) %>%  -->
@@ -377,10 +377,10 @@ Though there are some clusters in each of these dendrograms having low heterogen
 <!--                                  #"#1ABCB4",    # Teal -->
 <!--                                  "#34495E"))   # Slate blue -->
 
-<!-- agnes_dend_clust6_ggd <- agnes_dend_clust6 %>%  -->
+<!-- agnes_dend_clust_v2_ggd <- agnes_dend_clust_v2 %>%  -->
 <!--   as.ggdend() -->
 
-<!-- agnes_dend_clust6_gg <- ggplot(agnes_dend_clust6_ggd, labels = FALSE) + -->
+<!-- agnes_dend_clust_v2_gg <- ggplot(agnes_dend_clust_v2_ggd, labels = FALSE) + -->
 <!--   scale_y_reverse() + -->
 <!--   coord_polar(theta = "x") + -->
 <!--   theme(axis.line = element_blank(), -->
@@ -391,16 +391,16 @@ Though there are some clusters in each of these dendrograms having low heterogen
 <!--   xlab("") + -->
 <!--   ylab("") + -->
 <!--   ggtitle("AGNES Dendrogram, k = 6 Clusters") -->
-<!-- agnes_dend_clust6_gg -->
+<!-- agnes_dend_clust_v2_gg -->
 
 <!-- ggthemr("flat") -->
 <!-- ``` -->
 
-<!-- ```{r diana_dend_clust_k9, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11} -->
+<!-- ```{r diana_dend_clust_v2, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11} -->
 <!-- # 9 clusters for DIANA -->
 <!-- ggthemr("flat", spacing = 0.1) -->
 
-<!-- diana_dend_clust9 <- nhanes_diana %>%  -->
+<!-- diana_dend_clust_v2 <- nhanes_diana %>%  -->
 <!--   as.dendrogram() %>%  -->
 <!--   set("leaves_pch", 19, col = di_labcolors$leafcolor) %>%  -->
 <!--   set("leaves_col", di_labcolors$leafcolor) %>%  -->
@@ -414,10 +414,10 @@ Though there are some clusters in each of these dendrograms having low heterogen
 <!--                                  "#1ABCB4",    # Teal -->
 <!--                                  "#34495E"))   # Slate blue -->
 
-<!-- diana_dend_clust9_ggd <- diana_dend_clust9 %>%  -->
+<!-- diana_dend_clust_v2_ggd <- diana_dend_clust_v2 %>%  -->
 <!--   as.ggdend() -->
 
-<!-- diana_dend_clust9_gg <- ggplot(diana_dend_clust9_ggd, labels = FALSE) + -->
+<!-- diana_dend_clust_v2_gg <- ggplot(diana_dend_clust_v2_ggd, labels = FALSE) + -->
 <!--   scale_y_reverse() + -->
 <!--   coord_polar(theta = "x") + -->
 <!--   theme(axis.line = element_blank(), -->
@@ -428,7 +428,7 @@ Though there are some clusters in each of these dendrograms having low heterogen
 <!--   xlab("") + -->
 <!--   ylab("") + -->
 <!--   ggtitle("DIANA Dendrogram, k = 9 Clusters") -->
-<!-- diana_dend_clust9_gg -->
+<!-- diana_dend_clust_v2_gg -->
 
 <!-- ggthemr("flat") -->
 <!-- ``` -->

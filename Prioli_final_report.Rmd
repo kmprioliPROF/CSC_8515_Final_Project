@@ -11,6 +11,30 @@ geometry: margin = 0.5in
 abstract: "**_Background_** Text **_Methods_** Text  **_Results_** Text **_Conclusion_** Text"
 ---
 
+```{r load_libraries, include = FALSE, ech = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE}
+library(here)           # For easy sourcing from project directory
+library(haven)          # For loading SAS .xpt files
+library(sjlabelled)     # For removing pesky column labels
+library(forcats)        # For handling categorical data
+library(psych)          # For describe()
+library(randomForest)   # For rfImpute()
+library(vegan)          # For vegdist() (computing Gower distance)
+library(cluster)        # For diana()
+library(fpc)            # For cqcluster.stats()
+library(ggdendro)       # For ggdendrogram()
+library(dendextend)     # For coloring dendrogram labels by BMI_cat
+library(gridExtra)      # For grid.arrange()
+library(grid)           # For textGrob() to annotate grid.arrange() elements
+library(rmarkdown)      # For render()
+library(reticulate)     # For interfacing with Python in .Rmd
+library(kableExtra)     # For prettifying output tables
+library(broom)          # For tidy()
+library(ggthemr)        # For prettifying output plots
+library(tidyselect)     # For selecting by string
+library(tidyverse)      # For data import and wrangling
+```
+
+
 ```{r incrementers, include = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 i <- 1   # Tables
 j <- 1   # Figures
@@ -57,6 +81,8 @@ To further improve accuracy, the labels representing BMI category were recast as
 ### *Unsupervised Approach*
 
 For the unsupervised component of this analysis, data was subset to variables with $\ge 90 \%$ non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was further subset to a random 5% sample within each BMI category to allow for sensible, interpretable dendrogram plots.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.[28]  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).  Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters.
+
+Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based on an upper limit of 15 clusters; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via visual inspection, and the cluster number hyperparameter *k* was tuned as needed to improve homogeneity.
 
 
 ### *Technologies*
@@ -114,15 +140,55 @@ i <- i + 1
 
 ### *Supervised Approach*
 
-The initial model, based on the full dataset and using $k = 5$ folds, $n = 5$ repeats, and 100 trees in the ensemble without limitation on the number of cases per terminal node, yielded 52% accuracy (range: 49-55%).  Variables included in the reduced dataset included age, gender, race, education level, marital status, family income category, number of comorbidities, number of daily minutes active and sedentary, having eaten fast food or at a restaurant in the past year, daily calories, daily water intake, and having been told by a doctor to lose weight and/or exercise, along with dichotomous BMI category.  The final model based on this reduced dataset used $k = 3$ folds, $n = 10$ repeats, and 200 trees, and was limited to $\ge 25$ cases per terminal node.  This model yielded `r paste0(scores_final$pct_acc, "%")` accuracy (range: `r scores_final$min_act`-`r paste0(scores_final$max_acc, "%")`), representing a meaningful improvement.
+The initial model, based on the full dataset and using $k = 5$ folds, $n = 5$ repeats, and 100 trees in the ensemble without limitation on the number of cases per terminal node, yielded 52% mean accuracy (range: 49-55%).  Variables included in the reduced dataset included age, gender, race, education level, marital status, family income category, number of comorbidities, number of daily minutes active and sedentary, having eaten fast food or at a restaurant in the past year, daily calories, daily water intake, and having been told by a doctor to lose weight and/or exercise, along with dichotomous BMI category.  The final model based on this reduced dataset used $k = 3$ folds, $n = 10$ repeats, and 200 trees, and was limited to $\ge 25$ cases per terminal node.  This model yielded `r paste0(scores_final$pct_acc, "%")` mean accuracy (range: `r scores_final$min_act`-`r paste0(scores_final$max_acc, "%")`), representing a meaningful improvement.
 
 
 ### *Unsupervised Approach*
 
+The scree and silhouette plots are presented in Fig. `r j`.  The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two elbows are seen:  one at 5 clusters and one at 6.  Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.  Considered together, scree and silhouette plots indicate that 7 clusters may be sufficient for AGNES, and 6 for DIANA.
+
+**Figure `r i`.  Scree and Silhouette Plots**
+
+```{r scree_silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4, fig.cap = }
+grid.arrange(agnes_scree, diana_scree, nrow = 1,
+             top = textGrob("Scree Plots, Hierarchical Clustering Analysis",
+                            gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
+                            x = 0.025, hjust = 0))
+
+grid.arrange(agnes_sil, diana_sil, nrow = 1,
+             top = textGrob("Silhouette Plots, Hierarchical Clustering Analysis",
+                            gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
+                            x = 0.025, hjust = 0))
+
+j <- j + 1
+```
+
+Initial radial dendrograms are shown in Figs. 2 and 3.
+
+**Figure `r i`.  Initial Colored Radial Dendrogram, AGNES**
+
+```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
+ggthemr("flat", spacing = 0.1)
+agnes_dend_clust_init_gg
+ggthemr("flat")
+
+j <- j + 1
+```
+
+**Figure `r i`.  Initial Colored Radial Dendrogram, DIANA**
+
+```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
+ggthemr("flat", spacing = 0.1)
+diana_dend_clust_init_gg
+ggthemr("flat")
+
+j <- j + 1
+```
+
 
 ## **Discussion**
 
-For the supervised approach, the final decision model reached `r paste0(scores_final$pct_acc, "%")` accuracy.  While this is an improvement over the initial model, it generally would be considered poor performance for any real-world implementation.
+For the supervised approach, the final decision model reached `r paste0(scores_final$pct_acc, "%")` mean accuracy.  While this is an improvement over the initial model, it generally would be considered poor performance for any real-world implementation.
 
 
 
@@ -131,14 +197,15 @@ For the supervised approach, the final decision model reached `r paste0(scores_f
 
 
 
-<!-- Elaborate on the below or omit it -->
-<!-- Aside from the stated scientific objectives, learning objectives for this project were to understand how to use Python and R together in an RMarkdown environment using the `reticulate` package for R. -->
+
 
 ### *Limitations*
 
 Because the Scikit-Learn `randomForestClassifier()` function was unable to handle missing data, missing values were handled via imputation (continuous variables) or by creating a "missing" category comprising all-cause nonresponses (categorical variables).  Using a "missing" category in this manner may have introduced noise into the dataset, because it's not known missing values were missing completely at random or missing not at random.  Future iterations of this analysis should include other random forest functions - e.g., those available in the `xgboost` Python library.
 
-Another limitation is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [25-27]
+Another limitation is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [25-27]  In the absence of more sophisticated tools, variable selection was based on those characteristics expected to be most closely correlated with weight.
+
+
 
 
 ## **Conclusion**

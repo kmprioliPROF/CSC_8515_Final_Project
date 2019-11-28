@@ -30,3 +30,8 @@ ggthemr("flat")
 set.seed(20191205)      # Setting seed to ensure stable results
 
 load("data/analytic_datasets.RData")
+
+
+#### Rendering .Rmd ----
+
+# render("Prioli_final_report.Rmd")
