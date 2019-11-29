@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - load analytic datasets from .RData
-# Wed Nov 27 21:13:36 2019 ------------------------------
+# Fri Nov 29 17:16:59 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -34,4 +34,4 @@ load("data/analytic_datasets.RData")
 
 #### Rendering .Rmd ----
 
-# render("Prioli_final_report.Rmd")
+# render("report/Prioli_final_report.Rmd")

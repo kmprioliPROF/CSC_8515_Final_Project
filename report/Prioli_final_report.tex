@@ -1,0 +1,1007 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin = 0.5in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdfauthor={Katherine M. Prioli},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Understanding Correlates of Obesity:\\
+Supervised and Unsupervised Learning Approaches}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Katherine M. Prioli}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{December 05, 2019}
+
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\textbf{\emph{Background}} Text \textbf{\emph{Methods}} Text
+\textbf{\emph{Results}} Text \textbf{\emph{Conclusion}} Text
+\end{abstract}
+
+\hypertarget{background}{%
+\subsection{\texorpdfstring{\textbf{Background}}{Background}}\label{background}}
+
+Overweight and obesity are growing public health concerns, with 71.6\%
+of American adults meeting at least the criteria for overweight, and
+39.8\% qualifying as obese per the Centers for Disease Control and
+Prevention (CDC) as of 2016.{[}1{]} Defined as a body mass index (BMI)
+of 30 \(kg/m^{2}\) or above, obesity is of especially high concern
+because it strongly correlates with many diseases and conditions that
+lead to significant morbidity and mortality, and thus to increased
+healthcare utilization and decreased productivity, both at high economic
+burden.{[}2-4{]}
+
+The National Health and Nutrition Examination Survey (NHANES), a
+biennial health surveillance study performed by the CDC, collects data
+from a nationally representative sample of community-dwelling Americans
+pertaining to demographics, health, and nutritional and exercise habits
+through both self-report and physical examination.{[}5{]} NHANES has
+uncovered some demographic correlates of obesity \(-\) namely, that
+obesity is more prevalent among Hispanics and non-Hispanic blacks for
+both adults and children, that obesity is more prevalent among women
+across all racial groups, and that for all racial groups except blacks,
+education level appears inversely correlated with prevalence of
+obesity.{[}6,7{]} However, though much progress has been made toward
+understanding the socioeconomic and behavioral drivers of obesity, much
+remains unknown about the interactions of these characteristics and how
+constellations thereof could be used to detect obesity at the population
+level.
+
+Reducing both the incidence and prevalence of obesity will be critical
+in managing obesity-related healthcare expenditure, especially for
+publicly funded programs such as Medicare and Medicaid. If
+constellations of obesity correlates can be identified, tailored health
+interventions that target these constellations to prevent or reduce
+obesity could be developed. Using the 2015-2016 NHANES data, the
+objective of this study was to apply both supervised and unsupervised
+machine learning approaches to find patterns in a carefully selected set
+of characteristics which are known or suspected to be correlated with
+obesity.
+
+\hypertarget{methods}{%
+\subsection{\texorpdfstring{\textbf{Methods}}{Methods}}\label{methods}}
+
+\hypertarget{variable-selection}{%
+\subsubsection{\texorpdfstring{\emph{Variable
+Selection}}{Variable Selection}}\label{variable-selection}}
+
+A literature search of PubMed for currently known or suspected
+demographic, behavioral, and medical correlates of excess adiposity was
+used to inform variable selection. NHANES 2015-2016 variables chosen for
+the study are presented in Table 1, with the source denoted as
+``native'' for variables native to the NHANES dataset or ``derived'' for
+variables calculated from native NHANES variables. Derived variables of
+note included the scored and categorized nine-item Patient Health
+Questionnaire (PHQ-9), a validated nine-item depression inventory, as
+well as \texttt{BP\_cat}, representing clinical categories of blood
+pressure ranging from hypotension through hypertensive crisis, assigned
+based on systolic and diastolic blood pressure values. Additionally,
+many of the native categorical variables were refactored to group
+nonresponses (e.g., refusals to respond, ``Don't know'' responses, and
+missing values) into a single category.
+
+\textbf{Table 1. Variables in initial dataset.}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+\begin{minipage}[b]{0.10\columnwidth}\raggedright
+Variable\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\raggedright
+Source\strut
+\end{minipage} & \begin{minipage}[b]{0.43\columnwidth}\raggedright
+Description\strut
+\end{minipage} & \begin{minipage}[b]{0.31\columnwidth}\raggedright
+Reference\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+SEQN\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Unique identifier\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}8{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+RIAGENDR\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Gender\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}8{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+RIDAGEYR\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Age\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}8{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+RIDRETH3\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Race/ethnicity\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}8{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DMDEDUC2\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Education level\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}8{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DMDMARTL\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Marital status\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}8{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+INDFMIN2\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Annual family income\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}8{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+INDFMPIR\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Ratio of family income to poverty\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}8{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DIQ010\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+History of diabetes\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}9{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DIQ280\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Last hemoglobin A1C (HbA1C) level\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}9{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+MCQ160c\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+History of coronary heart disease\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}10{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+MCQ160e\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+History of myocardial infarction\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}10{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+MCQ160m\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+History of thyroid disease\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}10{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+MCQ365a\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Doctor has told to lose weight\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}10{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+MCQ365b\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Doctor has told to exercise\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}10{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+BPXSY2\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Systolic blood pressure (\(mmHg\))\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}11{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+BPXDI2\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Diastolic blood pressure (\(mmHg\))\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}11{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+BP\_cat\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+derived\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Clinical blood pressure category\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}18, 21{]}; native variables BPXSY2, BPXDI2\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PAD615\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Average minutes of vigorous physical work per day\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}12{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PAD630\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Average minutes of moderate physical work per day\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}12{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PAD660\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Average minutes of vigorous physical recreational activity per day\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}12{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PAD675\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Average minutes of moderate physical recreational activity per day\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}12{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+mins\_activ\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+derived\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Average minutes of moderate and/or vigorous activity per day\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+Native variables PAD615, PAD630, PAD660, PAD675\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PAD680\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Average minutes awake and sedentary per day\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}12{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PFQ049\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Unable to work due to impairment\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}13{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PFQ061\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Difficulty walking 1/4 mile\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}13{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DPQ010 - DPQ090\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Depression inventory subscores\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}14{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PHQ9\_score\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+derived\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Depression inventory score\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}19{]}; native variables DPQ010 - DPQ090\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+PHQ9\_cat\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+derived\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Depression inventory category\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}19{]}; native variables DPQ010 - DPQ090\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DBQ700\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Self-perception of dietary healthiness\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}15{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+CBQ505\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Ate fast food or pizza within past 12 months\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}15{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+CBQ540\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Used nutritional information to choose fast foods\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}15{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+CBQ545\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Would use nutritional information to choose fast foods\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}15{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+CBQ550\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Ate at a restaurant with waitstaff in past 12 months\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}15{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+CBQ585\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Used nutritional information to choose restaurant meal\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}15{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+CBQ590\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Would use nutritional information to choose restaurant meal\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}15{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DR1TKCAL\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Dietary intake, Day 1 (\emph{kcal})\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}16{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DR1300\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Day 1 dietary intake compared to usual\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}16{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+DR1\_32OZ\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Water intake, Day 1 (\emph{g})\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}16{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+BMXBMI\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+native\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+Body Mass Index (\(kg/m^{2}\))\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}17{]}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright
+BMI\_cat\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\raggedright
+derived\strut
+\end{minipage} & \begin{minipage}[t]{0.43\columnwidth}\raggedright
+BMI weight category\strut
+\end{minipage} & \begin{minipage}[t]{0.31\columnwidth}\raggedright
+{[}2{]}; native variable BMXBMI\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+Because BMI categories differ for children and adults, the analysis was
+limited to ages \(\ge\) 20, consistent with the NHANES definition of
+adult.{[}8{]} Additionally, since \texttt{BMI\_cat} represents the data
+labels, all rows with null \texttt{BMI\_cat} were excluded.
+
+Descriptive statistics and frequency tables were generated for
+continuous and categorical variables respectively to understand data
+contents and to assess the degree of missingness among the continuous
+data. Missing values were imputed for continuous data using the R
+function \texttt{rfImpute()}. To avoid introducing bias through
+imputation, two-sided Wilcoxon Rank-Sum tests were performed for each
+variable on the pre- vs.~post-imputation data to identify any
+statistically significant changes introduced by imputation at the
+\(\alpha = 0.05\) level. Any variables having statistically different
+post-imputation data were removed from the dataset.
+
+\hypertarget{supervised-approach}{%
+\subsubsection{\texorpdfstring{\emph{Supervised
+Approach}}{Supervised Approach}}\label{supervised-approach}}
+
+Using algorithms available in Scikit-learn, a random forest of decision
+tree classifiers was used with \(n \times k\)-fold crossvalidation to
+classify cases into BMI category, and descriptive statistics were
+generated to assess model accuracy.{[}22-24{]} To improve performance,
+hyperparameters \texttt{n\_repeats} (or \emph{n}, number of times
+crossvalidation was performed) and \texttt{n\_splits} (or \emph{k},
+number of folds) in \texttt{RepeatedKFold()} were tuned, along with
+hyperparameters \texttt{n\_estimators} (number of decision trees in the
+forest), \texttt{min\_samples\_leaf} (minimum cases allowed per terminal
+node), and \texttt{max\_depth} (maximum tree depth) in
+\texttt{RandomForestClassifier}.
+
+To further improve accuracy, the labels representing BMI category were
+recast as dichotomous, grouping together the underweight and healthy
+weight categories, versus the overweight and obese categories.
+Additionally, the six comorbidity variables (pertaining to diabetes,
+coronary artery disease, myocardial infarction, thyroid disease,
+hypertension, and depression) were consolidated into one variable
+representing number of comorbidities, and variables which were suspected
+not to contribute much information to the model (due to low variation or
+large amount of missingness) were excluded. This modified dataset was
+then run through \(N \times k\)-fold crossvalidation with hyperparameter
+tuning and model accuracy assessment as previously described.
+
+\hypertarget{unsupervised-approach}{%
+\subsubsection{\texorpdfstring{\emph{Unsupervised
+Approach}}{Unsupervised Approach}}\label{unsupervised-approach}}
+
+For the unsupervised component of this analysis, data was subset to
+variables with \(\ge 90\)\% non-missing values, then all cases with
+missing values were dropped. Since this approach involves visual
+analysis via dendrograms, the data was further subset to a random 5\%
+sample within each BMI category to allow for sensible, interpretable
+dendrogram plots. The analytic dataset thus comprised 241 cases having
+17 variables. To generate dendrograms for agglomerative clustering
+(AGNES) and divisive clustering (DIANA), a dissimilarity matrix was
+calculated based on Gower distance.{[}28{]} The Gower distance was
+chosen because the variables in this dataset are of mixed type (i.e.,
+some continuous, some ordinal, and some nominal). Because the data is
+likely noisy, AGNES relied on complete (i.e., maximum distance) linkage
+between clusters.
+
+Radial dendrograms for both AGNES and DIANA were plotted along with
+colored labels at each leaf to indicate the four BMI weight categories.
+For both AGNES and DIANA, cluster size was assessed and within-cluster
+sums of squares and average silhouette width were calculated based on an
+upper limit of 15 clusters; these latter two metrics were used to
+generate scree and silhouette plots, which were used to determine an
+initial cluster number for each approach. The radial dendrograms were
+replotted using these values to inform cluster coloration. Homogeneity
+of label colors in each cluster was assessed via visual inspection, and
+the cluster number hyperparameter \emph{k} was tuned as needed to
+improve homogeneity.
+
+\hypertarget{technologies}{%
+\subsubsection{\texorpdfstring{\emph{Technologies}}{Technologies}}\label{technologies}}
+
+Data import, wrangling, and visualization were performed in R using an
+RMarkdown notebook and relying primarily on the \texttt{tidyverse}
+ecosystem. The \(n \times k\) crossvalidation random forest was
+implemented via Python code chunks in the notebook leveraging
+Scikit-Learn along with other common Python libraries as necessary
+(\emph{e.g.}, \texttt{numpy} and \texttt{pandas}).{[}22-24{]} For the
+agglomerative and divisive clustering, R packages \texttt{cluster},
+\texttt{fpc}, \texttt{dendrogram} and \texttt{dendextend} were used. A
+public GitHub repository was established for this study and contains all
+raw data files and code along with project documentation.{[}20{]}
+
+\hypertarget{results}{%
+\subsection{\texorpdfstring{\textbf{Results}}{Results}}\label{results}}
+
+The final analytic dataframe contained 5406 rows and 24 columns.
+Variables included in the dataset are presented in Table 2:
+
+\textbf{Table 2. Variables in final dataset.}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+\begin{minipage}[b]{0.24\columnwidth}\raggedright
+Variable\strut
+\end{minipage} & \begin{minipage}[b]{0.70\columnwidth}\raggedright
+Description\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+age\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Age\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+BMI\_cat\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+BMI weight category\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+dailykcal\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Calories consumed on previous day\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+dailykcal\_typical\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Previous day's calorie consumption compared to usual\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+dailywater\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Previous day's water intake\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+diethealthy\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Feels diet is healthy\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+educ\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Level of education\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+famincome\_cat\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Family income category\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+fastfood\_eat\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Has eaten fast food in past 12 months\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+fastfood\_usednutrit\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Has used nutrition information to select fast food\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+fastfood\_woulduse\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Would use nutrition information to select fast food\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+gender\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Gender\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+losewt\_exer\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Told by doctor to lose weight and/or exercise\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+marital\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Marital status\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+mins\_activ\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Daily minutes of moderate to vigorous activity\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+mins\_seden\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Daily minutes spent sedentary\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+n\_comorbid\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Number of comorbidities\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+race\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Race\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+restaur\_eat\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Has eaten at a restaurant in past 12 months\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+restaur\_usednutrit\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Has used nutrition information to select restaurant meal\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+restaur\_woulduse\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Would use nutrition information to select restaurant meal\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+seqn\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Unique identifier (omitted from analyses)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+walklim\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Walking limitations\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.24\columnwidth}\raggedright
+worklim\strut
+\end{minipage} & \begin{minipage}[t]{0.70\columnwidth}\raggedright
+Work limitations\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{supervised-approach-1}{%
+\subsubsection{\texorpdfstring{\emph{Supervised
+Approach}}{Supervised Approach}}\label{supervised-approach-1}}
+
+The initial model, based on the full dataset and using \(k = 5\) folds,
+\(n = 5\) repeats, and 100 trees in the ensemble without limitation on
+the number of cases per terminal node, yielded 52\% mean accuracy
+(range: 49-55\%). Variables included in the reduced dataset included
+age, gender, race, education level, marital status, family income
+category, number of comorbidities, number of daily minutes active and
+sedentary, having eaten fast food or at a restaurant in the past year,
+daily calories, daily water intake, and having been told by a doctor to
+lose weight and/or exercise, along with dichotomous BMI category. The
+final model based on this reduced dataset used \(k = 3\) folds,
+\(n = 10\) repeats, and 200 trees, and was limited to \(\ge 25\) cases
+per terminal node. This model yielded 75.53\% mean accuracy (range:
+73.58-77.03\%), representing a meaningful improvement.
+
+\hypertarget{unsupervised-approach-1}{%
+\subsubsection{\texorpdfstring{\emph{Unsupervised
+Approach}}{Unsupervised Approach}}\label{unsupervised-approach-1}}
+
+The scree and silhouette plots are presented in Fig. 1. The AGNES scree
+plot shows a relatively smooth curve without strong elbows; possible but
+faint elbows appear at 5 and 7 clusters. For DIANA, two elbows are seen:
+one at 5 clusters and one at 6. Both the AGNES and DIANA silhouette
+plots show maximum average silhouette width at 2 clusters, which is
+unlikely to contain sufficient data to be meaningful. AGNES shows a
+local maximum at 7 clusters, and DIANA at 6. Considered together, scree
+and silhouette plots indicate that 7 clusters may be sufficient for
+AGNES, and 6 for DIANA.
+
+\textbf{Figure 3. Scree and Silhouette Plots}
+
+\includegraphics{Prioli_final_report_files/figure-latex/scree_silhou-1.pdf}
+\includegraphics{Prioli_final_report_files/figure-latex/scree_silhou-2.pdf}
+
+Initial radial dendrograms are shown in Figs. 2 and 3.
+
+\textbf{Figure 3. Initial Colored Radial Dendrogram, AGNES (\emph{k} =
+7)}
+
+\includegraphics{Prioli_final_report_files/figure-latex/agnes_dend_clust_init-1.pdf}
+
+\textbf{Figure 3. Initial Colored Radial Dendrogram, DIANA (\emph{k} =
+6)}
+
+\includegraphics{Prioli_final_report_files/figure-latex/diana_dend_clust_init-1.pdf}
+
+\hypertarget{discussion}{%
+\subsection{\texorpdfstring{\textbf{Discussion}}{Discussion}}\label{discussion}}
+
+For the supervised approach, the final decision model reached 75.53\%
+mean accuracy. While this is an improvement over the initial model, it
+generally would be considered poor performance for any real-world
+implementation.
+
+\hypertarget{strengths}{%
+\subsubsection{\texorpdfstring{\emph{Strengths}}{Strengths}}\label{strengths}}
+
+\hypertarget{limitations}{%
+\subsubsection{\texorpdfstring{\emph{Limitations}}{Limitations}}\label{limitations}}
+
+Because the Scikit-Learn \texttt{randomForestClassifier()} function was
+unable to handle missing data, missing values were handled via
+imputation (continuous variables) or by creating a ``missing'' category
+comprising all-cause nonresponses (categorical variables). Using a
+``missing'' category in this manner may have introduced noise into the
+dataset, because it's not known missing values were missing completely
+at random or missing not at random. Future iterations of this analysis
+should include other random forest functions - e.g., those available in
+the \texttt{xgboost} Python library.
+
+Another limitation is that variable selection is difficult with
+continuous variables. Principal Component Analysis (PCA) is a common
+method used for choosing variables when considering continuous data, but
+is not commonly used when data is categorical. There is, however,
+evidence in the literature to suggest that categorical variables can be
+treated via a modified PCA approach, but the packages currently
+available for this either have limited documentation or are not built on
+a recent version of R. {[}25-27{]} In the absence of more sophisticated
+tools, variable selection was based on those characteristics expected to
+be most closely correlated with weight.
+
+\hypertarget{conclusion}{%
+\subsection{\texorpdfstring{\textbf{Conclusion}}{Conclusion}}\label{conclusion}}
+
+\hypertarget{references}{%
+\subsection{\texorpdfstring{\textbf{References}}{References}}\label{references}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Selected health conditions and risk factors, by age: United States,
+  selected years 1988-1994 through 2015-2016. Centers for Disease
+  Control and Prevention. Health, United States, 2017: Trend Tables.
+  \url{https://www.cdc.gov/nchs/data/hus/2017/053.pdf}. Accessed October
+  20, 2019.
+\item
+  Defining Adult Overweight and Obesity. Centers for Disease Control and
+  Prevention. \url{https://www.cdc.gov/obesity/adult/defining.html}.
+  Updated April 11, 2017. Accessed October 22, 2019.
+\item
+  Hruby A, Hu FB. The Epidemiology of Obesity: A Big Picture.
+  \emph{Pharmacoeconomics}. 2015;33(7):673-89.
+  \url{doi:10.1007/s40273-014-0243-x}.
+\item
+  Li Q, Blume SW, Huang JC, Hammer M, Ganz ML. Prevalence and healthcare
+  costs of obesity-related comorbidities: evidence from an electronic
+  medical records system in the United States. \emph{J Med Econ}.
+  2015;18(12):1020-8. doi: 10.3111/13696998.2015.1067623.
+\item
+  National Health and Nutrition Examination Survey. National Center for
+  Health Statistics. \url{https://www.cdc.gov/nchs/nhanes/index.htm}.
+  Updated September 24, 2019. Accessed October 20, 2019.
+\item
+  Hales CM, Carroll MD, Fryar CD, Ogden CL. Prevalence of Obesity Among
+  Adults and Youth: United States, 2015-2016. NCHS Data Brief No.~288.
+  National Center for Health Statistics. 2017.
+  \url{https://www.cdc.gov/nchs/data/databriefs/db288.pdf}. Accessed
+  October 20, 2019.
+\item
+  Ogden CL, Fakhouri TH, Carroll MD, et al.~Prevalence of Obesity Among
+  Adults, by Household Income and Education -- United States, 2011-2014.
+  \emph{Morb Mortal Wkly Rep}. 2017;66:1369-1373. doi:
+  \url{http://dx.doi.org/10.15585/mmwr.mm6650a1}.
+\item
+  National Health and Nutrition Examination Survey: Demographic
+  Variables and Sample Weights (DEMO\_I). National Center for Health
+  Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.XPT}. Updated
+  September 2017. Accessed October 27, 2019.
+\item
+  National Health and Nutrition Examination Survey: Questionnaire Data -
+  Diabetes (DIQ\_I). National Center for Health Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DIQ_I.XPT}. Updated
+  September 2017. Accessed October 29, 2019.
+\item
+  National Health and Nutrition Examination Survey: Questionnaire Data -
+  Medical (MCQ\_I). National Center for Health Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/MCQ_I.XPT}. Updated
+  September 2017. Accessed October 29, 2019.
+\item
+  National Health and Nutrition Examination Survey: Examination Data -
+  Blood Pressure (BPX\_I). National Center for Health Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BPX_I.XPT}. Updated
+  September 2017. Accessed October 29, 2019.
+\item
+  National Health and Nutrition Examination Survey: Questionnaire Data -
+  Physical Activity (PAQ\_I). National Center for Health Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT}. Updated
+  September 2017. Accessed October 29, 2019.
+\item
+  National Health and Nutrition Examination Survey: Questionnaire Data -
+  Physical Functioning (PFQ\_I). National Center for Health Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT}. Updated
+  September 2017. Accessed October 29, 2019.
+\item
+  National Health and Nutrition Examination Survey: Questionnaire Data -
+  Mental Health: Depression Screener (DPQ\_I). National Center for
+  Health Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT}. Updated
+  December 2017. Accessed October 29, 2019.
+\item
+  National Health and Nutrition Examination Survey: Questionnaire Data -
+  Diet Behavior and Nutrition (DBQ\_I). National Center for Health
+  Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT}. Updated
+  November 2018. Accessed October 29, 2019.
+\item
+  National Health and Nutrition Examination Survey: Questionnaire Data -
+  Dietary Interview: Total Nutrient Intakes, First Day (DR1TOT\_I).
+  National Center for Health Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT}. Updated
+  July 2018. Accessed October 29, 2019.
+\item
+  National Health and Nutrition Examination Survey: Examination Data -
+  Body Measures (BMX\_I). National Center for Health Statistics.
+  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT}. Updated
+  September 2017. Accessed October 29, 2019.
+\item
+  Whelton PK, Carey RM, Aronow WS, et al.~2017
+  ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the
+  Prevention, Detection, Evaluation, and Management of High Blood
+  Pressure in Adults: A Report of the American College of
+  Cardiology/American Heart Association Task Force on Clinical Practice
+  Guidelines. \emph{J Am Coll Cardiol}. 2018;71(19):e127-e248. doi:
+  10.1016/j.jacc.2017.11.006.
+\item
+  Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and
+  severity measure. \emph{Psychiatric Annals}. 2002;32(9):1-7 doi:
+  10.3928/0048-5713-20020901-06.
+\item
+  Prioli KM. CSC\_8515\_Final\_Project.
+  \url{https://github.com/kprioliPROF/CSC_8515_Final_Project}.
+\item
+  Low Blood Pressure. US National Library of Medicine: MedlinePlus.
+  \url{https://medlineplus.gov/ency/article/007278.htm}. Updated
+  November 06, 2019. Accessed November 10, 2019.
+\item
+  sklearn.ensemble.RandomForestClassifier. Scikit-learn documentation.
+  \url{https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html}.
+  Accessed November 10, 2019.
+\item
+  sklearn.model\_selection.RepeatedKFold. Scikit-learn documentation.
+  \url{https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RepeatedKFold.html}.
+  Accessed November 10, 2019.
+\item
+  sklearn.model\_selection.cross\_val\_score. Scikit-learn
+  documentation.
+  \url{https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html}.
+  Accessed November 10, 2019.
+\item
+  Niitsuma H, Okada T. Covariance and PCA for Categorical Variables.
+  Advances in Knowledge Discovery and Data Mining. Ho TB, Cheung D, Liu
+  H, eds.~*Advances in Knowledge Discovery and Data Mining. Berlin:
+  Springer; 2005. doi: 10.1007/11430919\_61. arXiv: 0711.4452
+  {[}cs.LG{]}.
+\item
+  princals: Categorical principal component analysis (PRINCALS). Gifi
+  Multivariate Analysis with Optimal Scaling documentation.
+  \url{https://cran.r-project.org/web/packages/Gifi/index.html}. Updated
+  June 25, 2019. Accessed November 17, 2019.
+\item
+  Chavent M, Kuentz-Simonet V, Labenne A, Saracco J. Multivariate
+  Analysis of Mixed Data: The R Package PCAmixdata. arXiv:1411.4911v4
+  {[}stat.CO{]} Updated December 8, 2017. Accessed November 17, 2019.
+\item
+  Gower JC. A General Coefficient of Similarity and Some of Its
+  Properties. \emph{Biometrics}. 1971;27(4):857-71. doi:
+  10.2307/2528823.
+\end{enumerate}
+
+
+\end{document}

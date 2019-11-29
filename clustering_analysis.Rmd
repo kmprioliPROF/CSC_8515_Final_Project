@@ -84,8 +84,8 @@ agnes_dend_gg <- ggplot(agnes_dend_ggd, labels = FALSE) +
         panel.grid = element_blank(),
         plot.title = element_text(angle = 0)) +
   xlab("") +
-  ylab("") +
-  ggtitle("AGNES Dendrogram")
+  ylab("") #+
+  #ggtitle("AGNES Dendrogram")
 agnes_dend_gg
 
 ggthemr("flat")
@@ -141,8 +141,8 @@ diana_dend_gg <- ggplot(diana_dend_ggd, labels = FALSE) +
         panel.grid = element_blank(),
         plot.title = element_text(angle = 0)) +
   xlab("") +
-  ylab("") +
-  ggtitle("DIANA Dendrogram")
+  ylab("") #+
+  #ggtitle("DIANA Dendrogram")
 diana_dend_gg
 
 ggthemr("flat")
@@ -216,7 +216,7 @@ diana_scree <- ggplot(data = diana_statdata, aes(x = n_clusters, y = withinss)) 
   ggtitle("DIANA")
 
 grid.arrange(agnes_scree, diana_scree, nrow = 1,
-             top = textGrob("Scree Plots, Hierarchical Clustering Analysis",
+             top = textGrob("Scree Plots",
                             gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
                             x = 0.025, hjust = 0))
 ```
@@ -241,7 +241,7 @@ diana_sil <- ggplot(data = diana_statdata, aes(x = n_clusters, y = asw)) +
   ggtitle("DIANA")
 
 grid.arrange(agnes_sil, diana_sil, nrow = 1,
-             top = textGrob("Silhouette Plots, Hierarchical Clustering Analysis",
+             top = textGrob("Silhouette Plots",
                             gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
                             x = 0.025, hjust = 0))
 ```
@@ -280,8 +280,8 @@ agnes_dend_clust_init_gg <- ggplot(agnes_dend_clust_init_ggd, labels = FALSE) +
         axis.ticks = element_blank(),
         panel.grid = element_blank()) +
   xlab("") +
-  ylab("") +
-  ggtitle("AGNES Dendrogram, k = 7 Clusters")
+  ylab("") #+
+  #ggtitle("AGNES Dendrogram, k = 7 Clusters")
 agnes_dend_clust_init_gg
 
 ggthemr("flat")
@@ -326,8 +326,8 @@ diana_dend_clust_init_gg <- ggplot(diana_dend_clust_init_ggd, labels = FALSE) +
         axis.ticks = element_blank(),
         panel.grid = element_blank()) +
   xlab("") +
-  ylab("") +
-  ggtitle("DIANA Dendrogram, k = 6 Clusters")
+  ylab("") #+
+  #ggtitle("DIANA Dendrogram, k = 6 Clusters")
 diana_dend_clust_init_gg
 
 ggthemr("flat")
@@ -389,8 +389,8 @@ Though there are some clusters in each of these dendrograms having low heterogen
 <!--         axis.ticks = element_blank(), -->
 <!--         panel.grid = element_blank()) + -->
 <!--   xlab("") + -->
-<!--   ylab("") + -->
-<!--   ggtitle("AGNES Dendrogram, k = 6 Clusters") -->
+<!--   ylab("") #+ -->
+<!--   #ggtitle("AGNES Dendrogram, k = 6 Clusters") -->
 <!-- agnes_dend_clust_v2_gg -->
 
 <!-- ggthemr("flat") -->
@@ -426,8 +426,8 @@ Though there are some clusters in each of these dendrograms having low heterogen
 <!--         axis.ticks = element_blank(), -->
 <!--         panel.grid = element_blank()) + -->
 <!--   xlab("") + -->
-<!--   ylab("") + -->
-<!--   ggtitle("DIANA Dendrogram, k = 9 Clusters") -->
+<!--   ylab("") #+ -->
+<!--   #ggtitle("DIANA Dendrogram, k = 9 Clusters") -->
 <!-- diana_dend_clust_v2_gg -->
 
 <!-- ggthemr("flat") -->

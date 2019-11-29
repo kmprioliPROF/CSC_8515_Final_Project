@@ -60,7 +60,7 @@ A literature search of PubMed for currently known or suspected demographic, beha
 
 ```{r init_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 
-initvars <- read_csv("init_vars_final_rept.csv", col_names = TRUE) %>% 
+initvars <- read_csv(here("/report/init_vars_final_rept.csv"), col_names = TRUE) %>% 
   select(-Type) %>% 
   kable(format = "markdown")
 initvars
@@ -152,12 +152,12 @@ The scree and silhouette plots are presented in Fig. `r j`.  The AGNES scree plo
 
 ```{r scree_silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 grid.arrange(agnes_scree, diana_scree, nrow = 1,
-             top = textGrob("Scree Plots, Hierarchical Clustering Analysis",
+             top = textGrob("Scree Plots",
                             gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
                             x = 0.025, hjust = 0))
 
 grid.arrange(agnes_sil, diana_sil, nrow = 1,
-             top = textGrob("Silhouette Plots, Hierarchical Clustering Analysis",
+             top = textGrob("Silhouette Plots",
                             gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
                             x = 0.025, hjust = 0))
 
@@ -166,7 +166,7 @@ j <- j + 1
 
 Initial radial dendrograms are shown in Figs. 2 and 3.
 
-**Figure `r i`.  Initial Colored Radial Dendrogram, AGNES**
+**Figure `r i`.  Initial Colored Radial Dendrogram, AGNES (*k* = 7)**
 
 ```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
 ggthemr("flat", spacing = 0.1)
@@ -176,7 +176,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Figure `r i`.  Initial Colored Radial Dendrogram, DIANA**
+**Figure `r i`.  Initial Colored Radial Dendrogram, DIANA (*k* = 6)**
 
 ```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
 ggthemr("flat", spacing = 0.1)
@@ -214,142 +214,58 @@ Another limitation is that variable selection is difficult with continuous varia
 
 ## **References**
 
-\renewcommand\refname{}
-\vspace*{-1cm}
-\begin{flushleft}
-\begin{thebibliography}{99}
-
-\bibitem[1]
-<!-- \bibitem{} -->
-  `Selected health conditions and risk factors, by age:  United States, selected years 1988-1994 through 2015-2016.  Centers for Disease Control and Prevention.  Health, United States, 2017:  Trend Tables.  \url{https://www.cdc.gov/nchs/data/hus/2017/053.pdf}.  Accessed October 20, 2019.
+1. Selected health conditions and risk factors, by age:  United States, selected years 1988-1994 through 2015-2016.  Centers for Disease Control and Prevention.  Health, United States, 2017:  Trend Tables.  https://www.cdc.gov/nchs/data/hus/2017/053.pdf.  Accessed October 20, 2019.
   
-\bibitem[2]
-<!-- \bibitem{} -->
-  `Defining Adult Overweight and Obesity.  Centers for Disease Control and Prevention.  \url{https://www.cdc.gov/obesity/adult/defining.html}.  Updated April 11, 2017.  Accessed October 22, 2019.
+2. Defining Adult Overweight and Obesity.  Centers for Disease Control and Prevention.  https://www.cdc.gov/obesity/adult/defining.html.  Updated April 11, 2017.  Accessed October 22, 2019.
 
-\bibitem[3]
-<!-- \bibitem{} -->
-  `Hruby A, Hu FB.  The Epidemiology of Obesity: A Big Picture. \textit{Pharmacoeconomics}. 2015;33(7):673-89.  doi:10.1007/s40273-014-0243-x.
+3. Hruby A, Hu FB.  The Epidemiology of Obesity: A Big Picture. *Pharmacoeconomics*. 2015;33(7):673-89.  doi:10.1007/s40273-014-0243-x.
 
-\bibitem[4]
-<!-- \bibitem{} -->
-  `Li Q, Blume SW, Huang JC, Hammer M, Ganz ML.  Prevalence and healthcare costs of obesity-related comorbidities:  evidence from an electronic medical records system in the United States.  \textit{J Med Econ}.  2015;18(12):1020-8.  doi:  10.3111/13696998.2015.1067623.
+4. Li Q, Blume SW, Huang JC, Hammer M, Ganz ML.  Prevalence and healthcare costs of obesity-related comorbidities:  evidence from an electronic medical records system in the United States.  *J Med Econ*.  2015;18(12):1020-8.  doi:  10.3111/13696998.2015.1067623.
 
-\bibitem[5]
-<!-- \bibitem{} -->
-	`National Health and Nutrition Examination Survey.  National Center for Health Statistics.  \url{https://www.cdc.gov/nchs/nhanes/index.htm}.  Updated September 24, 2019.  Accessed October 20, 2019.
+5. National Health and Nutrition Examination Survey.  National Center for Health Statistics.  https://www.cdc.gov/nchs/nhanes/index.htm.  Updated September 24, 2019.  Accessed October 20, 2019.
 
-\bibitem[6]
-<!-- \bibitem{} -->
-  `Hales CM, Carroll MD, Fryar CD, Ogden CL.  Prevalence of Obesity Among Adults and Youth:  United States, 2015-2016.  NCHS Data Brief No. 288.  National Center for Health Statistics.  2017.  \url{https://www.cdc.gov/nchs/data/databriefs/db288.pdf}.  Accessed October 20, 2019.
+6. Hales CM, Carroll MD, Fryar CD, Ogden CL.  Prevalence of Obesity Among Adults and Youth:  United States, 2015-2016.  NCHS Data Brief No. 288.  National Center for Health Statistics.  2017.  https://www.cdc.gov/nchs/data/databriefs/db288.pdf.  Accessed October 20, 2019.
 
-\bibitem[7]
-<!-- \bibitem{} -->
-  `Ogden CL, Fakhouri TH, Carroll MD, et al. Prevalence of Obesity Among Adults, by Household Income and Education – United States, 2011-2014.  \textit{Morb Mortal Wkly Rep}. 2017;66:1369-1373.  doi:  \url{http://dx.doi.org/10.15585/mmwr.mm6650a1}.
+7. Ogden CL, Fakhouri TH, Carroll MD, et al. Prevalence of Obesity Among Adults, by Household Income and Education – United States, 2011-2014.  *Morb Mortal Wkly Rep*. 2017;66:1369-1373.  doi:  http://dx.doi.org/10.15585/mmwr.mm6650a1.
   
-\bibitem[8]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Demographic Variables and Sample Weights (DEMO$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.XPT}.  Updated September 2017.  Accessed October 27, 2019.
+8. National Health and Nutrition Examination Survey:  Demographic Variables and Sample Weights (DEMO_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.XPT.  Updated September 2017.  Accessed October 27, 2019.
 
-\bibitem[9]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diabetes (DIQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DIQ_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
+9. National Health and Nutrition Examination Survey:  Questionnaire Data - Diabetes (DIQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DIQ_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
 
-\bibitem[10]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Medical (MCQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/MCQ_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
+10. National Health and Nutrition Examination Survey:  Questionnaire Data - Medical (MCQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/MCQ_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
 
-\bibitem[11]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BPX_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
+11. National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BPX_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
 
-\bibitem[12]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
+12. National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
 
-\bibitem[13]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
+13. National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
 
-\bibitem[14]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT}.  Updated December 2017.  Accessed October 29, 2019.
+14. National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT.  Updated December 2017.  Accessed October 29, 2019.
 
-\bibitem[15]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT}.  Updated November 2018.  Accessed October 29, 2019.
+15. National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT.  Updated November 2018.  Accessed October 29, 2019.
 
-\bibitem[16]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT}.  Updated July 2018.  Accessed October 29, 2019.
+16. National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT.  Updated July 2018.  Accessed October 29, 2019.
 
-\bibitem[17]
-<!-- \bibitem{} -->
-  `National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX$\_$I).  National Center for Health Statistics.  \url{https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT}.  Updated September 2017.  Accessed October 29, 2019.
+17. National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
   
-\bibitem[18]
-<!-- \bibitem{} -->
-	`Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  \textit{J Am Coll Cardiol}.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
+18. Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  *J Am Coll Cardiol*.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
 
-\bibitem[19]
-<!-- \bibitem{} -->
-  `Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. \textit{Psychiatric Annals}. 2002;32(9):1-7  doi:  10.3928/0048-5713-20020901-06.
+19. Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. *Psychiatric Annals*. 2002;32(9):1-7  doi:  10.3928/0048-5713-20020901-06.
 
-\bibitem[20]
-<!-- \bibitem{} -->
-  `Prioli KM. CSC$\_$8515$\_$Final$\_$Project. \url{https://github.com/kprioliPROF/CSC_8515_Final_Project}.
+20. Prioli KM. CSC_8515_Final_Project. https://github.com/kprioliPROF/CSC_8515_Final_Project.
   
-\bibitem[21]
-<!-- \bibitem{} -->
-  `Low Blood Pressure.  US National Library of Medicine:  MedlinePlus.  \url{https://medlineplus.gov/ency/article/007278.htm}.  Updated November 06, 2019.  Accessed November 10, 2019.
+21. Low Blood Pressure.  US National Library of Medicine:  MedlinePlus.  https://medlineplus.gov/ency/article/007278.htm.  Updated November 06, 2019.  Accessed November 10, 2019.
 
-\bibitem[22]
-<!-- \bibitem{} -->
-  `sklearn.ensemble.RandomForestClassifier.  Scikit-learn documentation.  \url{https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html}.  Accessed November 10, 2019.
+22. sklearn.ensemble.RandomForestClassifier.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html.  Accessed November 10, 2019.
 
-\bibitem[23]
-<!-- \bibitem{} -->
-  `sklearn.model$\_$selection.RepeatedKFold.  Scikit-learn documentation.  \url{https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RepeatedKFold.html}.  Accessed November 10, 2019.
+23. sklearn.model_selection.RepeatedKFold.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RepeatedKFold.html.  Accessed November 10, 2019.
 
-\bibitem[24]
-<!-- \bibitem{} -->
-  `sklearn.model$\_$selection.cross$\_$val$\_$score.  Scikit-learn documentation.  \url{https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html}.  Accessed November 10, 2019.
+24. sklearn.model_selection.cross_val_score.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html.  Accessed November 10, 2019.
 
-\bibitem[25]
-<!-- \bibitem{} -->
-  `Niitsuma H, Okada T.  Covariance and PCA for Categorical Variables.  Advances in Knowledge Discovery and Data Mining.  Ho TB, Cheung D, Liu H, eds.  \textit{Advances in Knowledge Discovery and Data Mining}.  Berlin:  Springer; 2005.  doi:  10.1007/11430919_61.  arXiv:  0711.4452 [cs.LG].
+25. Niitsuma H, Okada T.  Covariance and PCA for Categorical Variables.  Advances in Knowledge Discovery and Data Mining.  Ho TB, Cheung D, Liu H, eds.  *Advances in Knowledge Discovery and Data Mining.  Berlin:  Springer; 2005.  doi:  10.1007/11430919_61.  arXiv:  0711.4452 [cs.LG].
 
-\end{thebibliography}
-\end{flushleft}
+26. princals:  Categorical principal component analysis (PRINCALS).  Gifi Multivariate Analysis with Optimal Scaling documentation.  https://cran.r-project.org/web/packages/Gifi/index.html.  Updated June 25, 2019.  Accessed November 17, 2019.
 
+27. Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  arXiv:1411.4911v4 [stat.CO]  Updated December 8, 2017.  Accessed November 17, 2019.
 
-
-
-
-<!-- NEED TO FIX REFERENCES -->
-<!-- For some reason, 1-24 are fine, but at 25 throws an error ????? -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- \bibitem[26] -->
-<!--   `princals:  Categorical principal component analysis (PRINCALS).  Gifi Multivariate Analysis with Optimal Scaling documentation.  \url{https://cran.r-project.org/web/packages/Gifi/index.html}.  Updated June 25, 2019.  Accessed November 17, 2019. -->
-
-<!-- \bibitem[27] -->
-<!--   `Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  arXiv:1411.4911v4 [stat.CO]  Updated December 8, 2017.  Accessed November 17, 2019. -->
-
-<!-- \bibitem[28] -->
-<!-- `Gower JC. A General Coefficient of Similarity and Some of Its Properties.  \textit{Biometrics}.  1971;27(4):857-71.  doi:  10.2307/2528823. -->
-
-
-<!-- \end{thebibliography} -->
-<!-- \end{flushleft} -->
+28. Gower JC. A General Coefficient of Similarity and Some of Its Properties.  *Biometrics*.  1971;27(4):857-71.  doi:  10.2307/2528823.
