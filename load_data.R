@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - load analytic datasets from .RData
-# Fri Nov 29 17:16:59 2019 ------------------------------
+# Sat Nov 30 12:46:38 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -29,9 +29,15 @@ library(tidyverse)      # For data import and wrangling
 ggthemr("flat")
 set.seed(20191205)      # Setting seed to ensure stable results
 
-load("data/analytic_datasets.RData")
+
+#### Loading staging files (avoids rerunning computationally intense code)
+
+load("data/staging/analytic_datasets.RData")
+load("data/staging/random_forest_init_scores.RData")   # Created 11.10.2019 w/seed 20191110; see git commit a9a7880 to generate corresponding dataset
+load("data/staging/random_forest_final_scores.RData")
+load("data/staging/clustering_stats.RData")
 
 
-#### Rendering .Rmd ----
+#### Rendering final report .Rmd ----
 
-# render("report/Prioli_final_report.Rmd")
+# render("report/Prioli_final_report.Rmd")   # Run this after running all chunks in clustering_analysis.Rmd

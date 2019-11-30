@@ -55,5 +55,6 @@ scores_final <- py$scores_f %>%
 
 scores_final_kbl <- scores_final %>% 
   kable(format = "markdown")
-# scores_final_kbl
+
+# save(scores_final, scores_final_kbl, file = "data/staging/random_forest_final_scores.RData")
 ```

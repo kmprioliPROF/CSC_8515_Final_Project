@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Wed Nov 27 21:21:39 2019 ------------------------------
+# Sat Nov 30 12:21:58 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -34,16 +34,16 @@ set.seed(20191205)      # Setting seed to ensure stable results
 
 # NHANES 2015-2016 data ( Source:  https://wwwn.cdc.gov/nchs/nhanes/ContinuousNhanes/Default.aspx?BeginYear=2015 )
 
-dietbehav_raw <- read_xpt("data/DBQ_I.XPT")       # Questionnaire data - dietary behavior
-dietintake_raw <- read_xpt("data/DR1TOT_I.XPT")   # Dietary intake data, Day 1
-PHQ9_raw <- read_xpt("data/DPQ_I.XPT")            # Questionnaire data - PHQ-9
-bloodpress_raw <- read_xpt("data/BPX_I.XPT")      # Examination data - blood pressure
-bodymeas_raw <- read_xpt("data/BMX_I.XPT")        # Examination data - body measures
-demog_raw <- read_xpt("data/DEMO_I.XPT")          # Demographics data
-diabetes_raw <- read_xpt("data/DIQ_I.XPT")        # Questionnaire data - diabetes items
-medical_raw <- read_xpt("data/MCQ_I.XPT")         # Questionnaire data - medical items
-physactiv_raw <- read_xpt("data/PAQ_I.XPT")       # Questionnaire data - physical activity
-physfxn_raw <- read_xpt("data/PFQ_I.XPT")         # Questionnaire data - physical functioning
+dietbehav_raw <- read_xpt("data/NHANES/DBQ_I.XPT")       # Questionnaire data - dietary behavior
+dietintake_raw <- read_xpt("data/NHANES/DR1TOT_I.XPT")   # Dietary intake data, Day 1
+PHQ9_raw <- read_xpt("data/NHANES/DPQ_I.XPT")            # Questionnaire data - PHQ-9
+bloodpress_raw <- read_xpt("data/NHANES/BPX_I.XPT")      # Examination data - blood pressure
+bodymeas_raw <- read_xpt("data/NHANES/BMX_I.XPT")        # Examination data - body measures
+demog_raw <- read_xpt("data/NHANES/DEMO_I.XPT")          # Demographics data
+diabetes_raw <- read_xpt("data/NHANES/DIQ_I.XPT")        # Questionnaire data - diabetes items
+medical_raw <- read_xpt("data/NHANES/MCQ_I.XPT")         # Questionnaire data - medical items
+physactiv_raw <- read_xpt("data/NHANES/PAQ_I.XPT")       # Questionnaire data - physical activity
+physfxn_raw <- read_xpt("data/NHANES/PFQ_I.XPT")         # Questionnaire data - physical functioning
 
 
 #### Wrangling data ----
@@ -741,7 +741,7 @@ nhanes_unsup_mat <- nhanes_unsup_stag2 %>%
 rownames(nhanes_unsup_mat) <- unsup_labs
 
 
-# Save analytic datasets to .Rdata
+# Saving analytic datasets to .Rdata
 
 # save(nhanes, nhanes_sup_trim_dichot, nhanes_unsup_mat, unsup_labs, file = "data/analytic_datasets.RData")
 

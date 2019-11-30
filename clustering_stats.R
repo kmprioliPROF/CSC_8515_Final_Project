@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - finding clustering statistics
-# Sun Nov 24 14:02:57 2019 ------------------------------
+# Sat Nov 30 11:47:06 2019 ------------------------------
 
 
 clust_stats <- function(approach, k) {
@@ -58,3 +58,8 @@ diana_statdata <- diana_stats$cluster_stats %>%
   rename(n_clusters = "Number of Clusters",
          withinss = "Within-Cluster Sum of Squares",
          asw = "Average Silhouette Width")
+
+
+# Saving analytic datasets to .Rdata
+
+# save(agnes_statdata, diana_statdata, agnes_sizes, diana_sizes, file = "data/clustering_stats.RData")

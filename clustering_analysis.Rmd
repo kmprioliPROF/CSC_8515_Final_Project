@@ -139,9 +139,9 @@ diana_dend_gg
 ggthemr("flat")
 ```
 
-```{r clust_stats, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
-source(here("clustering_stats.R"), echo = FALSE)
-```
+<!-- ```{r load_clust_RData, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
+<!-- load("data/clustering_stats.RData") -->
+<!-- ``` -->
 
 ```{r clust_sizes, warning = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
 maxheight = rbind(agnes_sizes$cluster_size, diana_sizes$cluster_size) %>% 
