@@ -29,13 +29,12 @@ The repo is organized as follows:
   | checkpoints/                 | Contains intermediate "checkpoint" project status reports                                     |
   | data/                        | Contains raw source datasets and .RData file with analytic datasets used in the analysis      |
   | presentation/                | Contains final presentation slides and any supporting files                                   |
+  | report/                      | Contains final report .Rmd file and output                                                    |
   | CSC_8515_final_project.Rproj | .Rproj project container                                                                      |
   | clustering_analysis.Rmd      | RMarkdown notebook containing the hierarchical clustering analysis                            |
   | clustering_stats.R           | R script used to generate clustering statistics for scree and silhouette plots                |
   | import_wrangle.R             | R script used to import raw data and generate analytic datasets                               |
   | load_data.R                  | R script used to load analytic dataset from .RData; **_must be run before any other files_**  |
-  | Prioli_final_report.Rmd      | RMarkdown notebook containing final report                                                    |
-  | Prioli_final_report.pdf      | .pdf of final report                                                                          |
   | random_forest.Rmd            | RMarkdown notebook containing the $n \times k$-fold crossvalidation Random Forest analysis    |
 
 

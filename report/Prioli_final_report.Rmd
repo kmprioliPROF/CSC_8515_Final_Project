@@ -83,7 +83,7 @@ To further improve accuracy, the labels representing BMI category were recast as
 
 For the unsupervised component of this analysis, data was subset to variables with $\ge 90$% non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was further subset to a random 5% sample within each BMI category to allow for sensible, interpretable dendrogram plots.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.[28]  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).  Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters.
 
-Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based on an upper limit of 15 clusters; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via visual inspection, and the cluster number hyperparameter *k* was tuned as needed to improve homogeneity.
+Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based varying the number of clusters up to an upper limit of 15; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.[29]  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via both visual and numeric inspection, and the cluster number hyperparameter *k* was tuned as needed to improve homogeneity.
 
 
 ### *Technologies*
@@ -146,7 +146,7 @@ The initial model, based on the full dataset and using $k = 5$ folds, $n = 5$ re
 
 ### *Unsupervised Approach*
 
-The scree and silhouette plots are presented in Fig. `r j` a and b. The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two elbows are seen:  one at 5 clusters and one at 6.  Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.  Considered together, scree and silhouette plots indicate that 7 clusters may be sufficient for AGNES, and 6 for DIANA.
+The scree and silhouette plots are presented in Figure `r j` *a* and *b*. The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two elbows are seen:  one at 5 clusters and one at 6.  Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.  Considered together, scree and silhouette plots indicate that 7 clusters may be sufficient for AGNES, and 6 for DIANA.
 
 **Figure `r i`.  Scree and Silhouette Plots**
 
@@ -156,11 +156,11 @@ grid.arrange(screes, sils, nrow = 2)
 j <- j + 1
 ```
 
-Initial radial dendrograms are shown in Figs. `r j` and `r j + 1`.
+The initial radial dendrogram for AGNES is shown in Fig. `r j` and the corresponding numeric analysis of BMI category by cluster number is presented in Table `r i`.
 
 **Figure `r j`.  Initial Colored Radial Dendrogram, AGNES (*k* = 7)**
 
-```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
 agnes_dend_clust_init_gg
 ggthemr("flat")
@@ -168,14 +168,31 @@ ggthemr("flat")
 j <- j + 1
 ```
 
+**Table `r i`.  BMI Categories by Cluster, Initial AGNES Analysis.**
+
+```{r agnes_dend_clust_init_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+ag_init_clusts_kbl
+
+i <- i + 1
+```
+
+For DIANA, the initial radial dendrogram is shown in Fig. `r j` with analysis of BMI category by cluster number in Table `r i`.
+
 **Figure `r j`.  Initial Colored Radial Dendrogram, DIANA (*k* = 6)**
 
-```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+
+```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
 diana_dend_clust_init_gg
 ggthemr("flat")
 
 j <- j + 1
+```
+
+```{r diana_dend_clust_init_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+di_init_clusts_kbl
+
+i <- i + 1
 ```
 
 
@@ -261,3 +278,5 @@ Another limitation is that variable selection is difficult with continuous varia
 27. Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  arXiv:1411.4911v4 [stat.CO]  Updated December 8, 2017.  Accessed November 17, 2019.
 
 28. Gower JC. A General Coefficient of Similarity and Some of Its Properties.  *Biometrics*.  1971;27(4):857-71.  doi:  10.2307/2528823.
+
+29. Rousseeuw PJ.  Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis.  *Journal of Computational and Applied Mathematics*.  1987(20): 53-65.  https://doi.org/10.1016/0377-0427(87)90125-7.
