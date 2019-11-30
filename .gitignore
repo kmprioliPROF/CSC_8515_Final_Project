@@ -8,5 +8,6 @@ checkpoints/*.tex
 checkpoints/*.pdf
 checkpoints/*.dot
 proposals/
-report/*.tex
+report/Prioli_final_report.tex
+report/Prioli_final_report_files/
 Final project assignment parameters.pdf

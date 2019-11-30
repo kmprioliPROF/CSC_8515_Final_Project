@@ -139,10 +139,6 @@ diana_dend_gg
 ggthemr("flat")
 ```
 
-<!-- ```{r load_clust_RData, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6} -->
-<!-- load("data/clustering_stats.RData") -->
-<!-- ``` -->
-
 ```{r clust_sizes, warning = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
 maxheight = rbind(agnes_sizes$cluster_size, diana_sizes$cluster_size) %>% 
   max()
@@ -283,24 +279,25 @@ cluster_labs <- function(df){
 cluster_pct <- function(df){
   
   clusts <- cluster_clusts(df) %>% 
-    select(cluster_num, BMI_cat, n_in_clust, n_cat_in_clust) %>% 
+    select(cluster_num, n_in_clust, BMI_cat, n_cat_in_clust) %>% 
     unique() %>% 
     arrange(cluster_num, BMI_cat) %>% 
-    mutate(pct_cat_in_clust = round((n_cat_in_clust / n_in_clust) * 100, digits = 1),
+    rename(Size = n_in_clust) %>% 
+    mutate(pct_cat_in_clust = round((n_cat_in_clust / Size) * 100, digits = 1),
            n_pct = paste0(n_cat_in_clust, " (", pct_cat_in_clust, "%)"),
            BMI_cat = paste0(BMI_cat, " (n, %)"),
            BMI_cat = factor(BMI_cat, levels = c("Underweight (n, %)",
                                                 "Healthy Weight (n, %)",
                                                 "Overweight (n, %)",
                                                 "Obese (n, %)"))) %>% 
-    select(cluster_num, BMI_cat, n_pct) %>% 
+    select(cluster_num, Size, BMI_cat, n_pct) %>% 
     spread(BMI_cat, n_pct, fill = "0 (0%)")
-  
-  clusts_kbl <- clusts %>%
-    rename(Cluster = cluster_num) %>%
-    kable(format = "markdown")
-
-  clusts_kbl
+  # 
+  # clusts_kbl <- clusts %>%
+  #   rename(Cluster = cluster_num) %>%
+  #   kable(format = "markdown")
+  # 
+  # clusts_kbl
 }
 ```
 
@@ -326,7 +323,12 @@ agnes_dend_clust_init_ggd <- agnes_dend_clust_init %>%
 ```
 
 ```{r agnes_init_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-ag_init_clusts_kbl <- cluster_pct(agnes_dend_clust_init_ggd)
+ag_init_clusts_df <- cluster_pct(agnes_dend_clust_init_ggd)
+
+ag_init_clusts_kbl <- ag_init_clusts_df %>%
+  rename(Cluster = cluster_num) %>%
+  kable(format = "markdown")
+
 ag_init_clust_labs <- cluster_labs(agnes_dend_clust_init_ggd)
 ```
 
