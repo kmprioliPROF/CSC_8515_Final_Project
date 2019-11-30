@@ -8,7 +8,7 @@ output:
   pdf_document: default
   html_document: default
 geometry: margin = 0.5in
-abstract: "**_Background_** Text **_Methods_** Text  **_Results_** Text **_Conclusion_** Text"
+abstract: "**_Background_** Increasing overweight and obesity represent an important national health concern and a significant, preventable driver of healthcare expenditure. Every two years, the National Health and Nutrition Examination Survey (NHANES) collects data about Americans' dietary and exercise behaviors along with demographics and relevant clinical characteristics.  If these characteristics can be used to identify overweight and obesity at a population level, interventions designed to reduce excess adiposity could be appropriately targeted to those who could most benefit.  This study applied supervised and unsupervised machine learning techniques to categorize cases by Body Mass Index (BMI) weight category.  **_Methods_** Medical, demographic, and behavioral variables known or suspected to be correlated with obesity were selected from the 2015-2016 NHANES data.  The dataset was subset to adult, missing data were imputed, and BMI weight category (four levels) was computed for each case.  Random forest classification (supervised approach) was performed using *n* × *k*-fold crossvalidation on both the initial dataset and a smaller dataset with dichotomous BMI categories.  Hierarchical clustering (unsupervised approach) was performed on a 5% sample stratified by BMI category using both agglomerative (AGNES) and divisive (DIANA) methods, and percentages of cases in each BMI category were calculated for each cluster.  **_Results_** Text **_Conclusion_** Text"
 ---
 
 ```{r load_libraries, include = FALSE, ech = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE}
@@ -33,7 +33,6 @@ library(ggthemr)        # For prettifying output plots
 library(tidyselect)     # For selecting by string
 library(tidyverse)      # For data import and wrangling
 ```
-
 
 ```{r incrementers, include = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 i <- 1   # Tables
@@ -70,25 +69,25 @@ i <- i + 1
 
 Because BMI categories differ for children and adults, the analysis was limited to ages $\ge$ 20, consistent with the NHANES definition of adult.[8]  Additionally, since `BMI_cat` represents the data labels, all rows with null `BMI_cat` were excluded.
 
-Descriptive statistics and frequency tables were generated for continuous and categorical variables respectively to understand data contents and to assess the degree of missingness among the continuous data.  Missing values were imputed for continuous data using the R function `rfImpute()`.  To avoid introducing bias through imputation, two-sided Wilcoxon Rank-Sum tests were performed for each variable on the pre- vs. post-imputation data to identify any statistically significant changes introduced by imputation at the $\alpha = 0.05$ level.  Any variables having statistically different post-imputation data were removed from the dataset.
+Descriptive statistics and frequency tables were generated for continuous and categorical variables respectively to understand data contents and to assess the degree of missingness among the continuous data.  Missing values were imputed for continuous data.  To avoid introducing bias through imputation, two-sided Wilcoxon Rank-Sum tests were performed for each variable on the pre- vs. post-imputation data to identify any statistically significant changes introduced by imputation at the $\alpha = 0.05$ level.  Any variables having statistically different post-imputation data were removed from the dataset.
 
 
 ### *Supervised Approach*
 
-Using algorithms available in Scikit-learn, a random forest of decision tree classifiers was used with $n \times k$-fold crossvalidation to classify cases into BMI category, and descriptive statistics were generated to assess model accuracy.[22-24]  To improve performance, hyperparameters `n_repeats` (or *n*, number of times crossvalidation was performed) and `n_splits` (or *k*, number of folds) in `RepeatedKFold()` were tuned, along with hyperparameters `n_estimators` (number of decision trees in the forest), `min_samples_leaf` (minimum cases allowed per terminal node), and `max_depth` (maximum tree depth) in `RandomForestClassifier`.
+Using algorithms available in Scikit-learn, a random forest of decision tree classifiers was used with $n \times k$-fold crossvalidation to classify cases into BMI category, and descriptive statistics were generated to assess model accuracy.  To improve performance, hyperparameters `n_repeats` (or *n*, number of times crossvalidation was performed) and `n_splits` (or *k*, number of folds) in `RepeatedKFold()` were tuned, along with hyperparameters `n_estimators` (number of decision trees in the forest), `min_samples_leaf` (minimum cases allowed per terminal node), and `max_depth` (maximum tree depth) in `RandomForestClassifier`.
 
 To further improve accuracy, the labels representing BMI category were recast as dichotomous, grouping together the underweight and healthy weight categories, versus the overweight and obese categories.  Additionally, the six comorbidity variables (pertaining to diabetes, coronary artery disease, myocardial infarction, thyroid disease, hypertension, and depression) were consolidated into one variable representing number of comorbidities, and variables which were suspected not to contribute much information to the model (due to low variation or large amount of missingness) were excluded.  This modified dataset was then run through $N \times k$-fold crossvalidation with hyperparameter tuning and model accuracy assessment as previously described.
 
 ### *Unsupervised Approach*
 
-For the unsupervised component of this analysis, data was subset to variables with $\ge 90$% non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was further subset to a random 5% sample within each BMI category to allow for sensible, interpretable dendrogram plots.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.[28]  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).  Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters.
+For the unsupervised component of this analysis, data was subset to variables with $\ge 90$% non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was further subset to a random 5% sample within each BMI category to allow for sensible, interpretable dendrogram plots.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.[21]  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).  Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters.
 
-Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based varying the number of clusters up to an upper limit of 15; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.[29]  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via both visual and numeric inspection, and the cluster number hyperparameter *k* was tuned as needed to improve homogeneity.
+Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based varying the number of clusters up to an upper limit of 15; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.[22]  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via both visual and numeric inspection, and the cluster number hyperparameter *k* was tuned as needed to improve homogeneity.
 
 
 ### *Technologies*
 
-Data import, wrangling, and visualization were performed in R using an RMarkdown notebook and relying primarily on the `tidyverse` ecosystem.  The $n \times k$ crossvalidation random forest was implemented via Python code chunks in the notebook leveraging Scikit-Learn along with other common Python libraries as necessary (*e.g.*, `numpy` and `pandas`).[22-24]  For the agglomerative and divisive clustering, R packages `cluster`, `fpc`, `dendrogram` and `dendextend` were used.  A public GitHub repository was established for this study and contains all raw data files and code along with project documentation.[20]
+Data import, wrangling, and visualization were performed in R using an RMarkdown notebook and relying primarily on the `tidyverse` ecosystem.  The $n \times k$ crossvalidation random forest was implemented via Python code chunks in the notebook leveraging Scikit-Learn along with other common Python libraries as necessary (*e.g.*, `numpy` and `pandas`).[23-25]  For the agglomerative and divisive clustering, R packages `cluster`, `fpc`, `ggdendro` and `dendextend` were used.[26-29]  A public GitHub repository was established for this study and contains all raw data files and code along with project documentation.[30]
 
 
 ## **Results**
@@ -138,11 +137,9 @@ dfvars
 i <- i + 1
 ```
 
-
 ### *Supervised Approach*
 
 The initial model, based on the full dataset and using $k = 5$ folds, $n = 5$ repeats, and 100 trees in the ensemble without limitation on the number of cases per terminal node, yielded 52% mean accuracy (range: 49-55%).  Variables included in the reduced dataset included age, gender, race, education level, marital status, family income category, number of comorbidities, number of daily minutes active and sedentary, having eaten fast food or at a restaurant in the past year, daily calories, daily water intake, and having been told by a doctor to lose weight and/or exercise, along with dichotomous BMI category.  The final model based on this reduced dataset used $k = 3$ folds, $n = 10$ repeats, and 200 trees, and was limited to $\ge 25$ cases per terminal node.  This model yielded `r paste0(scores_final$pct_acc, "%")` mean accuracy (range: `r scores_final$min_acc`-`r paste0(scores_final$max_acc, "%")`), representing a meaningful improvement.
-
 
 ### *Unsupervised Approach*
 
@@ -180,7 +177,6 @@ For DIANA, the initial radial dendrogram is shown in Fig. `r j` with analysis of
 
 **Figure `r j`.  Initial Colored Radial Dendrogram, DIANA (*k* = 6)**
 
-
 ```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
 diana_dend_clust_init_gg
@@ -213,7 +209,7 @@ For the supervised approach, the final decision model reached `r paste0(scores_f
 
 Because the Scikit-Learn `randomForestClassifier()` function was unable to handle missing data, missing values were handled via imputation (continuous variables) or by creating a "missing" category comprising all-cause nonresponses (categorical variables).  Using a "missing" category in this manner may have introduced noise into the dataset, because it's not known missing values were missing completely at random or missing not at random.  Future iterations of this analysis should include other random forest functions - e.g., those available in the `xgboost` Python library.
 
-Another limitation is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [25-27]  In the absence of more sophisticated tools, variable selection was based on those characteristics expected to be most closely correlated with weight.
+Another limitation is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [31-33]  In the absence of more sophisticated tools, variable selection was based on those characteristics expected to be most closely correlated with weight.
 
 
 
@@ -245,38 +241,46 @@ Another limitation is that variable selection is difficult with continuous varia
 
 11. National Health and Nutrition Examination Survey:  Examination Data - Blood Pressure (BPX_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BPX_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
 
-12. National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
+12.  Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  *J Am Coll Cardiol*.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
 
-13. National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
+13. Low Blood Pressure.  US National Library of Medicine:  MedlinePlus.  https://medlineplus.gov/ency/article/007278.htm.  Updated November 06, 2019.  Accessed November 10, 2019.
 
-14. National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT.  Updated December 2017.  Accessed October 29, 2019.
+14. National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Activity (PAQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PAQ_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
 
-15. National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT.  Updated November 2018.  Accessed October 29, 2019.
+15. National Health and Nutrition Examination Survey:  Questionnaire Data - Physical Functioning (PFQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/PFQ_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
 
-16. National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT.  Updated July 2018.  Accessed October 29, 2019.
+16. National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT.  Updated December 2017.  Accessed October 29, 2019.
 
-17. National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
+17. Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. *Psychiatric Annals*. 2002;32(9):1-7  doi:  10.3928/0048-5713-20020901-06.
+
+18. National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT.  Updated November 2018.  Accessed October 29, 2019.
+
+19. National Health and Nutrition Examination Survey:  Questionnaire Data - Dietary Interview:  Total Nutrient Intakes, First Day (DR1TOT_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT.  Updated July 2018.  Accessed October 29, 2019.
+
+20. National Health and Nutrition Examination Survey:  Examination Data - Body Measures (BMX_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT.  Updated September 2017.  Accessed October 29, 2019.
+
+21. Gower JC. A General Coefficient of Similarity and Some of Its Properties.  *Biometrics*.  1971;27(4):857-71.  doi:  10.2307/2528823.
+
+22. Rousseeuw PJ.  Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis.  *Journal of Computational and Applied Mathematics*.  1987(20): 53-65.  https://doi.org/10.1016/0377-0427(87)90125-7.
+
+23. sklearn.ensemble.RandomForestClassifier.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html.  Accessed November 10, 2019.
+
+24. sklearn.model_selection.RepeatedKFold.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RepeatedKFold.html.  Accessed November 10, 2019.
+
+25. sklearn.model_selection.cross_val_score.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html.  Accessed November 10, 2019.
+
+26. Maechler M, Rousseeuw P, Struyf A, Hubert M, Hornik K.  cluster: Cluster Analysis Basics and Extensions.  R package version 2.1.0.  2019.  https://cran.r-project.org/package=cluster.
+
+27. Hennig C.  fpc:  Flexible Procedures for Clustering.  R package version 2.2-3.  2019.  https://cran.r-project.org/package=fpc.
+
+28. de Vries A, Ripley BD.  ggdendro:  Create Dendrograms and Tree Diagrams Using 'ggplot2'.  R package version 0.1-20.  2016.  https://cran.r-project.org/package=ggdendro.
+
+29. Galili T.  dendextend:  an R package for visualizing, adjusting, and comparing trees of hierarchical clustering.  *Bioinformatics*.  2015;31(22):3718-20.  doi:  10.1093/bioinformatics/btv428.
+
+30. Prioli KM. CSC_8515_Final_Project. https://github.com/kprioliPROF/CSC_8515_Final_Project.
   
-18. Whelton PK, Carey RM, Aronow WS, et al.  2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults:  A Report of the American College of Cardiology/American Heart Association Task Force on Clinical Practice Guidelines.  *J Am Coll Cardiol*.  2018;71(19):e127-e248.  doi:  10.1016/j.jacc.2017.11.006.
+31. Niitsuma H, Okada T.  Covariance and PCA for Categorical Variables.  Advances in Knowledge Discovery and Data Mining.  Ho TB, Cheung D, Liu H, eds.  *Advances in Knowledge Discovery and Data Mining*.  Berlin:  Springer; 2005.  doi:  10.1007/11430919_61.  arXiv:  0711.4452 [cs.LG].
 
-19. Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. *Psychiatric Annals*. 2002;32(9):1-7  doi:  10.3928/0048-5713-20020901-06.
+32. princals:  Categorical principal component analysis (PRINCALS).  Gifi Multivariate Analysis with Optimal Scaling documentation.  https://cran.r-project.org/web/packages/Gifi/index.html.  Updated June 25, 2019.  Accessed November 17, 2019.
 
-20. Prioli KM. CSC_8515_Final_Project. https://github.com/kprioliPROF/CSC_8515_Final_Project.
-  
-21. Low Blood Pressure.  US National Library of Medicine:  MedlinePlus.  https://medlineplus.gov/ency/article/007278.htm.  Updated November 06, 2019.  Accessed November 10, 2019.
-
-22. sklearn.ensemble.RandomForestClassifier.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html.  Accessed November 10, 2019.
-
-23. sklearn.model_selection.RepeatedKFold.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RepeatedKFold.html.  Accessed November 10, 2019.
-
-24. sklearn.model_selection.cross_val_score.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html.  Accessed November 10, 2019.
-
-25. Niitsuma H, Okada T.  Covariance and PCA for Categorical Variables.  Advances in Knowledge Discovery and Data Mining.  Ho TB, Cheung D, Liu H, eds.  *Advances in Knowledge Discovery and Data Mining.  Berlin:  Springer; 2005.  doi:  10.1007/11430919_61.  arXiv:  0711.4452 [cs.LG].
-
-26. princals:  Categorical principal component analysis (PRINCALS).  Gifi Multivariate Analysis with Optimal Scaling documentation.  https://cran.r-project.org/web/packages/Gifi/index.html.  Updated June 25, 2019.  Accessed November 17, 2019.
-
-27. Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  arXiv:1411.4911v4 [stat.CO]  Updated December 8, 2017.  Accessed November 17, 2019.
-
-28. Gower JC. A General Coefficient of Similarity and Some of Its Properties.  *Biometrics*.  1971;27(4):857-71.  doi:  10.2307/2528823.
-
-29. Rousseeuw PJ.  Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis.  *Journal of Computational and Applied Mathematics*.  1987(20): 53-65.  https://doi.org/10.1016/0377-0427(87)90125-7.
+33. Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  arXiv:1411.4911v4 [stat.CO]  Updated December 8, 2017.  Accessed November 17, 2019.
