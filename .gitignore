@@ -8,4 +8,5 @@ checkpoints/*.tex
 checkpoints/*.pdf
 checkpoints/*.dot
 proposals/
+report/*.tex
 Final project assignment parameters.pdf

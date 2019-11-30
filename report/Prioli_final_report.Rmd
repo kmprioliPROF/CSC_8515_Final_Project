@@ -146,29 +146,21 @@ The initial model, based on the full dataset and using $k = 5$ folds, $n = 5$ re
 
 ### *Unsupervised Approach*
 
-The scree and silhouette plots are presented in Fig. `r j`.  The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two elbows are seen:  one at 5 clusters and one at 6.  Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.  Considered together, scree and silhouette plots indicate that 7 clusters may be sufficient for AGNES, and 6 for DIANA.
+The scree and silhouette plots are presented in Fig. `r j` a and b. The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two elbows are seen:  one at 5 clusters and one at 6.  Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.  Considered together, scree and silhouette plots indicate that 7 clusters may be sufficient for AGNES, and 6 for DIANA.
 
 **Figure `r i`.  Scree and Silhouette Plots**
 
-```{r scree_silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-grid.arrange(agnes_scree, diana_scree, nrow = 1,
-             top = textGrob("Scree Plots",
-                            gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
-                            x = 0.025, hjust = 0))
-
-grid.arrange(agnes_sil, diana_sil, nrow = 1,
-             top = textGrob("Silhouette Plots",
-                            gp = gpar(fontsize = 16, fontface = "bold", col = "#34495E"),
-                            x = 0.025, hjust = 0))
+```{r scree_silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 8}
+grid.arrange(screes, sils, nrow = 2)
 
 j <- j + 1
 ```
 
-Initial radial dendrograms are shown in Figs. 2 and 3.
+Initial radial dendrograms are shown in Figs. `r j` and `r j + 1`.
 
-**Figure `r i`.  Initial Colored Radial Dendrogram, AGNES (*k* = 7)**
+**Figure `r j`.  Initial Colored Radial Dendrogram, AGNES (*k* = 7)**
 
-```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
+```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
 ggthemr("flat", spacing = 0.1)
 agnes_dend_clust_init_gg
 ggthemr("flat")
@@ -176,9 +168,9 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Figure `r i`.  Initial Colored Radial Dendrogram, DIANA (*k* = 6)**
+**Figure `r j`.  Initial Colored Radial Dendrogram, DIANA (*k* = 6)**
 
-```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 11, fig.height = 11}
+```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
 ggthemr("flat", spacing = 0.1)
 diana_dend_clust_init_gg
 ggthemr("flat")
