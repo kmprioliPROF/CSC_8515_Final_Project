@@ -231,29 +231,6 @@ sils <- grid.arrange(agnes_sil, diana_sil, nrow = 1,
                                     x = 0.025, hjust = 0))
 ```
 
-```{r agnes_dend_clust_ggd_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
-# 7 clusters for AGNES
-ggthemr("flat", spacing = 0.1)
-
-agnes_dend_clust_init <- nhanes_agnes %>% 
-  as.dendrogram() %>% 
-  set("leaves_pch", 20, col = ag_labcolors$leafcolor) %>% 
-  set("leaves_col", ag_labcolors$leafcolor) %>% 
-  set("branches_lwd", 0.5) %>% 
-  set("branches_k_col", k = 7, c("#3498DB",    # Blue
-                                 "#2ECC71",    # Green
-                                 "#F39C12",    # Gold/orange
-                                 "#E74C3C",    # Red
-                                 "#D979C9",    # Pink
-                                 "#9B59B6",    # Purple
-                                 #"#9F83D4",    # Grape
-                                 "#1ABCB4")) #,    # Teal
-                                 #"#34495E"))   # Slate blue
-
-agnes_dend_clust_init_ggd <- agnes_dend_clust_init %>% 
-  as.ggdend()
-```
-
 ```{r leaves_segs, include = FALSE, echo = FALSE}
 cluster_clusts <- function(df){
   leaves <- df$nodes %>% 
@@ -268,7 +245,7 @@ cluster_clusts <- function(df){
     )) %>% 
     mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight", "Healthy Weight", "Overweight", "Obese")))
   
-  segs <- agnes_dend_clust_init_ggd$segments %>% 
+  segs <- df$segments %>% 
     filter(yend == 0) %>% 
     select(x, col) %>% 
     rename(cluster_col = col)
@@ -320,9 +297,29 @@ cluster_pct <- function(df){
 }
 ```
 
+```{r agnes_dend_clust_ggd_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+# 7 clusters for AGNES
+agnes_dend_clust_init <- nhanes_agnes %>% 
+  as.dendrogram() %>% 
+  set("leaves_pch", 20, col = ag_labcolors$leafcolor) %>% 
+  set("leaves_col", ag_labcolors$leafcolor) %>% 
+  set("branches_lwd", 0.5) %>% 
+  set("branches_k_col", k = 7, c("#3498DB",    # Blue
+                                 "#2ECC71",    # Green
+                                 "#F39C12",    # Gold/orange
+                                 "#E74C3C",    # Red
+                                 "#D979C9",    # Pink
+                                 "#9B59B6",    # Purple
+                                 #"#9F83D4",    # Grape
+                                 "#1ABCB4")) #,    # Teal
+                                 #"#34495E"))   # Slate blue
+
+agnes_dend_clust_init_ggd <- agnes_dend_clust_init %>% 
+  as.ggdend()
+```
+
 ```{r agnes_init_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 ag_init_clusts_kbl <- cluster_pct(agnes_dend_clust_init_ggd)
-
 ag_init_clust_labs <- cluster_labs(agnes_dend_clust_init_ggd)
 ```
 
@@ -347,10 +344,8 @@ agnes_dend_clust_init_gg
 ggthemr("flat")
 ```
 
-```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+```{r diana_dend_clust_ggd_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
 # 6 clusters for DIANA
-ggthemr("flat", spacing = 0.1)
-
 di_labcolors <- unsup_labs_reord_di %>% 
   as_tibble()
 
@@ -371,8 +366,16 @@ diana_dend_clust_init <- nhanes_diana %>%
 
 diana_dend_clust_init_ggd <- diana_dend_clust_init %>% 
   as.ggdend()
+```
 
+```{r diana_init_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+di_init_clusts_kbl <- cluster_pct(diana_dend_clust_init_ggd)
+di_init_clust_labs <- cluster_labs(diana_dend_clust_init_ggd)
+```
+
+```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 diana_dend_clust_init_gg <- ggplot(diana_dend_clust_init_ggd, labels = FALSE) +
+  geom_text(data = di_init_clust_labs, aes(x = x_lab, y = -0.15, label = cluster_num, color = cluster_col)) +
   scale_y_reverse() +
   coord_polar(theta = "x") +
   theme(axis.line = element_blank(),
@@ -387,6 +390,7 @@ diana_dend_clust_init_gg
 
 ggthemr("flat")
 ```
+
 
 <!-- CONTINUE HERE: -->
 <!-- The below text needs to be updated after re-evaluation of these initial dendrogram plots. -->
