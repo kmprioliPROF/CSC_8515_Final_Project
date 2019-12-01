@@ -9,9 +9,9 @@ geometry: margin = 0.5in
 ---
 
 
-```{r corrplots, echo = FALSE, paged.print = FALSE, fig.width = 9, fig.height = 6}
-# Correlation plots for BMI_cat vs continuous and ordinal variables
+## GENERATING CORRELATION PLOTS FOR BMI VS CONTINUOUS AND ORDINAL VARIABLES
 
+```{r corrplots, echo = FALSE, paged.print = FALSE, fig.width = 9, fig.height = 6}
 demog_corrplot <- ggpairs(nhanes_unsup_tbl, 
                           columns = c("BMI_cat", "age", "educ", "famincome_cat", "n_comorbid"),
                           columnLabels = c("BMI Category", "Age", "Education", "Fam. Income", "No. Comorbidities"),
@@ -25,6 +25,9 @@ behav_corrplot <- ggpairs(nhanes_unsup_tbl,
 behav_corrplot
 ```
 
+
+## GENERATING DISSIMILARITY MATRIX
+
 ```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 dissim_mat <- vegdist(nhanes_unsup_mat, method = "gower")
 
@@ -35,6 +38,9 @@ summary(dissim_mat) %>%
   setNames(., c("Min", "Q1", "Median", "Mean", "Q3", "Max")) %>% 
   kable(format = "markdown")
 ```
+
+
+## GENERATING INITIAL NON-CLUSTERED DENDROGRAMS WITH 4-LEVEL BMI CATEGORY LEAF LABELS
 
 ```{r agnes_diana, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 nhanes_agnes <- hclust(d = dissim_mat, method = "ward.D2")   # ward.D2 performs agglomerative per hclust documentation
@@ -105,6 +111,9 @@ agnes_dend_gg
 
 ggthemr("flat")
 ```
+
+
+### Generating plot legends for use in final report
 
 ```{r legend_gen, warning = FALSE, message = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 7.5, fig.height = 6.5}
 # Creating legends for radial dendrogram plots
@@ -235,6 +244,9 @@ diana_dend_gg
 ggthemr("flat")
 ```
 
+
+## USING CLUSTER STATISTICS TO GENERATE CLUSTER SIZE, SCREE, AND SILHOUETTE PLOTS
+
 ```{r clust_sizes, warning = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 12, fig.height = 4}
 maxheight = rbind(agnes_sizes$cluster_size, diana_sizes$cluster_size) %>% 
   max()
@@ -325,30 +337,36 @@ sils <- grid.arrange(agnes_sil, diana_sil, nrow = 1,
 sils
 ```
 
+
+## EXTRACTING CLUSTER N, % IN EACH BMI CATEGORY (BOTH 4-LEVEL AND DICHOTOMOUS)
+
 ```{r leaves_segs, include = FALSE, echo = FALSE}
-cluster_clusts <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 for dichotomous; defaults to 4-level
+cluster_clusts <- function(df, dichot = FALSE){   # dichot = 0 for 4-level BMI category, dichot = 1 for dichotomous; defaults to 4-level
   leaves <- df$nodes %>% 
     filter(leaf == TRUE) %>% 
     select(x, col) %>% 
-    rename(BMI_cat = col) %>% 
-    mutate(
-      BMI_cat = case_when(
-        BMI_cat == "#FFFF00" ~ "Underweight",
-        BMI_cat == "#008318" ~ "Healthy Weight",
-        BMI_cat == "#FF8D03" ~ "Overweight",
-        BMI_cat == "#FF0000" ~ "Obese"),
-      BMI_dichot = case_when(
-        BMI_cat %in% c("Underweight", "Healthy Weight") ~ "Not Overweight \nor Obese",
-        BMI_cat %in% c("Overweight", "Obese") ~ "Overweight \nor Obese")) %>% 
-    mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight", "Healthy Weight", "Overweight", "Obese")),
-           BMI_dichot = factor(BMI_dichot, levels = c("Not Overweight \nor Obese", "Overweight \nor Obese")))
+    rename(BMI_cat = col)
   
-  if(x == 0){
-    leaves <- leaves %>% select(x, BMI_cat)
+  if(dichot == FALSE){
+    leaves <- leaves %>% 
+      mutate(
+        BMI_cat = case_when(
+          BMI_cat == "#FFFF00" ~ "Underweight",
+          BMI_cat == "#008318" ~ "Healthy Weight",
+          BMI_cat == "#FF8D03" ~ "Overweight",
+          BMI_cat == "#FF0000" ~ "Obese"),
+        BMI_cat = factor(BMI_cat, levels = c("Underweight", "Healthy Weight", "Overweight", "Obese"))) %>% 
+      select(x, BMI_cat)
   }
   
-  if(x == 1){
-    leaves <- leaves %>% select(x, BMI_dichot) %>% rename(BMI_cat = BMI_dichot)
+  if(dichot == TRUE){
+    leaves <- leaves %>% 
+      mutate(
+        BMI_cat = case_when(
+          BMI_cat == "#0000FF" ~ "Not Overweight or Obese",
+          BMI_cat == "#9C0022" ~ "Overweight or Obese"),
+        BMI_cat = factor(BMI_cat, levels = c("Not Overweight or Obese", "Overweight or Obese"))) %>% 
+      select(x, BMI_cat)
   }
   
   segs <- df$segments %>% 
@@ -370,8 +388,8 @@ cluster_clusts <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1
 ```
 
 ```{r cluster_num_labs}
-cluster_labs <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 for dichotomous; defaults to 4-level
-  clust_labs <- cluster_clusts(df, x) %>% 
+cluster_labs <- function(df, dichot = FALSE){   # dichot = 0 for 4-level BMI category, dichot = 1 for dichotomous; defaults to 4-level
+  clust_labs <- cluster_clusts(df, dichot) %>% 
     mutate(cluster_num = paste0("Cluster #", cluster_num)) %>% 
     group_by(cluster_num) %>% 
     mutate(x_lab = mean(x)) %>%
@@ -384,8 +402,8 @@ cluster_labs <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 f
 ```
 
 ```{r cluster_pct, include = FALSE, echo = FALSE}
-cluster_pct <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 for dichotomous; defaults to 4-level
-  clusts <- cluster_clusts(df, x) %>% 
+cluster_pct <- function(df, dichot = FALSE){   # dichot = 0 for 4-level BMI category, dichot = 1 for dichotomous; defaults to 4-level
+  clusts <- cluster_clusts(df, dichot) %>% 
     select(cluster_num, n_in_clust, BMI_cat, n_cat_in_clust) %>% 
     unique() %>% 
     arrange(cluster_num, BMI_cat) %>% 
@@ -394,7 +412,7 @@ cluster_pct <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 fo
            n_pct = paste0(n_cat_in_clust, " (", pct_cat_in_clust, "%)"),
            BMI_cat = paste0(BMI_cat, " (n, %)"))
   
-  if(x == 0){
+  if(dichot == FALSE){
     clusts <- clusts %>% 
       mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight (n, %)",
                                                 "Healthy Weight (n, %)",
@@ -402,10 +420,10 @@ cluster_pct <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 fo
                                                 "Obese (n, %)")))
   }
   
-  if(x == 1){
+  if(dichot == TRUE){
     clusts <- clusts %>% 
-      mutate(BMI_cat = factor(BMI_cat, levels = c("Not Overweight \nor Obese (n, %)",
-                                                  "Overweight \nor Obese (n, %)")))
+      mutate(BMI_cat = factor(BMI_cat, levels = c("Not Overweight or Obese (n, %)",
+                                                  "Overweight or Obese (n, %)")))
   }
   
   clusts <- clusts %>% 
@@ -414,6 +432,9 @@ cluster_pct <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 fo
     spread(BMI_cat, n_pct, fill = "0 (0%)")
   }
 ```
+
+
+## INITIAL CLUSTERING DENDROGRAMS WITH 4-LEVEL BMI
 
 ```{r agnes_dend_clust_ggd_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
 # 7 clusters for AGNES
@@ -518,43 +539,46 @@ diana_dend_clust_init_gg
 ggthemr("flat")
 ```
 
-```{r agnes_dend_clust_ggd_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
-# 10 clusters for AGNES
-agnes_dend_clust_rev <- nhanes_agnes %>% 
+
+## REVISED CLUSTERING DENDROGRAMS, DICHOTOMOUS BMI, NO CHANGE TO *k*
+
+```{r agnes_dend_clust_ggd_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+# 7 clusters for AGNES; dichotomous BMI category
+agnes_dend_clust_dichot <- nhanes_agnes %>% 
   as.dendrogram() %>% 
-  set("leaves_pch", 20, col = ag_labcolors$leafcolor) %>% 
-  set("leaves_col", ag_labcolors$leafcolor) %>% 
+  set("leaves_pch", 20, col = ag_labcolors$leafcolor_dichot) %>% 
+  set("leaves_col", ag_labcolors$leafcolor_dichot) %>% 
   set("branches_lwd", 0.5) %>% 
-  set("branches_k_col", k = 10, c("#3498DB",   # Blue
+  set("branches_k_col", k = 7, c("#3498DB",    # Blue
                                  "#2ECC71",    # Green
                                  "#F39C12",    # Gold/orange
                                  "#E74C3C",    # Red
                                  "#D979C9",    # Pink
                                  "#9B59B6",    # Purple
-                                 "#9F83D4",    # Grape
-                                 "#1ABCB4",    # Teal
-                                 "#45A37C",    # Sage green
-                                 "#34495E"))   # Slate blue
+                                 #"#9F83D4",    # Grape
+                                 "#1ABCB4")) #,    # Teal
+                                 #"#45A37C",    # Sage green
+                                 #"#34495E"))   # Slate blue
 
-agnes_dend_clust_rev_ggd <- agnes_dend_clust_rev %>% 
+agnes_dend_clust_dichot_ggd <- agnes_dend_clust_dichot %>% 
   as.ggdend()
 ```
 
-```{r agnes_rev_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-ag_rev_clusts_df <- cluster_pct(agnes_dend_clust_rev_ggd)
+```{r agnes_dichot_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+ag_dichot_clusts_df <- cluster_pct(agnes_dend_clust_dichot_ggd, dichot = TRUE)
 
-ag_rev_clusts_kbl <- ag_rev_clusts_df %>%
+ag_dichot_clusts_kbl <- ag_dichot_clusts_df %>%
   rename(Cluster = cluster_num) %>%
   kable(format = "markdown")
 
-ag_rev_clust_labs <- cluster_labs(agnes_dend_clust_rev_ggd)
+ag_dichot_clust_labs <- cluster_labs(agnes_dend_clust_dichot_ggd, dichot = TRUE)
 ```
 
-```{r agnes_dend_clust_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+```{r agnes_dend_clust_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
 
-agnes_dend_clust_rev_gg <- ggplot(agnes_dend_clust_rev_ggd, labels = FALSE) +
-  geom_text(data = ag_rev_clust_labs, aes(x = x_lab, y = -0.5, label = cluster_num, color = cluster_col)) +
+agnes_dend_clust_dichot_gg <- ggplot(agnes_dend_clust_dichot_ggd, labels = FALSE) +
+  geom_text(data = ag_dichot_clust_labs, aes(x = x_lab, y = -0.5, label = cluster_num, color = cluster_col)) +
   scale_y_reverse() +
   coord_polar(theta = "x") +
   theme(axis.line = element_blank(),
@@ -564,7 +588,119 @@ agnes_dend_clust_rev_gg <- ggplot(agnes_dend_clust_rev_ggd, labels = FALSE) +
         panel.grid = element_blank()) +
   xlab("") +
   ylab("")
-agnes_dend_clust_rev_gg
+agnes_dend_clust_dichot_gg
 
 ggthemr("flat")
 ```
+
+```{r diana_dend_clust_ggd_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+# 6 clusters for DIANA; dichotomous BMI category
+di_labcolors <- unsup_labs_reord_di %>% 
+  as_tibble()
+
+diana_dend_clust_dichot <- nhanes_diana %>% 
+  as.dendrogram() %>% 
+  set("leaves_pch", 20, col = di_labcolors$leafcolor_dichot) %>% 
+  set("leaves_col", di_labcolors$leafcolor_dichot) %>% 
+  set("branches_lwd", 0.5) %>% 
+  set("branches_k_col", k = 6, c("#3498DB",    # Blue
+                                 "#2ECC71",    # Green
+                                 "#F39C12",    # Gold/orange
+                                 "#E74C3C",    # Red
+                                 "#D979C9",    # Pink
+                                 "#9B59B6"))#,    # Purple
+                                 #"#9F83D4",    # Grape
+                                 #"#1ABCB4",    # Teal
+                                 #"#45A37C",    # Sage green
+                                 #"#34495E"))   # Slate blue
+
+diana_dend_clust_dichot_ggd <- diana_dend_clust_dichot %>% 
+  as.ggdend()
+```
+
+```{r diana_dichot_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+di_dichot_clusts_df <- cluster_pct(diana_dend_clust_dichot_ggd, dichot = TRUE)
+
+di_dichot_clusts_kbl <- di_dichot_clusts_df %>% 
+  rename(Cluster = cluster_num) %>% 
+  kable(format = "markdown")
+
+di_dichot_clust_labs <- cluster_labs(diana_dend_clust_dichot_ggd, dichot = TRUE)
+```
+
+```{r diana_dend_clust_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+diana_dend_clust_dichot_gg <- ggplot(diana_dend_clust_dichot_ggd, labels = FALSE) +
+  geom_text(data = di_dichot_clust_labs, aes(x = x_lab, y = -0.15, label = cluster_num, color = cluster_col)) +
+  scale_y_reverse() +
+  coord_polar(theta = "x") +
+  theme(axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()) +
+  xlab("") +
+  ylab("")
+diana_dend_clust_dichot_gg
+
+ggthemr("flat")
+```
+
+
+
+
+
+
+
+
+<!-- ANALYSIS WITH INCREASING k (OMITTING IN FAVOR OF DICHOTOMOUS ANALYSIS) -->
+
+<!-- ```{r agnes_dend_clust_ggd_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5} -->
+<!-- # 10 clusters for AGNES -->
+<!-- agnes_dend_clust_rev <- nhanes_agnes %>%  -->
+<!--   as.dendrogram() %>%  -->
+<!--   set("leaves_pch", 20, col = ag_labcolors$leafcolor) %>%  -->
+<!--   set("leaves_col", ag_labcolors$leafcolor) %>%  -->
+<!--   set("branches_lwd", 0.5) %>%  -->
+<!--   set("branches_k_col", k = 10, c("#3498DB",   # Blue -->
+<!--                                  "#2ECC71",    # Green -->
+<!--                                  "#F39C12",    # Gold/orange -->
+<!--                                  "#E74C3C",    # Red -->
+<!--                                  "#D979C9",    # Pink -->
+<!--                                  "#9B59B6",    # Purple -->
+<!--                                  "#9F83D4",    # Grape -->
+<!--                                  "#1ABCB4",    # Teal -->
+<!--                                  "#45A37C",    # Sage green -->
+<!--                                  "#34495E"))   # Slate blue -->
+
+<!-- agnes_dend_clust_rev_ggd <- agnes_dend_clust_rev %>%  -->
+<!--   as.ggdend() -->
+<!-- ``` -->
+
+<!-- ```{r agnes_rev_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4} -->
+<!-- ag_rev_clusts_df <- cluster_pct(agnes_dend_clust_rev_ggd) -->
+
+<!-- ag_rev_clusts_kbl <- ag_rev_clusts_df %>% -->
+<!--   rename(Cluster = cluster_num) %>% -->
+<!--   kable(format = "markdown") -->
+
+<!-- ag_rev_clust_labs <- cluster_labs(agnes_dend_clust_rev_ggd) -->
+<!-- ``` -->
+
+<!-- ```{r agnes_dend_clust_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75} -->
+<!-- ggthemr("flat", spacing = 0.1) -->
+
+<!-- agnes_dend_clust_rev_gg <- ggplot(agnes_dend_clust_rev_ggd, labels = FALSE) + -->
+<!--   geom_text(data = ag_rev_clust_labs, aes(x = x_lab, y = -0.5, label = cluster_num, color = cluster_col)) + -->
+<!--   scale_y_reverse() + -->
+<!--   coord_polar(theta = "x") + -->
+<!--   theme(axis.line = element_blank(), -->
+<!--         axis.text.x = element_blank(), -->
+<!--         axis.text.y = element_blank(), -->
+<!--         axis.ticks = element_blank(), -->
+<!--         panel.grid = element_blank()) + -->
+<!--   xlab("") + -->
+<!--   ylab("") -->
+<!-- agnes_dend_clust_rev_gg -->
+
+<!-- ggthemr("flat") -->
+<!-- ``` -->
