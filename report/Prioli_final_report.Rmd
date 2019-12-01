@@ -82,8 +82,7 @@ To further improve accuracy, the labels representing BMI category were recast as
 
 For the unsupervised component of this analysis, data was subset to variables with $\ge 90$% non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was further subset to a random 5% sample within each BMI category to allow for sensible, interpretable dendrogram plots.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.[21]  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).  Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters.
 
-Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based varying the number of clusters up to an upper limit of 15; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.[22]  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via both visual and numeric inspection, and the cluster number hyperparameter *k* was tuned as needed to improve homogeneity.
-
+Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based varying the number of clusters up to an upper limit of 15; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.[22]  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via both visual and numeric inspection.  The analysis was run again with dichotomous BMI category, and results were compared to the initial analysis.
 
 ### *Technologies*
 
@@ -188,11 +187,28 @@ ggthemr("flat")
 j <- j + 1
 ```
 
+**Table `r i`.  BMI Categories by Cluster, Initial DIANA Analysis.**
+
 ```{r diana_dend_clust_init_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 di_init_clusts_kbl
 
 i <- i + 1
 ```
+
+When considering the initial results for both AGNES and DIANA alongside their respective dendrogram plots, 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- DECIDE WHETHER I WANT TO KEEP THE INCREASED K ANALYSIS BELOW; TRY DICHOTOMIZING BMI_CAT INSTEAD -->
 
