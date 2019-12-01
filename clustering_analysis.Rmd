@@ -115,7 +115,7 @@ legend_tbl <- unsup_labs_reord_ag %>%
 
 ggthemr("flat")
 ggleg <- ggplot(data = legend_tbl, aes(x = x, y = y)) +
-  geom_point(aes(x = x, y = y, fill = BMI_cat), color = "black", shape = "circle filled", size = 5) +
+  geom_point(aes(x = x, y = y, fill = BMI_cat), color = "#545454", shape = "circle filled", size = 3) +
   scale_fill_manual(name = "BMI Category",
                     values = c(Underweight = "#FFFF00",
                                "Healthy Weight" = "#008318",
@@ -187,8 +187,7 @@ diana_dend_gg <- ggplot(diana_dend_ggd, labels = FALSE) +
         panel.grid = element_blank(),
         plot.title = element_text(angle = 0)) +
   xlab("") +
-  ylab("") #+
-  #ggtitle("DIANA Dendrogram")
+  ylab("")
 diana_dend_gg
 
 ggthemr("flat")
@@ -345,7 +344,8 @@ cluster_pct <- function(df){
                                                 "Healthy Weight (n, %)",
                                                 "Overweight (n, %)",
                                                 "Obese (n, %)"))) %>% 
-    select(cluster_num, Size, BMI_cat, n_pct) %>% 
+    rename("Size (n)" = Size) %>% 
+    select(cluster_num, "Size (n)", BMI_cat, n_pct) %>% 
     spread(BMI_cat, n_pct, fill = "0 (0%)")
 }
 ```
@@ -453,9 +453,9 @@ diana_dend_clust_init_gg
 ggthemr("flat")
 ```
 
-```{r agnes_dend_clust_ggd_final, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+```{r agnes_dend_clust_ggd_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
 # 10 clusters for AGNES
-agnes_dend_clust_final <- nhanes_agnes %>% 
+agnes_dend_clust_rev <- nhanes_agnes %>% 
   as.dendrogram() %>% 
   set("leaves_pch", 20, col = ag_labcolors$leafcolor) %>% 
   set("leaves_col", ag_labcolors$leafcolor) %>% 
@@ -471,25 +471,25 @@ agnes_dend_clust_final <- nhanes_agnes %>%
                                  "#45A37C",    # Sage green
                                  "#34495E"))   # Slate blue
 
-agnes_dend_clust_final_ggd <- agnes_dend_clust_final %>% 
+agnes_dend_clust_rev_ggd <- agnes_dend_clust_rev %>% 
   as.ggdend()
 ```
 
-```{r agnes_final_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-ag_final_clusts_df <- cluster_pct(agnes_dend_clust_final_ggd)
+```{r agnes_rev_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+ag_rev_clusts_df <- cluster_pct(agnes_dend_clust_rev_ggd)
 
-ag_final_clusts_kbl <- ag_final_clusts_df %>%
+ag_rev_clusts_kbl <- ag_rev_clusts_df %>%
   rename(Cluster = cluster_num) %>%
   kable(format = "markdown")
 
-ag_final_clust_labs <- cluster_labs(agnes_dend_clust_final_ggd)
+ag_rev_clust_labs <- cluster_labs(agnes_dend_clust_rev_ggd)
 ```
 
-```{r agnes_dend_clust_final, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+```{r agnes_dend_clust_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
 
-agnes_dend_clust_final_gg <- ggplot(agnes_dend_clust_final_ggd, labels = FALSE) +
-  geom_text(data = ag_final_clust_labs, aes(x = x_lab, y = -0.5, label = cluster_num, color = cluster_col)) +
+agnes_dend_clust_rev_gg <- ggplot(agnes_dend_clust_rev_ggd, labels = FALSE) +
+  geom_text(data = ag_rev_clust_labs, aes(x = x_lab, y = -0.5, label = cluster_num, color = cluster_col)) +
   scale_y_reverse() +
   coord_polar(theta = "x") +
   theme(axis.line = element_blank(),
@@ -499,7 +499,7 @@ agnes_dend_clust_final_gg <- ggplot(agnes_dend_clust_final_ggd, labels = FALSE) 
         panel.grid = element_blank()) +
   xlab("") +
   ylab("")
-agnes_dend_clust_final_gg
+agnes_dend_clust_rev_gg
 
 ggthemr("flat")
 ```
