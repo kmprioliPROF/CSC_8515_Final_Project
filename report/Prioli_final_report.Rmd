@@ -82,7 +82,7 @@ To further improve accuracy, the labels representing BMI category were recast as
 
 For the unsupervised component of this analysis, data was subset to variables with $\ge 90$% non-missing values, then all cases with missing values were dropped.  Since this approach involves visual analysis via dendrograms, the data was further subset to a random 5% sample within each BMI category to allow for sensible, interpretable dendrogram plots.  The analytic dataset thus comprised `r dim(nhanes_unsup_mat)[1]` cases having `r dim(nhanes_unsup_mat)[2]` variables.  To generate dendrograms for agglomerative clustering (AGNES) and divisive clustering (DIANA), a dissimilarity matrix was calculated based on Gower distance.[21]  The Gower distance was chosen because the variables in this dataset are of mixed type (i.e., some continuous, some ordinal, and some nominal).  Because the data is likely noisy, AGNES relied on complete (i.e., maximum distance) linkage between clusters.
 
-Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based varying the number of clusters up to an upper limit of 15; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.[22]  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via both visual and numeric inspection.  The analysis was run again with dichotomous BMI category, and results were compared to the initial analysis.
+Radial dendrograms for both AGNES and DIANA were plotted along with colored labels at each leaf to indicate the four BMI weight categories.  For both AGNES and DIANA, cluster size was assessed and within-cluster sums of squares and average silhouette width were calculated based varying the number of clusters up to an upper limit of 15; these latter two metrics were used to generate scree and silhouette plots, which were used to determine an initial cluster number for each approach.[22]  The radial dendrograms were replotted using these values to inform cluster coloration.  Homogeneity of label colors in each cluster was assessed via both visual and numeric inspection.  The analysis was run again with dichotomous BMI category (not overweight or obese vs. overweight or obese) and more clusters, and results were compared to the initial analysis.
 
 ### *Technologies*
 
@@ -146,7 +146,7 @@ The initial model, based on the full dataset and using $k = 5$ folds, $n = 5$ re
 
 The scree and silhouette plots are presented in Figure `r j` *a* and *b*. The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two elbows are seen:  one at 5 clusters and one at 6.  Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.  Considered together, scree and silhouette plots indicate that 7 clusters may be sufficient for AGNES, and 6 for DIANA.
 
-**Figure `r i`.  Scree and Silhouette Plots**
+**Figure `r i`.  Scree and Silhouette Plots.**
 
 ```{r scree_silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 8}
 grid.arrange(screes, sils, nrow = 2)
@@ -156,11 +156,12 @@ j <- j + 1
 
 The initial radial dendrogram for AGNES is shown in Fig. `r j` and the corresponding numeric analysis of BMI category by cluster number is presented in Table `r i`.  Cluster #1 shows the most homogeneity, with 83.3% of the 12 cases in the cluster obese.  Cluster #2 is slightly larger at 25 cases, and is 64.0% homogeneous for obesity.  The largest cluster is Cluster #7, and it shows the least homogeneity with 37.7% of its 69 cases overweight, 36.2% obese, and 24.6% having healthy weight.
 
-**Figure `r j`.  Initial Colored Radial Dendrogram, AGNES (*k* = 7)**
+**Figure `r j`.  Initial Colored Radial Dendrogram, AGNES (*k* = 7).**
 
 ```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
-ggdraw() + draw_image(ggleg_svg, x = -0.025, scale = 1.15) + draw_plot(agnes_dend_clust_init_gg, x = -0.15)
+agnes_dend_init_out <- ggdraw() + draw_image(ggleg_svg, x = -0.025, scale = 1.15) + draw_plot(agnes_dend_clust_init_gg, x = -0.15)
+agnes_dend_init_out
 ggthemr("flat")
 
 j <- j + 1
@@ -176,7 +177,7 @@ i <- i + 1
 
 For DIANA, the initial radial dendrogram is shown in Fig. `r j` with analysis of BMI category by cluster number in Table `r i`.  A pattern generally similar to that seen in the initial AGNES case is seen, wherein smaller clusters had better homogeneity, and heterogeneity increased with cluster size.  Here, Cluster #6 was the most homogeneous, with 77.3% of its 22 cases obese, and Cluster #2 was the least homogeneous, with $\frac{1}{3}$ of its 69 cases at healthy weight, another $\frac{1}{3}$ obese, and 31.9% overweight.
 
-**Figure `r j`.  Initial Colored Radial Dendrogram, DIANA (*k* = 6)**
+**Figure `r j`.  Initial Colored Radial Dendrogram, DIANA (*k* = 6).**
 
 ```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -195,43 +196,46 @@ di_init_clusts_kbl
 i <- i + 1
 ```
 
-When considering the initial results for both AGNES and DIANA alongside their respective dendrogram plots, 
+After dichotomizing BMI category, both AGNES and DIANA showed improved homogeneity.  AGNES (Fig. `r j` and Table `r i`) shows improved homogeneity in all seven clusters, with homogeneity ranging from 52.8% (Cluster 5) to 100% (Cluster 1).  Importantly, the two largest clusters are over 70% homogeneous.  DIANA (Fig. `r j` and Table `r i`) shows similar improvements, with three clusters having over 90% homogeneity, and homogeneity values between 57.1% and 94.9%.  Mean homogeneity in AGNES was 76.3%, as compared to 76.6% for DIANA.  Though these values are comparable, DIANA was able to achive these results with one fewer cluster than AGNES.
 
+**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, AGNES (*k* = 7).**
 
+```{r agnes_dend_clust_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
+ggthemr("flat", spacing = 0.1)
+ggdraw() + draw_image(ggleg_dichot_svg, x = -0.025, scale = 1.15) + draw_plot(agnes_dend_clust_dichot_gg, x = -0.15)
+ggthemr("flat")
 
+j <- j + 1
+```
 
+**Table `r i`.  Dichotomized BMI Categories by Cluster, AGNES.**
 
+```{r agnes_dend_clust_dichot_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+ag_dichot_clusts_kbl
 
+i <- i + 1
+```
 
+**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, DIANA (*k* = 6).**
 
+```{r diana_dend_clust_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
+ggthemr("flat", spacing = 0.1)
+ggdraw() + draw_image(ggleg_dichot_svg, x = -0.025, scale = 1.15) + draw_plot(diana_dend_clust_dichot_gg, x = -0.10)
+ggthemr("flat")
 
+j <- j + 1
+```
 
+**Table `r i`.  Dichotomized BMI Categories by Cluster, DIANA.**
 
+```{r diana_dend_clust_dichot_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+di_dichot_clusts_kbl
 
+i <- i + 1
+```
 
+These dichotomized analyses were re-run using $k = 10$ clusters for AGNES (based on next local maxima in the silhouette plot) and $k = 9$ clusters for DIANA (based on next elbow in scree plot).  The revised radial AGNES dendrogram and corresponding output table are shown in Fig. `r j` and Table `r i` respectively.
 
-<!-- DECIDE WHETHER I WANT TO KEEP THE INCREASED K ANALYSIS BELOW; TRY DICHOTOMIZING BMI_CAT INSTEAD -->
-
-<!-- These analyses were re-run using $k = 10$ clusters for AGNES (based on next local maxima in the silhouette plot) and $k = 9$ clusters for DIANA (based on next elbow in scree plot).  The revised radial AGNES dendrogram and corresponding output table are shown in Fig. `r j` and Table `r i` respectively. -->
-
-<!-- **Figure `r j`.  Revised Colored Radial Dendrogram, AGNES (*k* = 10)** -->
-
-<!-- ```{r agnes_dend_clust_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75} -->
-<!-- ggthemr("flat", spacing = 0.1) -->
-<!-- ag_dend_rev_out <- ggdraw() + draw_image(ggleg_svg, x = -0.025, scale = 1.15) + draw_plot(agnes_dend_clust_rev_gg, x = -0.10) -->
-<!-- ag_dend_rev_out -->
-<!-- ggthemr("flat") -->
-
-<!-- j <- j + 1 -->
-<!-- ``` -->
-
-<!-- **Table `r i`.  BMI Categories by Cluster, Revised AGNES Analysis.** -->
-
-<!-- ```{r agnes_dend_clust_rev_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75} -->
-<!-- ag_rev_clusts_kbl -->
-
-<!-- i <- i + 1 -->
-<!-- ``` -->
 
 
 
