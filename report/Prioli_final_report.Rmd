@@ -167,7 +167,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  BMI Categories by Cluster, Initial AGNES Analysis.**
+**Table `r i`.  BMI Categories by Cluster, Initial AGNES Analysis (*k* = 7).**
 
 ```{r agnes_dend_clust_init_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ag_init_clusts_kbl
@@ -188,7 +188,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  BMI Categories by Cluster, Initial DIANA Analysis.**
+**Table `r i`.  BMI Categories by Cluster, Initial DIANA Analysis (*k* = 6).**
 
 ```{r diana_dend_clust_init_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 di_init_clusts_kbl
@@ -208,7 +208,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Dichotomized BMI Categories by Cluster, AGNES.**
+**Table `r i`.  Dichotomized BMI Categories by Cluster, AGNES (*k* = 7).**
 
 ```{r agnes_dend_clust_dichot_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ag_dichot_clusts_kbl
@@ -226,7 +226,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Dichotomized BMI Categories by Cluster, DIANA.**
+**Table `r i`.  Dichotomized BMI Categories by Cluster, DIANA (*k* = 6).**
 
 ```{r diana_dend_clust_dichot_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 di_dichot_clusts_kbl
@@ -237,8 +237,64 @@ i <- i + 1
 These dichotomized analyses were re-run using $k = 10$ clusters for AGNES (based on next local maxima in the silhouette plot) and $k = 9$ clusters for DIANA (based on next elbow in scree plot).  The revised radial AGNES dendrogram and corresponding output table are shown in Fig. `r j` and Table `r i` respectively.
 
 
+CONTINUE HERE - interpret the most recent AGNES and DIANA output
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, AGNES (*k* = 10).**
+
+```{r agnes_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
+ggthemr("flat", spacing = 0.1)
+ggdraw() + draw_image(ggleg_dichot_svg, x = -0.02, scale = 1.15) + draw_plot(agnes_dend_clust_dichot_rev_gg, x = -0.125)
+ggthemr("flat")
+
+j <- j + 1
+```
+
+**Table `r i`.  Dichotomized BMI Categories by Cluster, AGNES (*k* = 10).**
+
+```{r agnes_dend_clust_dichot_rev_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+ag_dichot_rev_clusts_kbl
+
+i <- i + 1
+```
+
+**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, DIANA (*k* = 9).**
+
+```{r diana_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
+ggthemr("flat", spacing = 0.1)
+ggdraw() + draw_image(ggleg_dichot_svg, x = -0.02, scale = 1.15) + draw_plot(diana_dend_clust_dichot_rev_gg, x = -0.10)
+ggthemr("flat")
+
+j <- j + 1
+```
+
+**Table `r i`.  Dichotomized BMI Categories by Cluster, DIANA (*k* = 9).**
+
+```{r diana_dend_clust_dichot_rev_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+di_dichot_rev_clusts_kbl
+
+i <- i + 1
+```
 
 
 

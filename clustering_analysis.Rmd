@@ -459,9 +459,7 @@ agnes_dend_clust_init_ggd <- agnes_dend_clust_init %>%
 ```
 
 ```{r agnes_init_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-ag_init_clusts_df <- cluster_pct(agnes_dend_clust_init_ggd)
-
-ag_init_clusts_kbl <- ag_init_clusts_df %>%
+ag_init_clusts_kbl <- cluster_pct(agnes_dend_clust_init_ggd) %>%
   rename(Cluster = cluster_num) %>%
   kable(format = "markdown")
 
@@ -513,9 +511,7 @@ diana_dend_clust_init_ggd <- diana_dend_clust_init %>%
 ```
 
 ```{r diana_init_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-di_init_clusts_df <- cluster_pct(diana_dend_clust_init_ggd)
-
-di_init_clusts_kbl <- di_init_clusts_df %>% 
+di_init_clusts_kbl <- cluster_pct(diana_dend_clust_init_ggd) %>% 
   rename(Cluster = cluster_num) %>% 
   kable(format = "markdown")
 
@@ -565,9 +561,7 @@ agnes_dend_clust_dichot_ggd <- agnes_dend_clust_dichot %>%
 ```
 
 ```{r agnes_dichot_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-ag_dichot_clusts_df <- cluster_pct(agnes_dend_clust_dichot_ggd, dichot = TRUE)
-
-ag_dichot_clusts_kbl <- ag_dichot_clusts_df %>%
+ag_dichot_clusts_kbl <- cluster_pct(agnes_dend_clust_dichot_ggd, dichot = TRUE) %>%
   rename(Cluster = cluster_num) %>%
   kable(format = "markdown")
 
@@ -619,9 +613,7 @@ diana_dend_clust_dichot_ggd <- diana_dend_clust_dichot %>%
 ```
 
 ```{r diana_dichot_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-di_dichot_clusts_df <- cluster_pct(diana_dend_clust_dichot_ggd, dichot = TRUE)
-
-di_dichot_clusts_kbl <- di_dichot_clusts_df %>% 
+di_dichot_clusts_kbl <- cluster_pct(diana_dend_clust_dichot_ggd, dichot = TRUE) %>% 
   rename(Cluster = cluster_num) %>% 
   kable(format = "markdown")
 
@@ -646,61 +638,102 @@ ggthemr("flat")
 ```
 
 
+## REVISED CLUSTERING DENDROGRAMS, DICHOTOMOUS BMI, INCREASED *k*
 
+```{r agnes_dend_clust_dichot_rev_ggd, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+# 10 clusters for AGNES; dichotomous BMI weight category
+agnes_dend_clust_dichot_rev <- nhanes_agnes %>%
+  as.dendrogram() %>%
+  set("leaves_pch", 20, col = ag_labcolors$leafcolor_dichot) %>%
+  set("leaves_col", ag_labcolors$leafcolor_dichot) %>%
+  set("branches_lwd", 0.5) %>%
+  set("branches_k_col", k = 10, c("#3498DB",   # Blue
+                                  "#2ECC71",    # Green
+                                  "#F39C12",    # Gold/orange
+                                  "#E74C3C",    # Red
+                                  "#D979C9",    # Pink
+                                  "#9B59B6",    # Purple
+                                  "#9F83D4",    # Grape
+                                  "#1ABCB4",    # Teal
+                                  "#45A37C",    # Sage green
+                                  "#34495E"))   # Slate blue
 
+agnes_dend_clust_dichot_rev_ggd <- agnes_dend_clust_dichot_rev %>%
+  as.ggdend()
+```
 
+```{r agnes_dichot_rev_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+ag_dichot_rev_clusts_kbl <- cluster_pct(agnes_dend_clust_dichot_rev_ggd, dichot = TRUE) %>%
+  rename(Cluster = cluster_num) %>%
+  kable(format = "markdown")
 
+ag_rev_clust_labs <- cluster_labs(agnes_dend_clust_dichot_rev_ggd)
+```
 
+```{r agnes_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+ggthemr("flat", spacing = 0.1)
 
-<!-- ANALYSIS WITH INCREASING k (OMITTING IN FAVOR OF DICHOTOMOUS ANALYSIS) -->
+agnes_dend_clust_dichot_rev_gg <- ggplot(agnes_dend_clust_dichot_rev_ggd, labels = FALSE) +
+  geom_text(data = ag_rev_clust_labs, aes(x = x_lab, y = -0.5, label = cluster_num, color = cluster_col)) +
+  scale_y_reverse() +
+  coord_polar(theta = "x") +
+  theme(axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()) +
+  xlab("") +
+  ylab("")
+agnes_dend_clust_dichot_rev_gg
 
-<!-- ```{r agnes_dend_clust_ggd_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5} -->
-<!-- # 10 clusters for AGNES -->
-<!-- agnes_dend_clust_rev <- nhanes_agnes %>%  -->
-<!--   as.dendrogram() %>%  -->
-<!--   set("leaves_pch", 20, col = ag_labcolors$leafcolor) %>%  -->
-<!--   set("leaves_col", ag_labcolors$leafcolor) %>%  -->
-<!--   set("branches_lwd", 0.5) %>%  -->
-<!--   set("branches_k_col", k = 10, c("#3498DB",   # Blue -->
-<!--                                  "#2ECC71",    # Green -->
-<!--                                  "#F39C12",    # Gold/orange -->
-<!--                                  "#E74C3C",    # Red -->
-<!--                                  "#D979C9",    # Pink -->
-<!--                                  "#9B59B6",    # Purple -->
-<!--                                  "#9F83D4",    # Grape -->
-<!--                                  "#1ABCB4",    # Teal -->
-<!--                                  "#45A37C",    # Sage green -->
-<!--                                  "#34495E"))   # Slate blue -->
+ggthemr("flat")
+```
 
-<!-- agnes_dend_clust_rev_ggd <- agnes_dend_clust_rev %>%  -->
-<!--   as.ggdend() -->
-<!-- ``` -->
+```{r diana_dend_clust_dichot_rev_ggd, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+# 9 clusters for DIANA; dichotomous BMI weight category
+diana_dend_clust_dichot_rev <- nhanes_diana %>%
+  as.dendrogram() %>%
+  set("leaves_pch", 20, col = di_labcolors$leafcolor_dichot) %>%
+  set("leaves_col", di_labcolors$leafcolor_dichot) %>%
+  set("branches_lwd", 0.5) %>%
+  set("branches_k_col", k = 9, c("#3498DB",   # Blue
+                                 "#2ECC71",    # Green
+                                 "#F39C12",    # Gold/orange
+                                 "#E74C3C",    # Red
+                                 "#D979C9",    # Pink
+                                 "#9B59B6",    # Purple
+                                 "#9F83D4",    # Grape
+                                 "#1ABCB4",    # Teal
+                                 #"#45A37C",    # Sage green
+                                 "#34495E"))   # Slate blue
 
-<!-- ```{r agnes_rev_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4} -->
-<!-- ag_rev_clusts_df <- cluster_pct(agnes_dend_clust_rev_ggd) -->
+diana_dend_clust_dichot_rev_ggd <- diana_dend_clust_dichot_rev %>%
+  as.ggdend()
+```
 
-<!-- ag_rev_clusts_kbl <- ag_rev_clusts_df %>% -->
-<!--   rename(Cluster = cluster_num) %>% -->
-<!--   kable(format = "markdown") -->
+```{r diana_dichot_rev_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+di_dichot_rev_clusts_kbl <- cluster_pct(diana_dend_clust_dichot_rev_ggd, dichot = TRUE) %>%
+  rename(Cluster = cluster_num) %>%
+  kable(format = "markdown")
 
-<!-- ag_rev_clust_labs <- cluster_labs(agnes_dend_clust_rev_ggd) -->
-<!-- ``` -->
+di_rev_clust_labs <- cluster_labs(diana_dend_clust_dichot_rev_ggd)
+```
 
-<!-- ```{r agnes_dend_clust_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75} -->
-<!-- ggthemr("flat", spacing = 0.1) -->
+```{r diana_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+ggthemr("flat", spacing = 0.1)
 
-<!-- agnes_dend_clust_rev_gg <- ggplot(agnes_dend_clust_rev_ggd, labels = FALSE) + -->
-<!--   geom_text(data = ag_rev_clust_labs, aes(x = x_lab, y = -0.5, label = cluster_num, color = cluster_col)) + -->
-<!--   scale_y_reverse() + -->
-<!--   coord_polar(theta = "x") + -->
-<!--   theme(axis.line = element_blank(), -->
-<!--         axis.text.x = element_blank(), -->
-<!--         axis.text.y = element_blank(), -->
-<!--         axis.ticks = element_blank(), -->
-<!--         panel.grid = element_blank()) + -->
-<!--   xlab("") + -->
-<!--   ylab("") -->
-<!-- agnes_dend_clust_rev_gg -->
+diana_dend_clust_dichot_rev_gg <- ggplot(diana_dend_clust_dichot_rev_ggd, labels = FALSE) +
+  geom_text(data = di_rev_clust_labs, aes(x = x_lab, y = -0.15, label = cluster_num, color = cluster_col)) +
+  scale_y_reverse() +
+  coord_polar(theta = "x") +
+  theme(axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()) +
+  xlab("") +
+  ylab("")
+diana_dend_clust_dichot_rev_gg
 
-<!-- ggthemr("flat") -->
-<!-- ``` -->
+ggthemr("flat")
+```
