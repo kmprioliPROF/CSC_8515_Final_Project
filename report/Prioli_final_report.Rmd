@@ -143,6 +143,8 @@ The initial model, based on the full dataset and using $k = 5$ folds, $n = 5$ re
 
 ### *Unsupervised Approach*
 
+<!-- Do I want to put the correlation plots in here? -->
+
 The scree and silhouette plots are presented in Figure `r j` *a* and *b*. The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two elbows are seen:  one at 5 clusters and one at 6.  Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.  Considered together, scree and silhouette plots indicate that 7 clusters may be sufficient for AGNES, and 6 for DIANA.
 
 **Figure `r i`.  Scree and Silhouette Plots**
@@ -157,9 +159,9 @@ The initial radial dendrogram for AGNES is shown in Fig. `r j` and the correspon
 
 **Figure `r j`.  Initial Colored Radial Dendrogram, AGNES (*k* = 7)**
 
-```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
-agnes_dend_clust_init_gg
+ggdraw() + draw_image(ggleg_svg, x = -0.025, scale = 1.15) + draw_plot(agnes_dend_clust_init_gg, x = -0.15)
 ggthemr("flat")
 
 j <- j + 1
@@ -177,9 +179,9 @@ For DIANA, the initial radial dendrogram is shown in Fig. `r j` with analysis of
 
 **Figure `r j`.  Initial Colored Radial Dendrogram, DIANA (*k* = 6)**
 
-```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
-diana_dend_clust_init_gg
+ggdraw() + draw_image(ggleg_svg, x = -0.025, scale = 1.15) + draw_plot(diana_dend_clust_init_gg, x = -0.1)
 ggthemr("flat")
 
 j <- j + 1
@@ -190,6 +192,18 @@ di_init_clusts_kbl
 
 i <- i + 1
 ```
+
+These dendrograms were re-run using $k = 6$ clusters for AGNES and $k = 9$ clusters for DIANA; output is shown below.
+
+
+
+
+
+
+
+
+
+
 
 
 ## **Discussion**

@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - import & wrangle data
-# Sat Nov 30 12:21:58 2019 ------------------------------
+# Sat Nov 30 16:14:32 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -738,12 +738,15 @@ nhanes_unsup_mat <- nhanes_unsup_stag2 %>%
   select(-seqn, BMI_cat) %>% 
   as.matrix()
 
+nhanes_unsup_tbl <- nhanes_unsup_stag2 %>% 
+  select(-seqn)
+
 rownames(nhanes_unsup_mat) <- unsup_labs
 
 
 # Saving analytic datasets to .Rdata
 
-# save(nhanes, nhanes_sup_trim_dichot, nhanes_unsup_mat, unsup_labs, file = "data/analytic_datasets.RData")
+# save(nhanes, nhanes_sup_trim_dichot, nhanes_unsup_tbl, nhanes_unsup_mat, unsup_labs, file = "data/staging/analytic_datasets.RData")
 
 
 #### Removing staging and other unnecessary dataframes ----
@@ -751,8 +754,8 @@ rownames(nhanes_unsup_mat) <- unsup_labs
 rm(list = c("allseqn", "nhanes_stag", "nhanes_stag2", "nhanes_contin", "nhanes_contin2", "nhanes_contin_desc",
             "nhanes_contin2_desc", "nhanes_contin_imp", "nhanes_contin_imp_desc", "nhanes_fct", "age_wilcox", 
             "mins_activ_wilcox", "mins_seden_wilcox", "dailykcal_wilcox", "dailywater_wilcox", "omits", 
-            "wilcox_pvals", "wilcox_results", "wilcox_vars", "nhanes_unsup_stag", "nhanes_unsup_full",
-            "nhanes_unsup_stag2"))
+            "wilcox_pvals", "wilcox_results", "wilcox_vars", "nhanes_unsup_stag", "nhanes_unsup_full"))#,
+            #"nhanes_unsup_stag2"))
 
 
 #### Rendering .Rmd ----

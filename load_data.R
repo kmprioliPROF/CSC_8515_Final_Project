@@ -1,6 +1,6 @@
 # Katherine M. Prioli
 # CSC 8515 Final Project - load analytic datasets from .RData
-# Sat Nov 30 12:46:38 2019 ------------------------------
+# Sat Nov 30 19:57:35 2019 ------------------------------
 
 
 #### Loading libraries ----
@@ -22,7 +22,10 @@ library(rmarkdown)      # For render()
 library(reticulate)     # For interfacing with Python in .Rmd
 library(kableExtra)     # For prettifying output tables
 library(broom)          # For tidy()
+library(GGally)         # For ggpairs()
 library(ggthemr)        # For prettifying output plots
+library(cowplot)        # For ggdraw() and draw_plot()
+library(magick)         # For image_read_svg()
 library(tidyselect)     # For selecting by string
 library(tidyverse)      # For data import and wrangling
 

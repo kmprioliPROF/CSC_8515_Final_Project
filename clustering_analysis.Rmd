@@ -9,10 +9,26 @@ geometry: margin = 0.5in
 ---
 
 
-Descriptives for the dissimilarity matrix:
+```{r corrplots, echo = FALSE, paged.print = FALSE, fig.width = 9, fig.height = 6}
+# Correlation plots for BMI_cat vs continuous and ordinal variables
+
+demog_corrplot <- ggpairs(nhanes_unsup_tbl, 
+                          columns = c("BMI_cat", "age", "educ", "famincome_cat", "n_comorbid"),
+                          columnLabels = c("BMI Category", "Age", "Education", "Fam. Income", "No. Comorbidities"),
+                          title = "BMI Category vs. Demographics and Comorbidities")
+demog_corrplot
+
+behav_corrplot <- ggpairs(nhanes_unsup_tbl,
+                          columns = c("BMI_cat", "mins_activ", "mins_seden", "dailykcal", "dailywater"),
+                          columnLabels = c("BMI Category", "Mins. Active", "Mins. Sedentary", "Caloric Intake", "Water Intake"),
+                          title = "BMI Category vs. Behavioral Variables")
+behav_corrplot
+```
 
 ```{r dissim, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 dissim_mat <- vegdist(nhanes_unsup_mat, method = "gower")
+
+# Descriptives for the dissimilarity matrix
 summary(dissim_mat) %>% 
   round(digits = 2) %>% 
   tidy() %>% 
@@ -76,11 +92,50 @@ agnes_dend_gg <- ggplot(agnes_dend_ggd, labels = FALSE) +
         panel.grid = element_blank(),
         plot.title = element_text(angle = 0)) +
   xlab("") +
-  ylab("") #+
-  #ggtitle("AGNES Dendrogram")
+  ylab("")
 agnes_dend_gg
 
 ggthemr("flat")
+```
+
+```{r legend_gen, warning = FALSE, message = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 7.5, fig.height = 6.5}
+# Creating legends for radial dendrogram plots
+
+legend_tbl <- unsup_labs_reord_ag %>% 
+  mutate(BMI_cat = case_when(
+    BMI_cat == "UW" ~ "Underweight",
+    BMI_cat == "HW" ~ "Healthy Weight",
+    BMI_cat == "OW" ~ "Overweight",
+    BMI_cat == "OB" ~ "Obese")) %>% 
+  mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight", "Healthy Weight", "Overweight", "Obese"))) %>% 
+  select(-labcolor, -x) %>% 
+  unique() %>%
+  arrange(BMI_cat) %>% 
+  mutate(x = 0, y = 0)
+
+ggthemr("flat")
+ggleg <- ggplot(data = legend_tbl, aes(x = x, y = y)) +
+  geom_point(aes(x = x, y = y, fill = BMI_cat), color = "black", shape = "circle filled", size = 5) +
+  scale_fill_manual(name = "BMI Category",
+                    values = c(Underweight = "#FFFF00",
+                               "Healthy Weight" = "#008318",
+                               Overweight = "#FF8D03",
+                               Obese = "#FF0000")) +
+  theme(axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        legend.background = element_rect(fill = "white"),
+        legend.key = element_rect(fill = "white"),
+        #legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid = element_blank(),
+        plot.background = element_blank(),
+        plot.title = element_text(angle = 0)) +
+  xlab("") +
+  ylab("")
+save_plot(filename = "report/ggleg.svg", plot = ggleg, base_height = 8.5, base_width = 8.5)
+ggleg_svg <- image_read_svg("report/ggleg.svg")
 ```
 
 ```{r diana_dend, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
@@ -292,12 +347,6 @@ cluster_pct <- function(df){
                                                 "Obese (n, %)"))) %>% 
     select(cluster_num, Size, BMI_cat, n_pct) %>% 
     spread(BMI_cat, n_pct, fill = "0 (0%)")
-  # 
-  # clusts_kbl <- clusts %>%
-  #   rename(Cluster = cluster_num) %>%
-  #   kable(format = "markdown")
-  # 
-  # clusts_kbl
 }
 ```
 
@@ -316,6 +365,7 @@ agnes_dend_clust_init <- nhanes_agnes %>%
                                  "#9B59B6",    # Purple
                                  #"#9F83D4",    # Grape
                                  "#1ABCB4")) #,    # Teal
+                                 #"#45A37C",    # Sage green
                                  #"#34495E"))   # Slate blue
 
 agnes_dend_clust_init_ggd <- agnes_dend_clust_init %>% 
@@ -333,7 +383,6 @@ ag_init_clust_labs <- cluster_labs(agnes_dend_clust_init_ggd)
 ```
 
 ```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
-# 7 clusters for AGNES
 ggthemr("flat", spacing = 0.1)
 
 agnes_dend_clust_init_gg <- ggplot(agnes_dend_clust_init_ggd, labels = FALSE) +
@@ -346,8 +395,7 @@ agnes_dend_clust_init_gg <- ggplot(agnes_dend_clust_init_ggd, labels = FALSE) +
         axis.ticks = element_blank(),
         panel.grid = element_blank()) +
   xlab("") +
-  ylab("") #+
-  #ggtitle("AGNES Dendrogram, k = 7 Clusters")
+  ylab("")
 agnes_dend_clust_init_gg
 
 ggthemr("flat")
@@ -371,6 +419,7 @@ diana_dend_clust_init <- nhanes_diana %>%
                                  "#9B59B6"))#,    # Purple
                                  #"#9F83D4",    # Grape
                                  #"#1ABCB4",    # Teal
+                                 #"#45A37C",    # Sage green
                                  #"#34495E"))   # Slate blue
 
 diana_dend_clust_init_ggd <- diana_dend_clust_init %>% 
@@ -378,7 +427,12 @@ diana_dend_clust_init_ggd <- diana_dend_clust_init %>%
 ```
 
 ```{r diana_init_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
-di_init_clusts_kbl <- cluster_pct(diana_dend_clust_init_ggd)
+di_init_clusts_df <- cluster_pct(diana_dend_clust_init_ggd)
+
+di_init_clusts_kbl <- di_init_clusts_df %>% 
+  rename(Cluster = cluster_num) %>% 
+  kable(format = "markdown")
+
 di_init_clust_labs <- cluster_labs(diana_dend_clust_init_ggd)
 ```
 
@@ -393,103 +447,59 @@ diana_dend_clust_init_gg <- ggplot(diana_dend_clust_init_ggd, labels = FALSE) +
         axis.ticks = element_blank(),
         panel.grid = element_blank()) +
   xlab("") +
-  ylab("") #+
-  #ggtitle("DIANA Dendrogram, k = 6 Clusters")
+  ylab("")
 diana_dend_clust_init_gg
 
 ggthemr("flat")
 ```
 
+```{r agnes_dend_clust_ggd_final, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
+# 10 clusters for AGNES
+agnes_dend_clust_final <- nhanes_agnes %>% 
+  as.dendrogram() %>% 
+  set("leaves_pch", 20, col = ag_labcolors$leafcolor) %>% 
+  set("leaves_col", ag_labcolors$leafcolor) %>% 
+  set("branches_lwd", 0.5) %>% 
+  set("branches_k_col", k = 10, c("#3498DB",   # Blue
+                                 "#2ECC71",    # Green
+                                 "#F39C12",    # Gold/orange
+                                 "#E74C3C",    # Red
+                                 "#D979C9",    # Pink
+                                 "#9B59B6",    # Purple
+                                 "#9F83D4",    # Grape
+                                 "#1ABCB4",    # Teal
+                                 "#45A37C",    # Sage green
+                                 "#34495E"))   # Slate blue
 
-<!-- CONTINUE HERE: -->
-<!-- The below text needs to be updated after re-evaluation of these initial dendrogram plots. -->
-<!-- At first glance it seems both plots were able to group obese and overweight pretty well for one cluster! -->
+agnes_dend_clust_final_ggd <- agnes_dend_clust_final %>% 
+  as.ggdend()
+```
 
+```{r agnes_final_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
+ag_final_clusts_df <- cluster_pct(agnes_dend_clust_final_ggd)
 
+ag_final_clusts_kbl <- ag_final_clusts_df %>%
+  rename(Cluster = cluster_num) %>%
+  kable(format = "markdown")
 
+ag_final_clust_labs <- cluster_labs(agnes_dend_clust_final_ggd)
+```
 
+```{r agnes_dend_clust_final, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
+ggthemr("flat", spacing = 0.1)
 
+agnes_dend_clust_final_gg <- ggplot(agnes_dend_clust_final_ggd, labels = FALSE) +
+  geom_text(data = ag_final_clust_labs, aes(x = x_lab, y = -0.5, label = cluster_num, color = cluster_col)) +
+  scale_y_reverse() +
+  coord_polar(theta = "x") +
+  theme(axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()) +
+  xlab("") +
+  ylab("")
+agnes_dend_clust_final_gg
 
-
-
-
-
-
-
-<!-- These dendrograms were re-run using $k = 6$ clusters for AGNES and $k = 9$ clusters for DIANA; output is shown below. -->
-
-<!-- ```{r agnes_dend_clust_v2, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5} -->
-<!-- # 6 clusters for AGNES -->
-<!-- ggthemr("flat", spacing = 0.1) -->
-
-<!-- agnes_dend_clust_v2 <- nhanes_agnes %>%  -->
-<!--   as.dendrogram() %>%  -->
-<!--   set("leaves_pch", 20, col = ag_labcolors$leafcolor) %>%  -->
-<!--   set("leaves_col", ag_labcolors$leafcolor) %>%  -->
-<!--   set("branches_lwd", 0.5) %>%  -->
-<!--   set("branches_k_col", k = 6, c("#3498DB",    # Blue -->
-<!--                                  "#2ECC71",    # Green -->
-<!--                                  "#F39C12",    # Gold/orange -->
-<!--                                  "#E74C3C",    # Red -->
-<!--                                  #"#D979C9",    # Pink -->
-<!--                                  "#9B59B6",    # Purple -->
-<!--                                  #"#9F83D4",    # Grape -->
-<!--                                  #"#1ABCB4",    # Teal -->
-<!--                                  "#34495E"))   # Slate blue -->
-
-<!-- agnes_dend_clust_v2_ggd <- agnes_dend_clust_v2 %>%  -->
-<!--   as.ggdend() -->
-
-<!-- agnes_dend_clust_v2_gg <- ggplot(agnes_dend_clust_v2_ggd, labels = FALSE) + -->
-<!--   scale_y_reverse() + -->
-<!--   coord_polar(theta = "x") + -->
-<!--   theme(axis.line = element_blank(), -->
-<!--         axis.text.x = element_blank(), -->
-<!--         axis.text.y = element_blank(), -->
-<!--         axis.ticks = element_blank(), -->
-<!--         panel.grid = element_blank()) + -->
-<!--   xlab("") + -->
-<!--   ylab("") #+ -->
-<!--   #ggtitle("AGNES Dendrogram, k = 6 Clusters") -->
-<!-- agnes_dend_clust_v2_gg -->
-
-<!-- ggthemr("flat") -->
-<!-- ``` -->
-
-<!-- ```{r diana_dend_clust_v2, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5} -->
-<!-- # 9 clusters for DIANA -->
-<!-- ggthemr("flat", spacing = 0.1) -->
-
-<!-- diana_dend_clust_v2 <- nhanes_diana %>%  -->
-<!--   as.dendrogram() %>%  -->
-<!--   set("leaves_pch", 20, col = di_labcolors$leafcolor) %>%  -->
-<!--   set("leaves_col", di_labcolors$leafcolor) %>%  -->
-<!--   set("branches_lwd", 0.5) %>%  -->
-<!--   set("branches_k_col", k = 9, c("#3498DB",    # Blue -->
-<!--                                  "#2ECC71",    # Green -->
-<!--                                  "#F39C12",    # Gold/orange -->
-<!--                                  "#E74C3C",    # Red -->
-<!--                                  "#D979C9",    # Pink -->
-<!--                                  "#9B59B6",    # Purple -->
-<!--                                  "#9F83D4",    # Grape -->
-<!--                                  "#1ABCB4",    # Teal -->
-<!--                                  "#34495E"))   # Slate blue -->
-
-<!-- diana_dend_clust_v2_ggd <- diana_dend_clust_v2 %>%  -->
-<!--   as.ggdend() -->
-
-<!-- diana_dend_clust_v2_gg <- ggplot(diana_dend_clust_v2_ggd, labels = FALSE) + -->
-<!--   scale_y_reverse() + -->
-<!--   coord_polar(theta = "x") + -->
-<!--   theme(axis.line = element_blank(), -->
-<!--         axis.text.x = element_blank(), -->
-<!--         axis.text.y = element_blank(), -->
-<!--         axis.ticks = element_blank(), -->
-<!--         panel.grid = element_blank()) + -->
-<!--   xlab("") + -->
-<!--   ylab("") #+ -->
-<!--   #ggtitle("DIANA Dendrogram, k = 9 Clusters") -->
-<!-- diana_dend_clust_v2_gg -->
-
-<!-- ggthemr("flat") -->
-<!-- ``` -->
+ggthemr("flat")
+```
