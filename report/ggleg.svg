@@ -17,10 +17,10 @@
     <rect x='26.06' y='5.98' width='480.27' height='579.96' />
   </clipPath>
 </defs>
-<circle cx='266.20' cy='295.96' r='5.69pt' style='stroke-width: 0.71; fill: #FFFF00;' clip-path='url(#cpMjYuMDZ8NTA2LjMzfDU4NS45NHw1Ljk4)' />
-<circle cx='266.20' cy='295.96' r='5.69pt' style='stroke-width: 0.71; fill: #008318;' clip-path='url(#cpMjYuMDZ8NTA2LjMzfDU4NS45NHw1Ljk4)' />
-<circle cx='266.20' cy='295.96' r='5.69pt' style='stroke-width: 0.71; fill: #FF8D03;' clip-path='url(#cpMjYuMDZ8NTA2LjMzfDU4NS45NHw1Ljk4)' />
-<circle cx='266.20' cy='295.96' r='5.69pt' style='stroke-width: 0.71; fill: #FF0000;' clip-path='url(#cpMjYuMDZ8NTA2LjMzfDU4NS45NHw1Ljk4)' />
+<circle cx='266.20' cy='295.96' r='3.56pt' style='stroke-width: 0.71; stroke: #545454; fill: #FFFF00;' clip-path='url(#cpMjYuMDZ8NTA2LjMzfDU4NS45NHw1Ljk4)' />
+<circle cx='266.20' cy='295.96' r='3.56pt' style='stroke-width: 0.71; stroke: #545454; fill: #008318;' clip-path='url(#cpMjYuMDZ8NTA2LjMzfDU4NS45NHw1Ljk4)' />
+<circle cx='266.20' cy='295.96' r='3.56pt' style='stroke-width: 0.71; stroke: #545454; fill: #FF8D03;' clip-path='url(#cpMjYuMDZ8NTA2LjMzfDU4NS45NHw1Ljk4)' />
+<circle cx='266.20' cy='295.96' r='3.56pt' style='stroke-width: 0.71; stroke: #545454; fill: #FF0000;' clip-path='url(#cpMjYuMDZ8NTA2LjMzfDU4NS45NHw1Ljk4)' />
 <defs>
   <clipPath id='cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA='>
     <rect x='0.00' y='0.00' width='612.00' height='612.00' />
@@ -29,13 +29,13 @@
 <rect x='517.67' y='252.85' width='88.35' height='86.21' style='stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)'><text x='517.67' y='262.71' style='font-size: 12.00px; fill: #34495E; font-family: Arial;' textLength='73.36px' lengthAdjust='spacingAndGlyphs'>BMI Category</text></g>
 <rect x='517.67' y='269.95' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
-<circle cx='526.31' cy='278.59' r='5.69pt' style='stroke-width: 0.71; fill: #FFFF00;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
+<circle cx='526.31' cy='278.59' r='3.56pt' style='stroke-width: 0.71; stroke: #545454; fill: #FFFF00;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
 <rect x='517.67' y='287.23' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
-<circle cx='526.31' cy='295.87' r='5.69pt' style='stroke-width: 0.71; fill: #008318;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
+<circle cx='526.31' cy='295.87' r='3.56pt' style='stroke-width: 0.71; stroke: #545454; fill: #008318;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
 <rect x='517.67' y='304.51' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
-<circle cx='526.31' cy='313.15' r='5.69pt' style='stroke-width: 0.71; fill: #FF8D03;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
+<circle cx='526.31' cy='313.15' r='3.56pt' style='stroke-width: 0.71; stroke: #545454; fill: #FF8D03;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
 <rect x='517.67' y='321.79' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
-<circle cx='526.31' cy='330.43' r='5.69pt' style='stroke-width: 0.71; fill: #FF0000;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
+<circle cx='526.31' cy='330.43' r='3.56pt' style='stroke-width: 0.71; stroke: #545454; fill: #FF0000;' clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)' />
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)'><text x='540.93' y='282.02' style='font-size: 9.60px; fill: #34495E; font-family: Arial;' textLength='53.90px' lengthAdjust='spacingAndGlyphs'>Underweight</text></g>
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)'><text x='540.93' y='299.30' style='font-size: 9.60px; fill: #34495E; font-family: Arial;' textLength='65.10px' lengthAdjust='spacingAndGlyphs'>Healthy Weight</text></g>
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8NjEyLjAwfDAuMDA=)'><text x='540.93' y='316.58' style='font-size: 9.60px; fill: #34495E; font-family: Arial;' textLength='48.55px' lengthAdjust='spacingAndGlyphs'>Overweight</text></g>

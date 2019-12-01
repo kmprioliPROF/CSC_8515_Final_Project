@@ -49,26 +49,34 @@ ggthemr("flat", spacing = 0.1)
 unsup_labs_reord_ag <- unsup_labs[nhanes_agnes$order] %>%    # Reordering leaf labels
   str_sub(start = 1L, end = 1L) %>% 
   as_tibble() %>% 
-  mutate(BMI_cat = case_when(   # Modifying leaf labels to show BMI category abbreviations
-    value == "1" ~ "UW",        # Underweight
-    value == "2" ~ "HW",        # Healthy weight
-    value == "3" ~ "OW",        # Overweight
-    value == "4" ~ "OB"         # Obese
-  )) %>% 
-  select(BMI_cat) %>% 
+  mutate(
+    BMI_cat = case_when(   # Modifying leaf labels to show BMI category abbreviations
+      value == "1" ~ "UW",        # Underweight
+      value == "2" ~ "HW",        # Healthy weight
+      value == "3" ~ "OW",        # Overweight
+      value == "4" ~ "OB"         # Obese
+      ),
+    BMI_dichot = case_when(
+      value %in% c(1, 2) ~ "UW/HW",
+      value %in% c(3, 4) ~ "OW/OB"
+    )) %>% 
+  select(BMI_cat, BMI_dichot) %>% 
   as_tibble() %>% 
   mutate(x = row_number(),
          labcolor = case_when(   # Have decided not to use text labels but keeping this here in case I change my mind
-           BMI_cat == "UW" ~ "#B0B000",         # Yellow
-           BMI_cat == "HW" ~ "#008318",         # Green
-           BMI_cat == "OW" ~ "#FF8D03",         # Orange
-           BMI_cat == "OB" ~ "#FF0000"),        # Red
+           BMI_cat == "UW" ~ "#B0B000",               # Yellow
+           BMI_cat == "HW" ~ "#008318",               # Green
+           BMI_cat == "OW" ~ "#FF8D03",               # Orange
+           BMI_cat == "OB" ~ "#FF0000"),              # Red
          leafcolor = case_when(
-           BMI_cat == "UW" ~ "#FFFF00",         # Yellow
-           BMI_cat == "HW" ~ "#008318",         # Green
-           BMI_cat == "OW" ~ "#FF8D03",         # Orange
-           BMI_cat == "OB" ~ "#FF0000")) %>%    # Red
-  select(x, BMI_cat, labcolor, leafcolor)
+           BMI_cat == "UW" ~ "#FFFF00",               # Yellow
+           BMI_cat == "HW" ~ "#008318",               # Green
+           BMI_cat == "OW" ~ "#FF8D03",               # Orange
+           BMI_cat == "OB" ~ "#FF0000"),              # Red
+         leafcolor_dichot = case_when(
+           BMI_dichot == "UW/HW" ~ "#0000FF",         # Blue
+           BMI_dichot == "OW/OB" ~ "#9C0022")) %>%    # Dark red
+  select(x, BMI_cat, BMI_dichot, labcolor, leafcolor, leafcolor_dichot)
 
 ag_labcolors <- unsup_labs_reord_ag
 
@@ -102,12 +110,17 @@ ggthemr("flat")
 # Creating legends for radial dendrogram plots
 
 legend_tbl <- unsup_labs_reord_ag %>% 
-  mutate(BMI_cat = case_when(
-    BMI_cat == "UW" ~ "Underweight",
-    BMI_cat == "HW" ~ "Healthy Weight",
-    BMI_cat == "OW" ~ "Overweight",
-    BMI_cat == "OB" ~ "Obese")) %>% 
-  mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight", "Healthy Weight", "Overweight", "Obese"))) %>% 
+  mutate(
+    BMI_cat = case_when(
+      BMI_cat == "UW" ~ "Underweight",
+      BMI_cat == "HW" ~ "Healthy Weight",
+      BMI_cat == "OW" ~ "Overweight",
+      BMI_cat == "OB" ~ "Obese"),
+    BMI_dichot = case_when(
+      BMI_dichot == "UW/HW" ~ "Not Overweight \nor Obese",
+      BMI_dichot == "OW/OB" ~ "Overweight \nor Obese")) %>% 
+  mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight", "Healthy Weight", "Overweight", "Obese")),
+         BMI_dichot = factor(BMI_dichot, levels = c("Not Overweight \nor Obese", "Overweight \nor Obese"))) %>% 
   select(-labcolor, -x) %>% 
   unique() %>%
   arrange(BMI_cat) %>% 
@@ -136,6 +149,27 @@ ggleg <- ggplot(data = legend_tbl, aes(x = x, y = y)) +
   ylab("")
 save_plot(filename = "report/ggleg.svg", plot = ggleg, base_height = 8.5, base_width = 8.5)
 ggleg_svg <- image_read_svg("report/ggleg.svg")
+
+ggleg_dichot <- ggplot(data = legend_tbl, aes(x = x, y = y)) +
+  geom_point(aes(x = x, y = y, fill = BMI_dichot), color = "#4A4A4A", shape = "circle filled", size = 3) +
+  scale_fill_manual(name = "Dichotomous \nBMI Category",
+                    values = c("Not Overweight \nor Obese" = "#0000FF",
+                               "Overweight \nor Obese" = "#9C0022")) +
+  theme(axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        legend.background = element_rect(fill = "white"),
+        legend.key = element_rect(fill = "white"),
+        #legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid = element_blank(),
+        plot.background = element_blank(),
+        plot.title = element_text(angle = 0)) +
+  xlab("") +
+  ylab("")
+save_plot(filename = "report/ggleg_dichot.svg", plot = ggleg_dichot, base_height = 8.5, base_width = 8.5)
+ggleg_dichot_svg <- image_read_svg("report/ggleg_dichot.svg")
 ```
 
 ```{r diana_dend, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
@@ -144,26 +178,34 @@ ggthemr("flat", spacing = 0.1)
 unsup_labs_reord_di <- unsup_labs[nhanes_diana$order] %>%    # Reordering leaf labels
   str_sub(start = 1L, end = 1L) %>% 
   as_tibble() %>% 
-  mutate(BMI_cat = case_when(   # Modifying leaf labels to show BMI category abbreviations
-    value == "1" ~ "UW",        # Underweight
-    value == "2" ~ "HW",        # Healthy weight
-    value == "3" ~ "OW",        # Overweight
-    value == "4" ~ "OB"         # Obese
-  )) %>% 
-  select(BMI_cat) %>% 
+  mutate(
+    BMI_cat = case_when(   # Modifying leaf labels to show BMI category abbreviations
+      value == "1" ~ "UW",        # Underweight
+      value == "2" ~ "HW",        # Healthy weight
+      value == "3" ~ "OW",        # Overweight
+      value == "4" ~ "OB"         # Obese
+      ),
+    BMI_dichot = case_when(
+      value %in% c(1, 2) ~ "UW/HW",
+      value %in% c(3, 4) ~ "OW/OB"
+    )) %>% 
+  select(BMI_cat, BMI_dichot) %>% 
   as_tibble() %>% 
   mutate(x = row_number(),
          labcolor = case_when(   # Have decided not to use text labels but keeping this here in case I change my mind
-           BMI_cat == "UW" ~ "#B0B000",
-           BMI_cat == "HW" ~ "#008318",
-           BMI_cat == "OW" ~ "#FF8D03",
-           BMI_cat == "OB" ~ "#FF0000"),
+           BMI_cat == "UW" ~ "#B0B000",               # Yellow
+           BMI_cat == "HW" ~ "#008318",               # Green
+           BMI_cat == "OW" ~ "#FF8D03",               # Orange
+           BMI_cat == "OB" ~ "#FF0000"),              # Red
          leafcolor = case_when(
-           BMI_cat == "UW" ~ "#FFFF00",
-           BMI_cat == "HW" ~ "#008318",
-           BMI_cat == "OW" ~ "#FF8D03",
-           BMI_cat == "OB" ~ "#FF0000")) %>% 
-  select(x, BMI_cat, labcolor, leafcolor)
+           BMI_cat == "UW" ~ "#FFFF00",               # Yellow
+           BMI_cat == "HW" ~ "#008318",               # Green
+           BMI_cat == "OW" ~ "#FF8D03",               # Orange
+           BMI_cat == "OB" ~ "#FF0000"),              # Red
+         leafcolor_dichot = case_when(
+           BMI_dichot == "UW/HW" ~ "#0000FF",         # Blue
+           BMI_dichot == "OW/OB" ~ "#9C0022")) %>%    # Dark red
+  select(x, BMI_cat, BMI_dichot, labcolor, leafcolor, leafcolor_dichot)
 
 di_labcolors <- unsup_labs_reord_di
 
@@ -284,18 +326,30 @@ sils
 ```
 
 ```{r leaves_segs, include = FALSE, echo = FALSE}
-cluster_clusts <- function(df){
+cluster_clusts <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 for dichotomous; defaults to 4-level
   leaves <- df$nodes %>% 
     filter(leaf == TRUE) %>% 
     select(x, col) %>% 
     rename(BMI_cat = col) %>% 
-    mutate(BMI_cat = case_when(
-      BMI_cat == "#FFFF00" ~ "Underweight",
-      BMI_cat == "#008318" ~ "Healthy Weight",
-      BMI_cat == "#FF8D03" ~ "Overweight",
-      BMI_cat == "#FF0000" ~ "Obese"
-    )) %>% 
-    mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight", "Healthy Weight", "Overweight", "Obese")))
+    mutate(
+      BMI_cat = case_when(
+        BMI_cat == "#FFFF00" ~ "Underweight",
+        BMI_cat == "#008318" ~ "Healthy Weight",
+        BMI_cat == "#FF8D03" ~ "Overweight",
+        BMI_cat == "#FF0000" ~ "Obese"),
+      BMI_dichot = case_when(
+        BMI_cat %in% c("Underweight", "Healthy Weight") ~ "Not Overweight \nor Obese",
+        BMI_cat %in% c("Overweight", "Obese") ~ "Overweight \nor Obese")) %>% 
+    mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight", "Healthy Weight", "Overweight", "Obese")),
+           BMI_dichot = factor(BMI_dichot, levels = c("Not Overweight \nor Obese", "Overweight \nor Obese")))
+  
+  if(x == 0){
+    leaves <- leaves %>% select(x, BMI_cat)
+  }
+  
+  if(x == 1){
+    leaves <- leaves %>% select(x, BMI_dichot) %>% rename(BMI_cat = BMI_dichot)
+  }
   
   segs <- df$segments %>% 
     filter(yend == 0) %>% 
@@ -316,8 +370,8 @@ cluster_clusts <- function(df){
 ```
 
 ```{r cluster_num_labs}
-cluster_labs <- function(df){
-  clust_labs <- cluster_clusts(df) %>% 
+cluster_labs <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 for dichotomous; defaults to 4-level
+  clust_labs <- cluster_clusts(df, x) %>% 
     mutate(cluster_num = paste0("Cluster #", cluster_num)) %>% 
     group_by(cluster_num) %>% 
     mutate(x_lab = mean(x)) %>%
@@ -330,24 +384,35 @@ cluster_labs <- function(df){
 ```
 
 ```{r cluster_pct, include = FALSE, echo = FALSE}
-cluster_pct <- function(df){
-  
-  clusts <- cluster_clusts(df) %>% 
+cluster_pct <- function(df, x = 0){   # x = 0 for 4-level BMI category, x = 1 for dichotomous; defaults to 4-level
+  clusts <- cluster_clusts(df, x) %>% 
     select(cluster_num, n_in_clust, BMI_cat, n_cat_in_clust) %>% 
     unique() %>% 
     arrange(cluster_num, BMI_cat) %>% 
     rename(Size = n_in_clust) %>% 
     mutate(pct_cat_in_clust = round((n_cat_in_clust / Size) * 100, digits = 1),
            n_pct = paste0(n_cat_in_clust, " (", pct_cat_in_clust, "%)"),
-           BMI_cat = paste0(BMI_cat, " (n, %)"),
-           BMI_cat = factor(BMI_cat, levels = c("Underweight (n, %)",
+           BMI_cat = paste0(BMI_cat, " (n, %)"))
+  
+  if(x == 0){
+    clusts <- clusts %>% 
+      mutate(BMI_cat = factor(BMI_cat, levels = c("Underweight (n, %)",
                                                 "Healthy Weight (n, %)",
                                                 "Overweight (n, %)",
-                                                "Obese (n, %)"))) %>% 
+                                                "Obese (n, %)")))
+  }
+  
+  if(x == 1){
+    clusts <- clusts %>% 
+      mutate(BMI_cat = factor(BMI_cat, levels = c("Not Overweight \nor Obese (n, %)",
+                                                  "Overweight \nor Obese (n, %)")))
+  }
+  
+  clusts <- clusts %>% 
     rename("Size (n)" = Size) %>% 
     select(cluster_num, "Size (n)", BMI_cat, n_pct) %>% 
     spread(BMI_cat, n_pct, fill = "0 (0%)")
-}
+  }
 ```
 
 ```{r agnes_dend_clust_ggd_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.5, fig.height = 6.5}
