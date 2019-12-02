@@ -11,7 +11,9 @@ geometry: margin = 0.5in
 
 ## GENERATING CORRELATION PLOTS FOR BMI VS CONTINUOUS AND ORDINAL VARIABLES
 
-```{r corrplots, echo = FALSE, paged.print = FALSE, fig.width = 9, fig.height = 6}
+```{r corrplots, eval = FALSE, echo = FALSE, paged.print = FALSE, fig.width = 9, fig.height = 6}
+# Change chunk options to eval = TRUE if I want to generate these (they're a bit computationally intense)
+
 demog_corrplot <- ggpairs(nhanes_unsup_tbl, 
                           columns = c("BMI_cat", "age", "educ", "famincome_cat", "n_comorbid"),
                           columnLabels = c("BMI Category", "Age", "Education", "Fam. Income", "No. Comorbidities"),
@@ -80,8 +82,8 @@ unsup_labs_reord_ag <- unsup_labs[nhanes_agnes$order] %>%    # Reordering leaf l
            BMI_cat == "OW" ~ "#FF8D03",               # Orange
            BMI_cat == "OB" ~ "#FF0000"),              # Red
          leafcolor_dichot = case_when(
-           BMI_dichot == "UW/HW" ~ "#0000FF",         # Blue
-           BMI_dichot == "OW/OB" ~ "#9C0022")) %>%    # Dark red
+           BMI_dichot == "UW/HW" ~ "#008318",         # Green
+           BMI_dichot == "OW/OB" ~ "#FF0000")) %>%    # Red
   select(x, BMI_cat, BMI_dichot, labcolor, leafcolor, leafcolor_dichot)
 
 ag_labcolors <- unsup_labs_reord_ag
@@ -160,10 +162,10 @@ save_plot(filename = "report/ggleg.svg", plot = ggleg, base_height = 8.5, base_w
 ggleg_svg <- image_read_svg("report/ggleg.svg")
 
 ggleg_dichot <- ggplot(data = legend_tbl, aes(x = x, y = y)) +
-  geom_point(aes(x = x, y = y, fill = BMI_dichot), color = "#4A4A4A", shape = "circle filled", size = 3) +
+  geom_point(aes(x = x, y = y, fill = BMI_dichot), color = "#545454", shape = "circle filled", size = 3) +
   scale_fill_manual(name = "Dichotomous \nBMI Category",
-                    values = c("Not Overweight \nor Obese" = "#0000FF",
-                               "Overweight \nor Obese" = "#9C0022")) +
+                    values = c("Not Overweight \nor Obese" = "#008318",
+                               "Overweight \nor Obese" = "#FF0000")) +
   theme(axis.line = element_blank(),
         axis.text.x = element_blank(),
         axis.text.y = element_blank(),
@@ -212,8 +214,8 @@ unsup_labs_reord_di <- unsup_labs[nhanes_diana$order] %>%    # Reordering leaf l
            BMI_cat == "OW" ~ "#FF8D03",               # Orange
            BMI_cat == "OB" ~ "#FF0000"),              # Red
          leafcolor_dichot = case_when(
-           BMI_dichot == "UW/HW" ~ "#0000FF",         # Blue
-           BMI_dichot == "OW/OB" ~ "#9C0022")) %>%    # Dark red
+           BMI_dichot == "UW/HW" ~ "#008318",         # Green
+           BMI_dichot == "OW/OB" ~ "#FF0000")) %>%    # Red
   select(x, BMI_cat, BMI_dichot, labcolor, leafcolor, leafcolor_dichot)
 
 di_labcolors <- unsup_labs_reord_di
@@ -363,8 +365,8 @@ cluster_clusts <- function(df, dichot = FALSE){   # dichot = 0 for 4-level BMI c
     leaves <- leaves %>% 
       mutate(
         BMI_cat = case_when(
-          BMI_cat == "#0000FF" ~ "Not Overweight or Obese",
-          BMI_cat == "#9C0022" ~ "Overweight or Obese"),
+          BMI_cat == "#008318" ~ "Not Overweight or Obese",
+          BMI_cat == "#FF0000" ~ "Overweight or Obese"),
         BMI_cat = factor(BMI_cat, levels = c("Not Overweight or Obese", "Overweight or Obese"))) %>% 
       select(x, BMI_cat)
   }
@@ -461,7 +463,7 @@ agnes_dend_clust_init_ggd <- agnes_dend_clust_init %>%
 ```{r agnes_init_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 ag_init_clusts_kbl <- cluster_pct(agnes_dend_clust_init_ggd) %>%
   rename(Cluster = cluster_num) %>%
-  kable(format = "markdown")
+  kable(format = "markdown", align = "rrrrrr")
 
 ag_init_clust_labs <- cluster_labs(agnes_dend_clust_init_ggd)
 ```
@@ -513,7 +515,7 @@ diana_dend_clust_init_ggd <- diana_dend_clust_init %>%
 ```{r diana_init_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 di_init_clusts_kbl <- cluster_pct(diana_dend_clust_init_ggd) %>% 
   rename(Cluster = cluster_num) %>% 
-  kable(format = "markdown")
+  kable(format = "markdown", align = "rrrrrr")
 
 di_init_clust_labs <- cluster_labs(diana_dend_clust_init_ggd)
 ```
@@ -563,7 +565,7 @@ agnes_dend_clust_dichot_ggd <- agnes_dend_clust_dichot %>%
 ```{r agnes_dichot_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 ag_dichot_clusts_kbl <- cluster_pct(agnes_dend_clust_dichot_ggd, dichot = TRUE) %>%
   rename(Cluster = cluster_num) %>%
-  kable(format = "markdown")
+  kable(format = "markdown", align = "rrrr")
 
 ag_dichot_clust_labs <- cluster_labs(agnes_dend_clust_dichot_ggd, dichot = TRUE)
 ```
@@ -615,7 +617,7 @@ diana_dend_clust_dichot_ggd <- diana_dend_clust_dichot %>%
 ```{r diana_dichot_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 di_dichot_clusts_kbl <- cluster_pct(diana_dend_clust_dichot_ggd, dichot = TRUE) %>% 
   rename(Cluster = cluster_num) %>% 
-  kable(format = "markdown")
+  kable(format = "markdown", align = "rrrr")
 
 di_dichot_clust_labs <- cluster_labs(diana_dend_clust_dichot_ggd, dichot = TRUE)
 ```
@@ -665,7 +667,7 @@ agnes_dend_clust_dichot_rev_ggd <- agnes_dend_clust_dichot_rev %>%
 ```{r agnes_dichot_rev_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 ag_dichot_rev_clusts_kbl <- cluster_pct(agnes_dend_clust_dichot_rev_ggd, dichot = TRUE) %>%
   rename(Cluster = cluster_num) %>%
-  kable(format = "markdown")
+  kable(format = "markdown", align = "rrrr")
 
 ag_rev_clust_labs <- cluster_labs(agnes_dend_clust_dichot_rev_ggd)
 ```
@@ -714,7 +716,7 @@ diana_dend_clust_dichot_rev_ggd <- diana_dend_clust_dichot_rev %>%
 ```{r diana_dichot_rev_cluster_characteristics, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 4}
 di_dichot_rev_clusts_kbl <- cluster_pct(diana_dend_clust_dichot_rev_ggd, dichot = TRUE) %>%
   rename(Cluster = cluster_num) %>%
-  kable(format = "markdown")
+  kable(format = "markdown", align = "rrrr")
 
 di_rev_clust_labs <- cluster_labs(diana_dend_clust_dichot_rev_ggd)
 ```

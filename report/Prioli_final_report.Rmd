@@ -8,7 +8,7 @@ output:
   pdf_document: default
   html_document: default
 geometry: margin = 0.5in
-abstract: "**_Background_** Increasing overweight and obesity represent an important national health concern and a significant, preventable driver of healthcare expenditure. Every two years, the National Health and Nutrition Examination Survey (NHANES) collects data about Americans' dietary and exercise behaviors along with demographics and relevant clinical characteristics.  If these characteristics can be used to identify overweight and obesity at a population level, interventions designed to reduce excess adiposity could be appropriately targeted to those who could most benefit.  This study applied supervised and unsupervised machine learning techniques to categorize cases by Body Mass Index (BMI) weight category.  **_Methods_** Medical, demographic, and behavioral variables known or suspected to be correlated with obesity were selected from the 2015-2016 NHANES data.  The dataset was subset to adult, missing data were imputed, and BMI weight category (four levels) was computed for each case.  Random forest classification (supervised approach) was performed using *n* × *k*-fold crossvalidation on both the initial dataset and a smaller dataset with dichotomous BMI categories.  Hierarchical clustering (unsupervised approach) was performed on a 5% sample stratified by BMI category using both agglomerative (AGNES) and divisive (DIANA) methods, and percentages of cases in each BMI category were calculated for each cluster.  **_Results_** The analytic dataset contained 5406 cases and 24 variables.  Initial random forest analysis using *k* = 5 folds, *n* = 5 repeats, and 100 trees yielded 52.6% mean accuracy (range 50.3-56.2%).  After hyperparameter tuning and variable reduction, the final random forest analysis yielded 75.6% mean accuracy (range 74.4-77.4%) on *k* = 3, *n* = 10, and 200 trees.  **_Conclusion_** Text"
+abstract: "**_Background_** Increasing overweight and obesity represent an important national health concern and a significant, preventable driver of healthcare expenditure. Every two years, the National Health and Nutrition Examination Survey (NHANES) collects data about Americans' dietary and exercise behaviors along with demographics and relevant clinical characteristics.  If these characteristics can be used to identify overweight and obesity at a population level, interventions designed to reduce excess adiposity could be appropriately targeted to those who could most benefit.  This study applied supervised and unsupervised machine learning techniques to categorize cases by Body Mass Index (BMI) weight category.  **_Methods_** Medical, demographic, and behavioral variables known or suspected to be correlated with obesity were selected from the 2015-2016 NHANES data.  The dataset was subset to adult, missing data were imputed, and BMI weight category (four levels) was computed for each case.  Random forest classification (supervised approach) was performed using *n* × *k*-fold crossvalidation on both the initial dataset and a smaller dataset with dichotomous BMI categories.  Hierarchical clustering (unsupervised approach) was performed on a 5% sample stratified by BMI category using both agglomerative (AGNES) and divisive (DIANA) methods, and percentages of cases in each BMI category were calculated for each cluster.  Mean homogeneity was compared for AGNES vs. DIANA on three analyses:  1) four-level BMI categories, 2) dichotomous BMI categories, 3) dichotomous BMI categories and increased number of clusters.  **_Results_** The analytic dataset contained 5406 cases and 24 variables.  Initial random forest analysis using *k* = 5 folds, *n* = 5 repeats, and 100 trees yielded 52.6% mean accuracy (range 50.3-56.2%).  After hyperparameter tuning and variable reduction, the final random forest analysis yielded 75.6% mean accuracy (range 74.4-77.4%) on *k* = 3, *n* = 10, and 200 trees.  Clustering via DIANA outperformed AGNES for all three analyses, reaching 81.2% mean homogeneity (range 57.1-100.0%) in Analysis 3 vs. 77.5% (range 52.6-100.0%) for AGNES.  **_Conclusion_** Text"
 ---
 
 ```{r load_libraries, include = FALSE, ech = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE}
@@ -156,7 +156,7 @@ grid.arrange(screes, sils, nrow = 2)
 j <- j + 1
 ```
 
-### Analysis #1
+### *Analysis #1*
 
 The initial radial dendrogram for the agglomerative method is shown in Fig. `r j` with the corresponding numeric analysis of BMI category by cluster number presented in Table `r i`.  Cluster #1 showed the most homogeneity, with 83.3% of the 12 cases in the cluster obese.  Cluster #2 was slightly larger at 25 cases, and was 64.0% homogeneous for obesity.  The largest cluster was Cluster #7, which was the least homogeneous with 37.7% of its 69 cases overweight, 36.2% obese, and 24.6% having healthy weight.  Mean cluster homogeneity was 52.8% (range 37.7% - 83.3%).
 
@@ -200,7 +200,7 @@ di_init_clusts_kbl
 i <- i + 1
 ```
 
-### Analysis #2
+### *Analysis #2*
 
 After dichotomizing BMI category, both AGNES and DIANA showed gains in homogeneity.  AGNES (Fig. `r j` and Table `r i`) had improved homogeneity in all seven clusters, with homogeneity ranging from 52.8% to 100%.  Importantly, the two largest clusters were over 70% homogeneous.  DIANA (Fig. `r j` and Table `r i`) showed similar improvements, with three clusters over 90% homogeneous, and homogeneity values ranging from 57.1% to 94.9%.  Mean homogeneity for the agglomerative approach was 76.3%, as compared to 76.6% for the divisive approach.  Though these values are comparable, DIANA was able to achive these results with one fewer cluster than AGNES.
 
@@ -240,11 +240,11 @@ di_dichot_clusts_kbl
 i <- i + 1
 ```
 
-### Analysis #3
+### *Analysis #3*
 
 In Analysis #3, AGNES had $k = 10$ clusters (based on next local maxima in the silhouette plot) and DIANA had $k = 9$ (based on next elbow in scree plot).  The AGNES radial dendrogram and corresponding output table are shown in Fig. `r j` and Table `r i` respectively.  The agglomerative approach yielded mean homogeneity 77.5% (range 52.6% - 100%), vs. 81.2% (range 57.1% - 100%) for DIANA (Fig. `r j` and Table `r i`).  Both approaches resulted in 4 clusters with homogeneity better than 90%.  Interestingly, the divisive method was able to identify one small cluster (Cluster #4) having majority membership in the "Not Overweight or Obese" category.  Increasing the number of clusters resulted in greater homogeneity for both AGNES and DIANA, but the effect was more pronounced for DIANA, which saw an increase of 4.6 percentage points in mean homogeneity above that of Analysis #2, as compared to 1.2 points for AGNES.
 
-**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, AGNES (*k* = 10)**
+**Figure `r j`.  Analysis #3:  Clustered Radial Dendrogram with Dichotomous BMI Categories, AGNES (*k* = 10)**
 
 ```{r agnes_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -254,7 +254,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Dichotomized BMI Categories by Cluster, AGNES (*k* = 10)**
+**Table `r i`.  Analysis #3:  Dichotomous BMI Categories by Cluster, AGNES (*k* = 10)**
 
 ```{r agnes_dend_clust_dichot_rev_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ag_dichot_rev_clusts_kbl
@@ -262,7 +262,7 @@ ag_dichot_rev_clusts_kbl
 i <- i + 1
 ```
 
-**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, DIANA (*k* = 9)**
+**Figure `r j`.  Analysis #3:  Clustered Radial Dendrogram with Dichotomous BMI Categories, DIANA (*k* = 9)**
 
 ```{r diana_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -272,7 +272,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Dichotomized BMI Categories by Cluster, DIANA (*k* = 9)**
+**Table `r i`.  Analysis #3:  Dichotomous BMI Categories by Cluster, DIANA (*k* = 9)**
 
 ```{r diana_dend_clust_dichot_rev_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 di_dichot_rev_clusts_kbl
@@ -285,37 +285,40 @@ Results for all three clustering analyses are summarized in Table `r i`.  In eac
 
 **Table `r i`.  Summary of Homogeneity Results for Clustering Analyses**
 
-| Analysis | AGNES mean | AGNES range |  | DIANA mean | DIANA range |
-|-----:----|-----------:|------------:|-:|-----------:|------------:|
-|     1    |      52.8% | 37.7%-83.3% |  |      54.7% | 33.3%-77.3% |
-|     2    |      76.3% |52.8%-100.0% |  |      76.6% | 57.1%-94.9% |
-|     3    |      77.5% |52.6%-100.0% |  |      81.2% |57.1%-100.0% |
+| **Analysis** 	| **AGNES mean (range)** 	| **DIANA mean (range)** 	|
+|--------------	|------------------------	|------------------------	|
+|       1      	|     52.8% (37.7-83.3%) 	|    54.7% (33.3%-77.3%) 	|
+|       2      	|    76.3% (52.8-100.0%) 	|     76.6% (57.1-94.9%) 	|
+|       3      	|    77.5% (52.6-100.0%) 	|   81.2% (57.1%-100.0%) 	|
 
 
 ## **Discussion**
 
 For the supervised approach, the final decision model reached `r paste0(scores_final$pct_acc, "%")` mean accuracy.  While this is an improvement over the initial model, it generally would be considered poor performance for any real-world implementation.  Performance may be improved if the data had fewer missing values; however, much of the NHANES data is collected via survey instruments and missing responses are common with this data collection methodology.  Missing continuous responses were successfully imputed without introducing bias; however, missing categorical responses are more difficult to handle appropriately.
 
-For the unsupervised approach, DIANA outperformed AGNES for all three analyses, indicating that a divisive approach may be more performant with mixed, largely categorical data.  This being an unsupervised analysis, the algorithms are naive to BMI weight category, and the clusters found may represent other similarities discovered among the cases that are not necessarily highly correlated with BMI.  **_ELABORATE_**
+For the unsupervised approach, DIANA outperformed AGNES for all three analyses, indicating that a divisive approach may be more performant with mixed, largely categorical data.  This being an unsupervised analysis, the algorithms are naive to BMI weight category, and the clusters found may represent other similarities discovered among the cases that are not necessarily highly correlated with BMI. However, the high homogeneities found for most clusters in Analysis #3 exceed population prevalence of dichotomous BMI category and are meaningful.  It should be noted that clustering analyses rely on calculation of a dissimilarity matrix, which contains distances between pairwise cases.  With categorical data, particularly nominal, "distance" loses physical meaning, and should not be measured via the typical Euclidean means.  The Gower distance was used to accommodate mixed variables (categorical, ordinal, and nominal), but it's possible an alternative calculation for distance would improve clustering results.
 
-Clustering analyses rely on calculation of a dissimilarity matrix, which contains distances between pairwise cases.  With categorical data, particularly nominal, "distance" loses physical meaning, and should not be measured via the typical Euclidean means.  The Gower distance was used **_FINISH THIS THOUGHT_**
+Both the random forest and clustering analyses employed dichotomous BMI categories, grouping together underweight and healthy weight vs. overweight and obese.  This approach yielded substantially better results than those found when using the original four-levels, but entails the loss of some specificity.  This grouping is defensible, however, because overweight individuals account for greater healthcare expenditure and productivity loss as compared to those of healthy weight, are at risk of becoming obese, and may benefit from similar weight management interventions as would be offered to obese patients.
 
 ### *Strengths*
 
-Though the variables used in this study were largely categorical, the final clustering analysis performed reasonably well, and could potentially be improved **_FINISH THIS THOUGHT_**
+Though the variables used in this study were largely categorical, the final clustering analysis performed reasonably well, and could potentially be improved via better variable selection or by using the full dataset rather than a 5% sample.  Using the 5% sample is also a strength because it allowed for dendrogram visualization, which improves transparency and interpretability of the analysis.
 
+**_FIND ANOTHER STRENGTH TO ADD_**
+
+From a technology standpoint, an additional strength of this analysis is that it successfully leveraged a wide variety of libraries in both Python and R in a single environment, and flexibly passed objects between the two domains with little difficulty.  Though not explicitly stated as a study aim, this was a personal learning objective.
 
 
 ### *Limitations*
 
-Because the Scikit-Learn `randomForestClassifier()` function was unable to handle missing data, missing values were handled via imputation (continuous variables) or by creating a "missing" category comprising all-cause nonresponses (categorical variables).  Using a "missing" category in this manner may have introduced noise into the dataset, particularly with ordinal variables.  More sophisticated methods of dealing with missing categorical data exist but implementing them was beyond the scope of this study.[31,32]  Future iterations of this analysis should include better handling of missing categorical data and should test other random forest functions - for example, those available in the `xgboost` Python library.
+Because the Scikit-Learn `randomForestClassifier()` function was unable to handle missing data, missing values were handled via imputation (continuous variables) or by creating a "missing" category comprising all-cause nonresponses (categorical variables).  Using a "missing" category in this manner may have introduced noise into the dataset, particularly with ordinal variables.  More sophisticated methods of dealing with missing categorical data exist but implementing them was beyond the scope of this study.[31,32]  Future iterations of this analysis should include better handling of missing categorical data and should test other random forest functions - for example, those available in the `xgboost` Python library.  An additional limitation to the random forest approach is that it uses an ensemble of trees and thus no meaningful single decision tree can be visualized, which hampers model transparency.
 
-Another limitation is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [33-35]  In the absence of more sophisticated tools, variable selection was based on those characteristics expected to be most closely correlated with weight.
+Another challenge is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [33-35]  In the absence of more sophisticated tools, variable selection was based on those characteristics expected to be most closely correlated with weight.
 
 
 ## **Conclusion**
 
-This study indicates that it may be feasible to identify individuals likely to be overweight or obese using demographic, behavioral, and medical variables.  Though refinements are needed, particularly in the choice of random forest algorithm as well as in cluster tuning, this analysis serves as a proof-of-concept **_FINISH THIS THOUGHT_**
+This study indicates that it may be feasible to identify individuals likely to be overweight or obese using demographic, behavioral, and medical variables.  Though refinements are needed, particularly in the choice of random forest algorithm as well as in cluster tuning, these findings serve as a proof-of-concept that it is possible to identify **_FINISH THIS THOUGHT_**
 
 
 ## **References**
@@ -352,7 +355,7 @@ This study indicates that it may be feasible to identify individuals likely to b
 
 16. National Health and Nutrition Examination Survey:  Questionnaire Data - Mental Health:  Depression Screener (DPQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DPQ_I.XPT.  Updated December 2017.  Accessed October 29, 2019.
 
-17. Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. *Psychiatric Annals*. 2002;32(9):1-7  doi:  10.3928/0048-5713-20020901-06.
+17. Kroenke K, Spitzer RL. The PHQ-9: A new depression diagnostic and severity measure. *Psychiatric Annals*. 2002;32(9):1-7.  doi:  10.3928/0048-5713-20020901-06.
 
 18. National Health and Nutrition Examination Survey:  Questionnaire Data - Diet Behavior and Nutrition (DBQ_I).  National Center for Health Statistics.  https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DBQ_I.XPT.  Updated November 2018.  Accessed October 29, 2019.
 
@@ -362,7 +365,7 @@ This study indicates that it may be feasible to identify individuals likely to b
 
 21. Gower JC. A General Coefficient of Similarity and Some of Its Properties.  *Biometrics*.  1971;27(4):857-71.  doi:  10.2307/2528823.
 
-22. Rousseeuw PJ.  Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis.  *Journal of Computational and Applied Mathematics*.  1987(20): 53-65.  https://doi.org/10.1016/0377-0427(87)90125-7.
+22. Rousseeuw PJ.  Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis.  *Journal of Computational and Applied Mathematics*.  1987;20:53-65.  https://doi.org/10.1016/0377-0427(87)90125-7.
 
 23. sklearn.ensemble.RandomForestClassifier.  Scikit-learn documentation.  https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html.  Accessed November 10, 2019.
 
@@ -382,7 +385,7 @@ This study indicates that it may be feasible to identify individuals likely to b
 
 31. Oshungade IO.  Some Methods of Handling Item Non-Response in Categorical Data.  *Journal of the Royal Statistical Society:  Series D (The Statistician)*.  1989;38(4):281-96.
   
-32. Copas A, Farewell V.  Dealing with Non-Ignorable Non-Response by Using an "Enthusiasm-To-Respond" Variable. *Journal of the Royal Statistical Society:  Series A (Statistics in Society).*  1998; 161(3), 385-96.
+32. Copas A, Farewell V.  Dealing with Non-Ignorable Non-Response by Using an "Enthusiasm-To-Respond" Variable. *Journal of the Royal Statistical Society:  Series A (Statistics in Society).*  1998;161(3):385-96.
 
 33. Niitsuma H, Okada T.  Covariance and PCA for Categorical Variables.  Advances in Knowledge Discovery and Data Mining.  Ho TB, Cheung D, Liu H, eds.  *Advances in Knowledge Discovery and Data Mining*.  Berlin:  Springer; 2005.  doi:  10.1007/11430919_61.  arXiv:  0711.4452 [cs.LG].
 
