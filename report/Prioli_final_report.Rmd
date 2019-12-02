@@ -208,7 +208,8 @@ After dichotomizing BMI category, both AGNES and DIANA showed gains in homogenei
 
 ```{r agnes_dend_clust_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
-ggdraw() + draw_image(ggleg_dichot_svg, x = -0.025, scale = 1.15) + draw_plot(agnes_dend_clust_dichot_gg, x = -0.15)
+ag_dend_dichot_out <- ggdraw() + draw_image(ggleg_dichot_svg, x = -0.025, scale = 1.15) + draw_plot(agnes_dend_clust_dichot_gg, x = -0.15)
+ag_dend_dichot_out
 ggthemr("flat")
 
 j <- j + 1
@@ -226,7 +227,8 @@ i <- i + 1
 
 ```{r diana_dend_clust_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
-ggdraw() + draw_image(ggleg_dichot_svg, x = -0.025, scale = 1.15) + draw_plot(diana_dend_clust_dichot_gg, x = -0.10)
+di_dend_dichot_out <- ggdraw() + draw_image(ggleg_dichot_svg, x = -0.025, scale = 1.15) + draw_plot(diana_dend_clust_dichot_gg, x = -0.10)
+di_dend_dichot_out
 ggthemr("flat")
 
 j <- j + 1
@@ -248,7 +250,8 @@ In Analysis #3, AGNES had $k = 10$ clusters (based on next local maxima in the s
 
 ```{r agnes_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
-ggdraw() + draw_image(ggleg_dichot_svg, x = -0.02, scale = 1.15) + draw_plot(agnes_dend_clust_dichot_rev_gg, x = -0.125)
+ag_dend_dichot_rev_out <- ggdraw() + draw_image(ggleg_dichot_svg, x = -0.02, scale = 1.15) + draw_plot(agnes_dend_clust_dichot_rev_gg, x = -0.125)
+ag_dend_dichot_rev_out
 ggthemr("flat")
 
 j <- j + 1
@@ -266,7 +269,8 @@ i <- i + 1
 
 ```{r diana_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
-ggdraw() + draw_image(ggleg_dichot_svg, x = -0.02, scale = 1.15) + draw_plot(diana_dend_clust_dichot_rev_gg, x = -0.10)
+di_dend_dichot_rev_out <- ggdraw() + draw_image(ggleg_dichot_svg, x = -0.02, scale = 1.15) + draw_plot(diana_dend_clust_dichot_rev_gg, x = -0.10)
+di_dend_dichot_rev_out
 ggthemr("flat")
 
 j <- j + 1
@@ -287,9 +291,9 @@ Results for all three clustering analyses are summarized in Table `r i`.  In eac
 
 | **Analysis** 	| **AGNES mean (range)** 	| **DIANA mean (range)** 	|
 |--------------	|------------------------	|------------------------	|
-|       1      	|     52.8% (37.7-83.3%) 	|    54.7% (33.3%-77.3%) 	|
+|       1      	|     52.8% (37.7-83.3%) 	|     54.7% (33.3-77.3%) 	|
 |       2      	|    76.3% (52.8-100.0%) 	|     76.6% (57.1-94.9%) 	|
-|       3      	|    77.5% (52.6-100.0%) 	|   81.2% (57.1%-100.0%) 	|
+|       3      	|    77.5% (52.6-100.0%) 	|    81.2% (57.1-100.0%) 	|
 
 
 ## **Discussion**
@@ -298,7 +302,7 @@ For the supervised approach, the final decision model reached `r paste0(scores_f
 
 For the unsupervised approach, DIANA outperformed AGNES for all three analyses, indicating that a divisive approach may be more performant with mixed, largely categorical data.  This being an unsupervised analysis, the algorithms are naive to BMI weight category, and the clusters found may represent other similarities discovered among the cases that are not necessarily highly correlated with BMI. However, the high homogeneities found for most clusters in Analysis #3 exceed population prevalence of dichotomous BMI category and are meaningful.  It should be noted that clustering analyses rely on calculation of a dissimilarity matrix, which contains distances between pairwise cases.  With categorical data, particularly nominal, "distance" loses physical meaning, and should not be measured via the typical Euclidean means.  The Gower distance was used to accommodate mixed variables (categorical, ordinal, and nominal), but it's possible an alternative calculation for distance would improve clustering results.
 
-Both the random forest and clustering analyses employed dichotomous BMI categories, grouping together underweight and healthy weight vs. overweight and obese.  This approach yielded substantially better results than those found when using the original four-levels, but entails the loss of some specificity.  This grouping is defensible, however, because overweight individuals account for greater healthcare expenditure and productivity loss as compared to those of healthy weight, are at risk of becoming obese, and may benefit from similar weight management interventions as would be offered to obese patients.
+Both the random forest and clustering analyses employed dichotomous BMI categories, grouping together underweight and healthy weight vs. overweight and obese.  This approach yielded substantially better results than those found when using the original four levels, but entails the loss of some specificity.  This grouping is defensible, however, because overweight individuals account for greater healthcare expenditure and productivity loss as compared to those of healthy weight, are at risk of becoming obese, and may benefit from similar weight management interventions as would be targeted to those with obesity.
 
 ### *Strengths*
 
