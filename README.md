@@ -1,7 +1,7 @@
 ---
 title: "README"
 author: "Katherine M. Prioli"
-date: "November 30, 2019"
+date: "December 02, 2019"
 output: html_document
 ---
 
@@ -17,7 +17,7 @@ Overweight and obesity are growing public health concerns, with 71.6% of America
 Using a carefully selected a carefully selected set of variables from the 2015-2016 NHANES data which are known or suspected to be correlated with obesity, the objectives of this study were:
 
 1.  Run a Random Forest using an $n \times k$-fold crossvalidation approach to classify cases into weight categories by Body Mass Index (BMI)
-2.  Apply agglomerative and divisive hierarchical clustering methods (AGNES and DIANA, respectively) to unlabeled data and plot the corresponding dendrograms along with the BMI category labels to determine how well the clustering approach is able to identify similar cases
+2.  Apply agglomerative and divisive hierarchical clustering methods (AGNES and DIANA, respectively) to unlabeled data and plot the corresponding dendrograms along with the BMI category labels and compare cluster homogeneity results
 
 
 ## **Repo Contents**
@@ -93,7 +93,7 @@ install.packages(c("broom",
 
 ## **Usage**
 
-The script `load_data.R` must be run before any other file.  From there, you can run either `random_forest.Rmd` for the supervised analysis, or `clustering_analysis.Rmd` for the unsupervised analysis.
+The script `load_data.R` must be run before any other file.  From there, you can edit and run either `random_forest.Rmd` for the supervised analysis, or `clustering_analysis.Rmd` for the unsupervised analysis.
 
 
 ## **Data Source**
