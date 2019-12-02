@@ -55,7 +55,7 @@ Reducing both the incidence and prevalence of obesity will be critical in managi
 
 A literature search of PubMed for currently known or suspected demographic, behavioral, and medical correlates of excess adiposity was used to inform variable selection.  NHANES 2015-2016 variables chosen for the study are presented in Table `r i`, with the source denoted as "native" for variables native to the NHANES dataset or "derived" for variables calculated from native NHANES variables.  Derived variables of note included the scored and categorized nine-item Patient Health Questionnaire (PHQ-9), a validated nine-item depression inventory, as well as `BP_cat`, representing clinical categories of blood pressure ranging from hypotension through hypertensive crisis, assigned based on systolic and diastolic blood pressure values.  Additionally, many of the native categorical variables were refactored to group nonresponses (e.g., refusals to respond, "Don't know" responses, and missing values) into a single category.
 
-**Table `r i`.  Variables in initial dataset.**
+**Table `r i`.  Variables in initial dataset**
 
 ```{r init_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 
@@ -95,7 +95,7 @@ Data import, wrangling, and visualization were performed in R using an RMarkdown
 
 The final analytic dataframe contained `r dim(nhanes)[1]` rows and `r dim(nhanes)[2]` columns.  Variables included in the dataset are presented in Table `r i`:
 
-**Table `r i`.  Variables in final dataset.**
+**Table `r i`.  Variables in final dataset**
 
 ```{r analytic_vars, echo = FALSE, message = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 6}
 varnames <- colnames(nhanes) %>% 
@@ -148,7 +148,7 @@ The initial model, based on the full dataset and using $k = 5$ folds, $n = 5$ re
 
 The scree and silhouette plots are presented in Figure `r j` *a* and *b*. The AGNES scree plot shows a relatively smooth curve without strong elbows; possible but faint elbows appear at 5 and 7 clusters.  For DIANA, two elbows are seen:  one at 5 clusters and one at 6.  Both the AGNES and DIANA silhouette plots show maximum average silhouette width at 2 clusters, which is unlikely to contain sufficient data to be meaningful.  AGNES shows a local maximum at 7 clusters, and DIANA at 6.  Considered together, scree and silhouette plots indicate that 7 clusters may be sufficient for AGNES, and 6 for DIANA.
 
-**Figure `r i`.  Scree and Silhouette Plots.**
+**Figure `r i`.  Scree and Silhouette Plots**
 
 ```{r scree_silhou, echo = FALSE, paged.print = FALSE, fig.width = 10, fig.height = 8}
 grid.arrange(screes, sils, nrow = 2)
@@ -160,7 +160,7 @@ j <- j + 1
 
 The initial radial dendrogram for the agglomerative method is shown in Fig. `r j` with the corresponding numeric analysis of BMI category by cluster number presented in Table `r i`.  Cluster #1 showed the most homogeneity, with 83.3% of the 12 cases in the cluster obese.  Cluster #2 was slightly larger at 25 cases, and was 64.0% homogeneous for obesity.  The largest cluster was Cluster #7, which was the least homogeneous with 37.7% of its 69 cases overweight, 36.2% obese, and 24.6% having healthy weight.  Mean cluster homogeneity was 52.8% (range 37.7% - 83.3%).
 
-**Figure `r j`.  Analysis #1:  Clustered Radial Dendrogram, AGNES (*k* = 7).**
+**Figure `r j`.  Analysis #1:  Clustered Radial Dendrogram, AGNES (*k* = 7)**
 
 ```{r agnes_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -171,7 +171,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Analysis #1:  BMI Categories by Cluster, AGNES (*k* = 7).**
+**Table `r i`.  Analysis #1:  BMI Categories by Cluster, AGNES (*k* = 7)**
 
 ```{r agnes_dend_clust_init_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ag_init_clusts_kbl
@@ -181,7 +181,7 @@ i <- i + 1
 
 For DIANA, the initial radial dendrogram is shown in Fig. `r j` with analysis of BMI category by cluster number in Table `r i`.  A pattern generally similar to that seen in the initial agglomerative case is seen, wherein smaller clusters had better homogeneity, and heterogeneity increased with cluster size.  Here, Cluster #6 was the most homogeneous, with 77.3% of its 22 cases obese, and Cluster #2 was the least homogeneous, with $\frac{1}{3}$ of its 69 cases at healthy weight, another $\frac{1}{3}$ obese, and 31.9% overweight.  Mean cluster homogeneity was 54.7% (range 33.3% - 77.3%).
 
-**Figure `r j`.  Analysis #1:  Clustered Radial Dendrogram, DIANA (*k* = 6).**
+**Figure `r j`.  Analysis #1:  Clustered Radial Dendrogram, DIANA (*k* = 6)**
 
 ```{r diana_dend_clust_init, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -192,7 +192,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Analysis #1:  BMI Categories by Cluster, DIANA (*k* = 6).**
+**Table `r i`.  Analysis #1:  BMI Categories by Cluster, DIANA (*k* = 6)**
 
 ```{r diana_dend_clust_init_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 di_init_clusts_kbl
@@ -204,7 +204,7 @@ i <- i + 1
 
 After dichotomizing BMI category, both AGNES and DIANA showed gains in homogeneity.  AGNES (Fig. `r j` and Table `r i`) had improved homogeneity in all seven clusters, with homogeneity ranging from 52.8% to 100%.  Importantly, the two largest clusters were over 70% homogeneous.  DIANA (Fig. `r j` and Table `r i`) showed similar improvements, with three clusters over 90% homogeneous, and homogeneity values ranging from 57.1% to 94.9%.  Mean homogeneity for the agglomerative approach was 76.3%, as compared to 76.6% for the divisive approach.  Though these values are comparable, DIANA was able to achive these results with one fewer cluster than AGNES.
 
-**Figure `r j`.  Analysis #2:  Clustered Radial Dendrogram with Dichotomous BMI Categories, AGNES (*k* = 7).**
+**Figure `r j`.  Analysis #2:  Clustered Radial Dendrogram with Dichotomous BMI Categories, AGNES (*k* = 7)**
 
 ```{r agnes_dend_clust_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -214,7 +214,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Analysis #2:  Dichotomous BMI Categories by Cluster, AGNES (*k* = 7).**
+**Table `r i`.  Analysis #2:  Dichotomous BMI Categories by Cluster, AGNES (*k* = 7)**
 
 ```{r agnes_dend_clust_dichot_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ag_dichot_clusts_kbl
@@ -222,7 +222,7 @@ ag_dichot_clusts_kbl
 i <- i + 1
 ```
 
-**Figure `r j`.  Analysis #2:  Clustered Radial Dendrogram with Dichotomous BMI Categories, DIANA (*k* = 6).**
+**Figure `r j`.  Analysis #2:  Clustered Radial Dendrogram with Dichotomous BMI Categories, DIANA (*k* = 6)**
 
 ```{r diana_dend_clust_dichot, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -232,7 +232,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Analysis #2:  Dichotomous BMI Categories by Cluster, DIANA (*k* = 6).**
+**Table `r i`.  Analysis #2:  Dichotomous BMI Categories by Cluster, DIANA (*k* = 6)**
 
 ```{r diana_dend_clust_dichot_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 di_dichot_clusts_kbl
@@ -244,7 +244,7 @@ i <- i + 1
 
 In Analysis #3, AGNES had $k = 10$ clusters (based on next local maxima in the silhouette plot) and DIANA had $k = 9$ (based on next elbow in scree plot).  The AGNES radial dendrogram and corresponding output table are shown in Fig. `r j` and Table `r i` respectively.  The agglomerative approach yielded mean homogeneity 77.5% (range 52.6% - 100%), vs. 81.2% (range 57.1% - 100%) for DIANA (Fig. `r j` and Table `r i`).  Both approaches resulted in 4 clusters with homogeneity better than 90%.  Interestingly, the divisive method was able to identify one small cluster (Cluster #4) having majority membership in the "Not Overweight or Obese" category.  Increasing the number of clusters resulted in greater homogeneity for both AGNES and DIANA, but the effect was more pronounced for DIANA, which saw an increase of 4.6 percentage points in mean homogeneity above that of Analysis #2, as compared to 1.2 points for AGNES.
 
-**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, AGNES (*k* = 10).**
+**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, AGNES (*k* = 10)**
 
 ```{r agnes_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -254,7 +254,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Dichotomized BMI Categories by Cluster, AGNES (*k* = 10).**
+**Table `r i`.  Dichotomized BMI Categories by Cluster, AGNES (*k* = 10)**
 
 ```{r agnes_dend_clust_dichot_rev_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 ag_dichot_rev_clusts_kbl
@@ -262,7 +262,7 @@ ag_dichot_rev_clusts_kbl
 i <- i + 1
 ```
 
-**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, DIANA (*k* = 9).**
+**Figure `r j`.  Colored Radial Dendrogram with Dichotomous BMI Categories, DIANA (*k* = 9)**
 
 ```{r diana_dend_clust_dichot_rev, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 8.25, fig.height = 6.75}
 ggthemr("flat", spacing = 0.1)
@@ -272,7 +272,7 @@ ggthemr("flat")
 j <- j + 1
 ```
 
-**Table `r i`.  Dichotomized BMI Categories by Cluster, DIANA (*k* = 9).**
+**Table `r i`.  Dichotomized BMI Categories by Cluster, DIANA (*k* = 9)**
 
 ```{r diana_dend_clust_dichot_rev_aggreg, echo = FALSE, warning = FALSE, paged.print = FALSE, fig.width = 6.75, fig.height = 6.75}
 di_dichot_rev_clusts_kbl
@@ -280,31 +280,42 @@ di_dichot_rev_clusts_kbl
 i <- i + 1
 ```
 
+Results for all three clustering analyses are summarized in Table `r i`.  In each case, the divisive method performed better than the agglomerative method using fewer clusters, and had a narrower range.  Analysis #3, having dichotomous BMI and a larger number of clusters, yielded the best results for both AGNES and DIANA.
+
+
+**Table `r i`.  Summary of Homogeneity Results for Clustering Analyses**
+
+| Analysis | AGNES mean | AGNES range |  | DIANA mean | DIANA range |
+|-----:----|-----------:|------------:|-:|-----------:|------------:|
+|     1    |      52.8% | 37.7%-83.3% |  |      54.7% | 33.3%-77.3% |
+|     2    |      76.3% |52.8%-100.0% |  |      76.6% | 57.1%-94.9% |
+|     3    |      77.5% |52.6%-100.0% |  |      81.2% |57.1%-100.0% |
+
 
 ## **Discussion**
 
-For the supervised approach, the final decision model reached `r paste0(scores_final$pct_acc, "%")` mean accuracy.  While this is an improvement over the initial model, it generally would be considered poor performance for any real-world implementation.
+For the supervised approach, the final decision model reached `r paste0(scores_final$pct_acc, "%")` mean accuracy.  While this is an improvement over the initial model, it generally would be considered poor performance for any real-world implementation.  Performance may be improved if the data had fewer missing values; however, much of the NHANES data is collected via survey instruments and missing responses are common with this data collection methodology.  Missing continuous responses were successfully imputed without introducing bias; however, missing categorical responses are more difficult to handle appropriately.
 
-For the unsupervised approach, DIANA 
+For the unsupervised approach, DIANA outperformed AGNES for all three analyses, indicating that a divisive approach may be more performant with mixed, largely categorical data.  This being an unsupervised analysis, the algorithms are naive to BMI weight category, and the clusters found may represent other similarities discovered among the cases that are not necessarily highly correlated with BMI.  **_ELABORATE_**
 
-Clustering analyses rely on calculation of a dissimilarity matrix, which contains distances between pairwise cases.  With categorical data, particularly nominal, "distance" loses physical meaning, and should not be measured via the typical Euclidean means.  **_FLESH OUT FURTHER_**
+Clustering analyses rely on calculation of a dissimilarity matrix, which contains distances between pairwise cases.  With categorical data, particularly nominal, "distance" loses physical meaning, and should not be measured via the typical Euclidean means.  The Gower distance was used **_FINISH THIS THOUGHT_**
 
 ### *Strengths*
 
-Though the variables used in this study were largely categorical, the clustering analysis performed reasonably well
+Though the variables used in this study were largely categorical, the final clustering analysis performed reasonably well, and could potentially be improved **_FINISH THIS THOUGHT_**
 
 
 
 ### *Limitations*
 
-Because the Scikit-Learn `randomForestClassifier()` function was unable to handle missing data, missing values were handled via imputation (continuous variables) or by creating a "missing" category comprising all-cause nonresponses (categorical variables).  Using a "missing" category in this manner may have introduced noise into the dataset, because it's not known missing values were missing completely at random or missing not at random.  Future iterations of this analysis should include other random forest functions - e.g., those available in the `xgboost` Python library.
+Because the Scikit-Learn `randomForestClassifier()` function was unable to handle missing data, missing values were handled via imputation (continuous variables) or by creating a "missing" category comprising all-cause nonresponses (categorical variables).  Using a "missing" category in this manner may have introduced noise into the dataset, particularly with ordinal variables.  More sophisticated methods of dealing with missing categorical data exist but implementing them was beyond the scope of this study.[31,32]  Future iterations of this analysis should include better handling of missing categorical data and should test other random forest functions - for example, those available in the `xgboost` Python library.
 
-Another limitation is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [31-33]  In the absence of more sophisticated tools, variable selection was based on those characteristics expected to be most closely correlated with weight.
-
-
+Another limitation is that variable selection is difficult with continuous variables.  Principal Component Analysis (PCA) is a common method used for choosing variables when considering continuous data, but is not commonly used when data is categorical.  There is, however, evidence in the literature to suggest that categorical variables can be treated via a modified PCA approach, but the packages currently available for this either have limited documentation or are not built on a recent version of R. [33-35]  In the absence of more sophisticated tools, variable selection was based on those characteristics expected to be most closely correlated with weight.
 
 
 ## **Conclusion**
+
+This study indicates that it may be feasible to identify individuals likely to be overweight or obese using demographic, behavioral, and medical variables.  Though refinements are needed, particularly in the choice of random forest algorithm as well as in cluster tuning, this analysis serves as a proof-of-concept **_FINISH THIS THOUGHT_**
 
 
 ## **References**
@@ -368,9 +379,13 @@ Another limitation is that variable selection is difficult with continuous varia
 29. Galili T.  dendextend:  an R package for visualizing, adjusting, and comparing trees of hierarchical clustering.  *Bioinformatics*.  2015;31(22):3718-20.  doi:  10.1093/bioinformatics/btv428.
 
 30. Prioli KM. CSC_8515_Final_Project. https://github.com/kprioliPROF/CSC_8515_Final_Project.
+
+31. Oshungade IO.  Some Methods of Handling Item Non-Response in Categorical Data.  *Journal of the Royal Statistical Society:  Series D (The Statistician)*.  1989;38(4):281-96.
   
-31. Niitsuma H, Okada T.  Covariance and PCA for Categorical Variables.  Advances in Knowledge Discovery and Data Mining.  Ho TB, Cheung D, Liu H, eds.  *Advances in Knowledge Discovery and Data Mining*.  Berlin:  Springer; 2005.  doi:  10.1007/11430919_61.  arXiv:  0711.4452 [cs.LG].
+32. Copas A, Farewell V.  Dealing with Non-Ignorable Non-Response by Using an "Enthusiasm-To-Respond" Variable. *Journal of the Royal Statistical Society:  Series A (Statistics in Society).*  1998; 161(3), 385-96.
 
-32. princals:  Categorical principal component analysis (PRINCALS).  Gifi Multivariate Analysis with Optimal Scaling documentation.  https://cran.r-project.org/web/packages/Gifi/index.html.  Updated June 25, 2019.  Accessed November 17, 2019.
+33. Niitsuma H, Okada T.  Covariance and PCA for Categorical Variables.  Advances in Knowledge Discovery and Data Mining.  Ho TB, Cheung D, Liu H, eds.  *Advances in Knowledge Discovery and Data Mining*.  Berlin:  Springer; 2005.  doi:  10.1007/11430919_61.  arXiv:  0711.4452 [cs.LG].
 
-33. Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  arXiv:1411.4911v4 [stat.CO]  Updated December 8, 2017.  Accessed November 17, 2019.
+34. princals:  Categorical principal component analysis (PRINCALS).  Gifi Multivariate Analysis with Optimal Scaling documentation.  https://cran.r-project.org/web/packages/Gifi/index.html.  Updated June 25, 2019.  Accessed November 17, 2019.
+
+35. Chavent M, Kuentz-Simonet V, Labenne A, Saracco J.  Multivariate Analysis of Mixed Data:  The R Package PCAmixdata.  arXiv:1411.4911v4 [stat.CO]  Updated December 8, 2017.  Accessed November 17, 2019.
