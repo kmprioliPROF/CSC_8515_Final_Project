@@ -1,14 +1,14 @@
 ---
 title: "README"
 author: "Katherine M. Prioli"
-date: "December 02, 2019"
+date: "December 04, 2019"
 output: html_document
 ---
 
   
 ## **Overview**
   
-This repo contains the data, full source code, final report, and slides for my CSC 8515 final project, which used supervised and unsupervised machine learning approaches to explore obesity and its correlates.
+This repo contains the data, full source code, final report, and slides for my CSC 8515 (Machine Learning) final project, which used supervised and unsupervised machine learning approaches to explore obesity and its correlates.
 
 ## **Background**
 
@@ -16,7 +16,7 @@ Overweight and obesity are growing public health concerns, with 71.6% of America
 
 Using a carefully selected a carefully selected set of variables from the 2015-2016 NHANES data which are known or suspected to be correlated with obesity, the objectives of this study were:
 
-1.  Run a Random Forest using an $n \times k$-fold crossvalidation approach to classify cases into weight categories by Body Mass Index (BMI)
+1.  Run a Random Forest using an *n* × *k*-fold crossvalidation approach to classify cases into weight categories by Body Mass Index (BMI)
 2.  Apply agglomerative and divisive hierarchical clustering methods (AGNES and DIANA, respectively) to unlabeled data and plot the corresponding dendrograms along with the BMI category labels and compare cluster homogeneity results
 
 
@@ -35,20 +35,22 @@ The repo is organized as follows:
   | clustering_stats.R           | R script used to generate clustering statistics for scree and silhouette plots                |
   | import_wrangle.R             | R script used to import raw data and generate analytic datasets                               |
   | load_data.R                  | R script used to load analytic dataset from .RData; **_must be run before any other files_**  |
-  | random_forest.Rmd            | RMarkdown notebook containing the final $n \times k$-fold CV Random Forest analysis           |
+  | random_forest.Rmd            | RMarkdown notebook containing the final *n* × *k*-fold-fold CV Random Forest analysis         |
 
 
 ## **Technologies and Dependencies**
 
 This project is written largely in R and uses .R and .Rmd files; however, the Random Forest analysis is performed in Python 3.8.0 and leverages the libraries `math`, `numpy`, `pandas`, and `sklearn`.
 
-The R components of this analysis rely on the following packages:
+The R components of this analysis rely on the following packages, which will automatically be loaded via a `library` call in `load_data.R`:
 
 * `broom`
 * `cluster`
+* `cowplot`
 * `dendextend`
 * `forcats`
 * `fpc`
+* `GGally`
 * `ggdendro`
 * `ggthemr`
 * `grid`
@@ -56,6 +58,7 @@ The R components of this analysis rely on the following packages:
 * `haven`
 * `here`
 * `kableExtra`
+* `magick`
 * `psych`
 * `randomForest`
 * `reticulate`
@@ -70,9 +73,11 @@ If you need any of these, you can install them by modifying and running the code
 ```
 install.packages(c("broom",
                    "cluster",
+                   "cowplot",
                    "dendextend",
                    "forcats",
                    "fpc",
+                   "GGally",
                    "ggdendro",
                    "ggthemr",
                    "grid",
@@ -80,6 +85,7 @@ install.packages(c("broom",
                    "haven",
                    "here",
                    "kableExtra",
+                   "magick",
                    "psych",
                    "randomForest",
                    "reticulate",

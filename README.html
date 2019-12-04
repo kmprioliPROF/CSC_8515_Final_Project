@@ -11,7 +11,7 @@
 
 <meta name="author" content="Katherine M. Prioli" />
 
-<meta name="date" content="2019-12-02" />
+<meta name="date" content="2019-12-04" />
 
 <title>README</title>
 
@@ -377,21 +377,21 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">README</h1>
 <h4 class="author">Katherine M. Prioli</h4>
-<h4 class="date">December 02, 2019</h4>
+<h4 class="date">December 04, 2019</h4>
 
 </div>
 
 
 <div id="overview" class="section level2">
 <h2><strong>Overview</strong></h2>
-<p>This repo contains the data, full source code, final report, and slides for my CSC 8515 final project, which used supervised and unsupervised machine learning approaches to explore obesity and its correlates.</p>
+<p>This repo contains the data, full source code, final report, and slides for my CSC 8515 (Machine Learning) final project, which used supervised and unsupervised machine learning approaches to explore obesity and its correlates.</p>
 </div>
 <div id="background" class="section level2">
 <h2><strong>Background</strong></h2>
 <p>Overweight and obesity are growing public health concerns, with 71.6% of American adults are overweight and 39.8% obese. Obesity strongly correlates with increased morbidity and mortality and the economic burden of obesity is high, both for direct costs (e.g., healthcare utilization) and indirect costs (e.g., work productivity loss). The National Health and Nutrition Examination Survey (NHANES) is a biennial health surveillance study performed by the Centers for Disease Control and Prevention (CDC) that seeks to understand population-level health by gathering demographic, medical, mental health, and behavioral data through self-report and physical examination. NHANES has uncovered some demographic correlates of obesity, but much remains unknown about the interactions of these correlates and how constellations thereof may be used to identify obesity at the population level.</p>
 <p>Using a carefully selected a carefully selected set of variables from the 2015-2016 NHANES data which are known or suspected to be correlated with obesity, the objectives of this study were:</p>
 <ol style="list-style-type: decimal">
-<li>Run a Random Forest using an <span class="math inline">\(n \times k\)</span>-fold crossvalidation approach to classify cases into weight categories by Body Mass Index (BMI)</li>
+<li>Run a Random Forest using an <em>n</em> × <em>k</em>-fold crossvalidation approach to classify cases into weight categories by Body Mass Index (BMI)</li>
 <li>Apply agglomerative and divisive hierarchical clustering methods (AGNES and DIANA, respectively) to unlabeled data and plot the corresponding dendrograms along with the BMI category labels and compare cluster homogeneity results</li>
 </ol>
 </div>
@@ -448,7 +448,7 @@ $(document).ready(function () {
 </tr>
 <tr class="even">
 <td>random_forest.Rmd</td>
-<td>RMarkdown notebook containing the final <span class="math inline">\(n \times k\)</span>-fold CV Random Forest analysis</td>
+<td>RMarkdown notebook containing the final <em>n</em> × <em>k</em>-fold-fold CV Random Forest analysis</td>
 </tr>
 </tbody>
 </table>
@@ -456,13 +456,15 @@ $(document).ready(function () {
 <div id="technologies-and-dependencies" class="section level2">
 <h2><strong>Technologies and Dependencies</strong></h2>
 <p>This project is written largely in R and uses .R and .Rmd files; however, the Random Forest analysis is performed in Python 3.8.0 and leverages the libraries <code>math</code>, <code>numpy</code>, <code>pandas</code>, and <code>sklearn</code>.</p>
-<p>The R components of this analysis rely on the following packages:</p>
+<p>The R components of this analysis rely on the following packages, which will automatically be loaded via a <code>library</code> call in <code>load_data.R</code>:</p>
 <ul>
 <li><code>broom</code></li>
 <li><code>cluster</code></li>
+<li><code>cowplot</code></li>
 <li><code>dendextend</code></li>
 <li><code>forcats</code></li>
 <li><code>fpc</code></li>
+<li><code>GGally</code></li>
 <li><code>ggdendro</code></li>
 <li><code>ggthemr</code></li>
 <li><code>grid</code></li>
@@ -470,6 +472,7 @@ $(document).ready(function () {
 <li><code>haven</code></li>
 <li><code>here</code></li>
 <li><code>kableExtra</code></li>
+<li><code>magick</code></li>
 <li><code>psych</code></li>
 <li><code>randomForest</code></li>
 <li><code>reticulate</code></li>
@@ -482,9 +485,11 @@ $(document).ready(function () {
 <p>If you need any of these, you can install them by modifying and running the code below as needed:</p>
 <pre><code>install.packages(c(&quot;broom&quot;,
                    &quot;cluster&quot;,
+                   &quot;cowplot&quot;,
                    &quot;dendextend&quot;,
                    &quot;forcats&quot;,
                    &quot;fpc&quot;,
+                   &quot;GGally&quot;,
                    &quot;ggdendro&quot;,
                    &quot;ggthemr&quot;,
                    &quot;grid&quot;,
@@ -492,6 +497,7 @@ $(document).ready(function () {
                    &quot;haven&quot;,
                    &quot;here&quot;,
                    &quot;kableExtra&quot;,
+                   &quot;magick&quot;,
                    &quot;psych&quot;,
                    &quot;randomForest&quot;,
                    &quot;reticulate&quot;,
